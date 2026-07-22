@@ -54,3 +54,16 @@ p {
 .copyright sup {
   font-size: 0.45em;
 }
+
+.copyright a,
+.copyright a:link,
+.copyright a:visited {
+  color: #e6e6e6;
+  text-decoration: underline;
+}
+
+.copyright a:hover,
+.copyright a:focus,
+.copyright a:active {
+  color: #ffffff;
+}
