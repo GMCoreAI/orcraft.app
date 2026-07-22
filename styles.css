@@ -58,12 +58,12 @@ p {
 .copyright a,
 .copyright a:link,
 .copyright a:visited {
-  color: #e6e6e6;
+  color: #9ecbff;
   text-decoration: underline;
 }
 
 .copyright a:hover,
 .copyright a:focus,
 .copyright a:active {
-  color: #ffffff;
+  color: #cfe6ff;
 }
