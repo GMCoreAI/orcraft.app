@@ -19,6 +19,16 @@ body {
   width: 160px;
   height: auto;
   margin-bottom: 24px;
+  animation: logo-spin 12s linear infinite;
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .wordmark {
