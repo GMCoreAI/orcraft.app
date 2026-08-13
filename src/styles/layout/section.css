@@ -11,6 +11,11 @@
   margin-bottom: var(--space-8);
 }
 
+.section__title--caps {
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
 .grid {
   display: grid;
   gap: var(--space-4);

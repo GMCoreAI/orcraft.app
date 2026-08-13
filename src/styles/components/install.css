@@ -20,7 +20,21 @@
 }
 
 .install__copy {
-  min-width: 88px;
+  padding: var(--space-2) var(--space-3);
+}
+
+.install__copy .icon {
+  font-size: 20px;
+}
+
+.install__copy-done,
+.install__copy.is-copied .install__copy-idle {
+  display: none;
+}
+
+.install__copy.is-copied .install__copy-done {
+  display: inline-flex;
+  color: var(--color-success);
 }
 
 @media (max-width: 480px) {

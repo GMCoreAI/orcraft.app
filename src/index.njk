@@ -5,29 +5,23 @@ key: home
 
 <h1 class="visually-hidden">Orcraft: test orchestration platform</h1>
 
-<!-- Positioning -->
-<section class="section--tight container">
-  <p class="lead lead--strong">{{ site.description }}</p>
-  <p class="lead">
-    Orcraft is a <strong>code-first</strong>, <strong>code-once</strong> and <strong>code-only</strong> test platform:
-    everything lives in Python - no JSON, YAML, or configuration layers - while the same code runs through GUI, CLI, CI,
-    and distributed endpoints.
-  </p>
-</section>
-
 <!-- Evaluation -->
 <section class="section container text-center">
-  <h2 class="section__title">Try it now with just:</h2>
+  <h2 class="section__title section__title--caps">Try it now:</h2>
   <div class="install">
     <code class="install__command">pip install orcraft</code>
-    <button class="button button--ghost install__copy" type="button" data-copy="pip install orcraft">Copy</button>
+    <button class="button button--ghost install__copy" type="button" data-copy="pip install orcraft"
+      aria-label="Copy command" title="Copy command">
+      <span class="install__copy-idle">{% icon "copy" %}</span>
+      <span class="install__copy-done">{% icon "check" %}</span>
+    </button>
   </div>
 </section>
 
 <!-- Product preview -->
 <section class="band">
   <div class="container">
-    <h2 class="section__title">How it works</h2>
+    <h2 class="section__title section__title--caps">How it works</h2>
     <div class="home-preview">
     <article class="card card--panel reveal">
       <button class="card__shot" type="button" data-lightbox aria-label="Enlarge screenshot">
@@ -67,7 +61,7 @@ key: home
 
 <!-- Core capabilities -->
 <section class="section container">
-  <h2 class="section__title">Core capabilities</h2>
+  <h2 class="section__title section__title--caps">Core capabilities</h2>
   <div class="capabilities">
     <article class="card card--feature">
       <span class="card__icon">{% icon "code" %}</span>
@@ -112,7 +106,7 @@ key: home
     <article class="card card--feature">
       <span class="card__icon">{% icon "file-spreadsheet" %}</span>
       <h3 class="card__title">Reports &amp; export</h3>
-      <p class="card__text">Spreadsheet reports and exportable session files for every run.</p>
+      <p class="card__text">Spreadsheet reports, exportable session files and AI analysis for every run.</p>
     </article>
     <article class="card card--feature">
       <span class="card__icon">{% icon "shield-lock" %}</span>

@@ -6,8 +6,17 @@
       <img class="masthead__wordmark" src="/assets/images/wordmark.png" alt="{{ site.name }}" />
     </a>
 
+    {# Slogan, parked for now:
     <p class="masthead__title">
       {{ site.slogan.lead }} <span class="text-accent">{{ site.slogan.accent }}</span>
+    </p>
+    #}
+
+    <p class="lead lead--strong">{{ site.description }}</p>
+    <p class="lead">
+      Orcraft is a <strong>code-first</strong>, <strong>code-once</strong> and <strong>code-only</strong> test platform:
+      everything lives in Python - no JSON, YAML, or configuration layers - while the same code runs through GUI, CLI,
+      CI, and distributed endpoints.
     </p>
 
     {% include "partials/nav.njk" %}

@@ -13,11 +13,7 @@ export function initCopy() {
       return;
     }
 
-    const original = button.dataset.label ?? button.textContent;
-    button.dataset.label = original;
-    button.textContent = "Copied";
-    setTimeout(() => {
-      button.textContent = original;
-    }, RESET_DELAY);
+    button.classList.add("is-copied");
+    setTimeout(() => button.classList.remove("is-copied"), RESET_DELAY);
   });
 }

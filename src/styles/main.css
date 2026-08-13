@@ -1,6 +1,7 @@
 /* Single stylesheet entry point. Page-specific files are linked per page. */
 
 /* Base */
+@import url("base/fonts.css");
 @import url("base/tokens.css");
 @import url("base/reset.css");
 @import url("base/typography.css");
