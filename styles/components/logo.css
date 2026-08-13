@@ -1,0 +1,22 @@
+.logo {
+  width: 28px;
+  height: auto;
+}
+
+.logo--spin {
+  animation: logo-spin 12s linear infinite;
+}
+
+.wordmark {
+  width: 110px;
+  height: auto;
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -2,9 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Orcraft</title>
+  <title>Orcraft — Test orchestration platform</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="A test orchestration platform." />
+  <meta name="description"
+    content="Orcraft is a test development and orchestration platform for GUI, CLI, CI environments and remote endpoints." />
+  <link rel="canonical" href="https://orcraft.app/" />
 
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/png" sizes="96x96" href="/assets/icons/favicon-96x96.png">
@@ -12,29 +14,177 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
   <link rel="manifest" href="/site.webmanifest">
 
-  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/styles/main.css" />
+  <link rel="stylesheet" href="/styles/pages/home.css" />
+  <script type="module" src="/scripts/main.js"></script>
 </head>
 
-<body>
-  <div class="container">
-    <img
-      src="/assets/images/logo.png"
-      alt="Orcraft logo"
-      class="logo"
-    >
+<body data-page="home">
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a class="site-header__brand" href="/">
+        <img class="logo" src="/assets/images/logo.png" alt="" />
+        <img class="wordmark" src="/assets/images/wordmark.png" alt="Orcraft" />
+      </a>
 
-    <img
-      src="/assets/images/wordmark.png"
-      alt="Orcraft"
-      class="wordmark"
-    >
+      <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="primary-nav">
+        Menu
+      </button>
 
-    <p>
-      A test orchestration platform
-    </p>
+      <nav class="nav" id="primary-nav" data-nav aria-label="Primary">
+        <a class="nav__link" href="/platform/">Platform</a>
+        <a class="nav__link" href="/features/">Features</a>
+        <a class="nav__link" href="/workflow/">Workflow</a>
+        <a class="nav__link" href="/docs/">Docs</a>
+        <a class="nav__link" href="/contact/">Contact</a>
+      </nav>
 
-    <p><em>Coming soon...</em></p>
-    <p class="copyright">© 2026 GM Core Ltd. All rights reserved.<br>Orcraft™ is a trademark of <a href="https://gmcore.ai/">GM Core Ltd.</a></p>
-  </div>
+      <a class="button button--ghost" href="/contact/">Request Demo</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero container">
+      <img class="hero__logo logo--spin" src="/assets/images/logo.png" alt="" />
+      <p class="hero__eyebrow">A test orchestration platform</p>
+      <h1 class="hero__title">
+        Code <span class="text-accent">once.</span> Run <span class="text-accent">everywhere.</span>
+      </h1>
+      <p class="hero__subtitle">
+        Orcraft is a test development and orchestration platform for GUI, CLI, CI environments and remote endpoints.
+      </p>
+      <div class="hero__actions">
+        <a class="button button--primary" href="/platform/">See Product</a>
+        <a class="button button--ghost" href="/docs/">Docs</a>
+      </div>
+    </section>
+
+    <!-- Product preview -->
+    <section class="section container">
+      <div class="home-preview">
+        <article class="card card--panel reveal">
+          <h3 class="card__title">Build tests</h3>
+          <p class="card__text">Author tests with Orcraft Script. Readable, reusable, reliable.</p>
+        </article>
+        <article class="card card--panel reveal">
+          <h3 class="card__title">Run across endpoints</h3>
+          <p class="card__text">Distribute and orchestrate tests across any environment.</p>
+        </article>
+        <article class="card card--panel reveal">
+          <h3 class="card__title">Logs &amp; results</h3>
+          <p class="card__text">Detailed logs and results for every run, every endpoint.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Core capabilities -->
+    <section class="section container">
+      <h2 class="section__title">Core capabilities</h2>
+      <div class="grid grid--6">
+        <article class="card card--feature">
+          <h3 class="card__title">Test development</h3>
+          <p class="card__text">Write once in Orcraft Script. Reuse with confidence.</p>
+        </article>
+        <article class="card card--feature">
+          <h3 class="card__title">Execution orchestration</h3>
+          <p class="card__text">Queue, schedule and run tests reliably across environments.</p>
+        </article>
+        <article class="card card--feature">
+          <h3 class="card__title">GUI + CLI + CI</h3>
+          <p class="card__text">Test GUIs, CLIs and APIs. Integrate natively with CI/CD pipelines.</p>
+        </article>
+        <article class="card card--feature">
+          <h3 class="card__title">Remote &amp; shared endpoints</h3>
+          <p class="card__text">Connect to labs, devices and remote hosts securely.</p>
+        </article>
+        <article class="card card--feature">
+          <h3 class="card__title">Logs &amp; results</h3>
+          <p class="card__text">Centralized logs, artifacts and results for complete visibility.</p>
+        </article>
+        <article class="card card--feature">
+          <h3 class="card__title">Security</h3>
+          <p class="card__text">mTLS encryption and token-based access control built-in.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="section container">
+      <h2 class="section__title">How it works</h2>
+      <ol class="steps">
+        <li class="step">
+          <span class="step__badge">1</span>
+          <h3 class="step__title">Build tests</h3>
+          <p class="step__text">Create tests with Orcraft Script. Organize, modularize and version your test assets.</p>
+        </li>
+        <li class="step">
+          <span class="step__badge">2</span>
+          <h3 class="step__title">Connect endpoints</h3>
+          <p class="step__text">Add local or remote endpoints. Securely connect to labs, devices and environments.</p>
+        </li>
+        <li class="step">
+          <span class="step__badge">3</span>
+          <h3 class="step__title">Run and analyze</h3>
+          <p class="step__text">Orchestrate execution, monitor progress and review logs and results.</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- Audience / platforms -->
+    <section class="section container">
+      <div class="home-audience">
+        <div class="card">
+          <h3 class="card__title text-center">Built for engineering teams</h3>
+          <ul class="grid grid--3">
+            <li class="card__text text-center">Validation labs</li>
+            <li class="card__text text-center">Hardware + software testing</li>
+            <li class="card__text text-center">Cross-platform automation</li>
+            <li class="card__text text-center">CI execution</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3 class="card__title text-center">Runs where you do</h3>
+          <ul class="grid grid--3">
+            <li class="card__text text-center">Windows</li>
+            <li class="card__text text-center">Linux</li>
+            <li class="card__text text-center">macOS</li>
+            <li class="card__text text-center">Python</li>
+          </ul>
+          <p class="card__text text-center">Orcraft is a downloadable desktop application.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Call to action -->
+    <section class="section--tight container">
+      <div class="home-cta">
+        <div>
+          <h2>Ready to streamline your test execution?</h2>
+          <p class="card__text">Request a demo to see Orcraft in action or talk to our engineering team.</p>
+        </div>
+        <a class="button button--primary" href="/contact/">Request Demo</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <a class="site-header__brand" href="/">
+        <img class="logo" src="/assets/images/logo.png" alt="" />
+        <img class="wordmark" src="/assets/images/wordmark.png" alt="Orcraft" />
+      </a>
+      <p>
+        © <span data-current-year>2026</span> GM Core Ltd. All rights reserved.<br />
+        Orcraft™ is a trademark of <a href="https://gmcore.ai/">GM Core Ltd.</a>
+      </p>
+      <nav class="site-footer__links" aria-label="Footer">
+        <a href="/legal/privacy/">Privacy Policy</a>
+        <a href="/legal/terms/">Terms of Use</a>
+        <a href="/contact/">Contact</a>
+      </nav>
+    </div>
+  </footer>
 </body>
+
 </html>

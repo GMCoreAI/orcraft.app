@@ -1,0 +1,40 @@
+/* Documentation pages: sidebar + article layout. */
+
+.docs {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: var(--space-8);
+  align-items: start;
+}
+
+.docs__sidebar {
+  position: sticky;
+  top: calc(var(--header-height) + var(--space-6));
+  font-size: var(--font-size-sm);
+}
+
+.docs__sidebar a {
+  display: block;
+  padding: var(--space-1) 0;
+  color: var(--color-text-muted);
+}
+
+.docs__sidebar a:hover,
+.docs__sidebar a[aria-current="page"] {
+  color: var(--color-text);
+}
+
+.docs__article p,
+.docs__article li {
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 860px) {
+  .docs {
+    grid-template-columns: 1fr;
+  }
+
+  .docs__sidebar {
+    position: static;
+  }
+}
