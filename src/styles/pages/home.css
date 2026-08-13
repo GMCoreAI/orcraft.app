@@ -1,5 +1,25 @@
 /* Home page specifics. Loaded in addition to styles/main.css. */
 
+.lead {
+  max-width: 900px;
+  margin: 0 auto;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-lg);
+  line-height: 1.5;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.lead strong {
+  color: var(--color-accent-strong);
+  font-weight: 600;
+}
+
+.lead--strong {
+  margin-bottom: var(--space-4);
+  color: var(--color-text);
+}
+
 .home-preview {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -67,7 +87,6 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: var(--space-3);
-  margin-bottom: var(--space-16);
 }
 
 .pill {

@@ -6,7 +6,7 @@
   left: 0;
   right: 0;
   z-index: 60;
-  background: var(--color-bg);
+  background: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
   transform: translateY(-100%);
   transition: transform var(--transition-base);
