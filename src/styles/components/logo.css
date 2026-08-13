@@ -5,6 +5,8 @@
 
 .logo--spin {
   animation: logo-spin 12s linear infinite;
+  /* Own compositor layer: the sticky masthead would otherwise repaint per frame. */
+  will-change: transform;
 }
 
 .wordmark {

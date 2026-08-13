@@ -42,7 +42,7 @@ async function loadPage(url, { push }) {
   const target = new URL(url, window.location.origin);
   if (push) window.history.pushState({}, "", target);
   markCurrent(target.pathname);
-  window.scrollTo({ top: container.offsetTop, behavior: "smooth" });
+  container.scrollIntoView({ behavior: "smooth", block: "start" });
 
   return document.body.dataset.page;
 }

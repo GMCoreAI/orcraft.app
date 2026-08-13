@@ -1,6 +1,7 @@
 /* Site-wide script entry point. Loaded as: <script type="module" src="/scripts/main.js"> */
 
 import { initRouter } from "./components/router.js";
+import { initTopbar } from "./components/topbar.js";
 import { initLightbox } from "./components/lightbox.js";
 import { initCopy } from "./components/copy.js";
 import { initReveal } from "./components/reveal.js";
@@ -15,6 +16,7 @@ function initContent(page) {
 
 function boot() {
   initRouter(initContent);
+  initTopbar();
   initLightbox();
   initCopy();
   initContent();

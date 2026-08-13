@@ -19,6 +19,7 @@
 </head>
 
 <body data-page="{{ key | default('page') }}">
+  {% include "partials/topbar.njk" %}
   {% include "partials/masthead.njk" %}
 
   {# Layout classes live on the page content itself: the router keeps this

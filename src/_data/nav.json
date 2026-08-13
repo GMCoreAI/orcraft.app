@@ -1,5 +1,6 @@
 {
   "primary": [
+    { "label": "Home", "url": "/" },
     { "label": "Platform", "url": "/platform/" },
     { "label": "Features", "url": "/features/" },
     { "label": "Workflow", "url": "/workflow/" },

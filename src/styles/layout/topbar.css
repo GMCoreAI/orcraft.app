@@ -1,0 +1,56 @@
+/* Compact bar, revealed by scripts/components/topbar.js after scrolling. */
+
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 60;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+  transform: translateY(-100%);
+  transition: transform var(--transition-base);
+}
+
+.topbar.is-visible {
+  transform: none;
+}
+
+.topbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-8);
+  padding-block: var(--space-2);
+}
+
+.topbar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+
+.topbar__logo {
+  width: 36px;
+}
+
+.topbar__wordmark {
+  width: 110px;
+}
+
+.topbar .nav {
+  padding-block: 0;
+  gap: var(--space-6);
+  justify-content: flex-end;
+}
+
+@media (max-width: 720px) {
+  .topbar__wordmark {
+    display: none;
+  }
+
+  .topbar .nav {
+    gap: var(--space-4);
+  }
+}

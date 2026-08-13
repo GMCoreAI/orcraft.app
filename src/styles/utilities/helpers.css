@@ -39,3 +39,8 @@
   opacity: 0.4;
   transition: opacity var(--transition-fast);
 }
+
+/* Keeps the fixed top bar from covering content scrolled into view. */
+[data-page-content] {
+  scroll-margin-top: 90px;
+}
