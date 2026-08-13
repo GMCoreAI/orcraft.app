@@ -11,6 +11,11 @@
   text-align: center;
 }
 
+/* Two-line box so one- and two-line titles start their text at the same height. */
+.card--feature .card__title {
+  min-height: calc(2em * 1.55);
+}
+
 .card__icon {
   display: inline-flex;
   align-items: center;
