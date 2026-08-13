@@ -38,11 +38,6 @@
   gap: var(--space-16);
 }
 
-.home-audience .card {
-  background: none;
-  border-color: transparent;
-}
-
 .capabilities {
   display: flex;
   flex-wrap: wrap;
@@ -56,12 +51,10 @@
 }
 
 .audience-list {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-6);
-  /* Matches the card padding under the capability titles. */
+  display: flex;
+  justify-content: center;
+  gap: var(--space-12);
   margin-top: var(--space-6);
-  margin-bottom: var(--space-6);
 }
 
 .audience-list li {
@@ -75,16 +68,6 @@
   text-align: center;
 }
 
-.audience-list .card__icon {
-  margin-bottom: 0;
-}
-
-.audience-list--row {
-  display: flex;
-  justify-content: center;
-  gap: var(--space-12);
-}
-
 .os-icon {
   width: 32px;
   height: 32px;
@@ -93,10 +76,6 @@
 
 @media (max-width: 900px) {
   .home-preview {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .audience-list {
     grid-template-columns: repeat(2, 1fr);
   }
 }
