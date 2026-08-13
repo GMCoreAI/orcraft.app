@@ -1,5 +1,27 @@
 /* Home page specifics. Loaded in addition to styles/main.css. */
 
+.home-shot {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  overflow: hidden;
+  cursor: zoom-in;
+  box-shadow: var(--shadow-card);
+  transition: border-color var(--transition-fast);
+}
+
+.home-shot:hover,
+.home-shot:focus-visible {
+  border-color: var(--color-accent);
+}
+
+.home-shot img {
+  width: 100%;
+}
+
 .home-preview {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -12,8 +34,8 @@
 
 .home-audience {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-24);
+  grid-template-columns: 1fr;
+  gap: var(--space-16);
 }
 
 .home-audience .card {
@@ -35,8 +57,10 @@
 
 .audience-list {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: var(--space-6);
+  /* Matches the card padding under the capability titles. */
+  margin-top: var(--space-6);
   margin-bottom: var(--space-6);
 }
 
@@ -56,12 +80,14 @@
 }
 
 .audience-list--row {
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  justify-content: center;
+  gap: var(--space-12);
 }
 
 .os-icon {
-  width: 44px;
-  height: 44px;
+  width: 32px;
+  height: 32px;
   object-fit: contain;
 }
 
@@ -70,8 +96,8 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .home-audience {
-    grid-template-columns: 1fr;
+  .audience-list {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
