@@ -1,12 +1,10 @@
 {
   "name": "Orcraft",
   "url": "https://orcraft.app",
-  "description": "Orcraft is a code-once, AI-assisted platform for test development, management and orchestration.",
+  "description": "Orcraft is a platform for AI-assisted test development, management and orchestration.",
   "slogan": {
-    "lead": "Code",
-    "leadAccent": "once.",
-    "tail": "Run",
-    "tailAccent": "everywhere."
+    "lead": "Testing,",
+    "accent": "Solved."
   },
   "company": "GM Core Ltd.",
   "companyUrl": "https://gmcore.ai/",
