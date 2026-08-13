@@ -25,7 +25,24 @@
 .home-preview {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-4);
+  gap: var(--space-12);
+}
+
+/* Chevron centred in the gutter, marking the step order. */
+.home-preview > * + *::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: calc(var(--space-12) / -2);
+  width: 20px;
+  height: 20px;
+  border-top: 3px solid var(--color-accent);
+  border-right: 3px solid var(--color-accent);
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.home-preview > * {
+  position: relative;
 }
 
 .home-preview__caption {
@@ -77,6 +94,11 @@
 @media (max-width: 900px) {
   .home-preview {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* The arrows only read as a sequence on a single row. */
+  .home-preview > * + *::before {
+    content: none;
   }
 }
 
