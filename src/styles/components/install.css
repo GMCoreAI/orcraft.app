@@ -1,0 +1,31 @@
+.install {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-6);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.install__command {
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+  white-space: nowrap;
+}
+
+.install__command::before {
+  content: "$ ";
+  color: var(--color-accent-strong);
+}
+
+.install__copy {
+  min-width: 88px;
+}
+
+@media (max-width: 480px) {
+  .install {
+    flex-direction: column;
+    padding: var(--space-4);
+  }
+}

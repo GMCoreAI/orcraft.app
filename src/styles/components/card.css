@@ -6,6 +6,8 @@
 }
 
 .card--feature {
+  background: none;
+  border-color: transparent;
   text-align: center;
 }
 
@@ -36,4 +38,30 @@
   padding: var(--space-4);
   background: var(--color-surface-alt);
   box-shadow: var(--shadow-card);
+}
+
+.card__shot {
+  display: block;
+  width: 100%;
+  padding: 0;
+  margin-bottom: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  overflow: hidden;
+  cursor: zoom-in;
+  transition: border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.card__shot:hover,
+.card__shot:focus-visible {
+  border-color: var(--color-accent);
+  transform: translateY(-2px);
+}
+
+.card__shot img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  object-position: top center;
 }

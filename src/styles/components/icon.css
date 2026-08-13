@@ -1,0 +1,15 @@
+/* Inlined SVGs from src/assets/icons/ui, injected by the `icon` shortcode. */
+
+.icon {
+  width: 1em;
+  height: 1em;
+  stroke-width: 1.5;
+}
+
+.card__icon .icon {
+  font-size: 24px;
+}
+
+.nav .icon {
+  font-size: 1em;
+}

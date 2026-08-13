@@ -50,11 +50,17 @@ src/
 
   assets/
     icons/            Favicons and app icons
+    icons/ui/         Tabler icon set (MIT), inlined by the `icon` shortcode
     images/           Logo and wordmark
 ```
 
 Text that appears on every page — description, slogan, menus, footer — is edited
 once in `src/_data/`, not in each page.
+
+UI icons are used as `{% raw %}{% icon "shield-lock" %}{% endraw %}`, which inlines the SVG so it
+inherits `currentColor` and the surrounding font size. To add one, drop the file
+into `src/assets/icons/ui/` — the whole set lives at
+[tabler.io/icons](https://tabler.io/icons).
 
 ## The persistent frame
 
@@ -89,6 +95,9 @@ repository's **Settings → Pages → Source** to be set to **GitHub Actions**.
 © 2026 GM Core Ltd. All rights reserved.  
 No license is granted to use, modify, or distribute the software.  
 Orcraft™ is a trademark of GM Core Ltd. The Orcraft name, logo, and branding assets are proprietary and may not be used without prior written permission.
+
+UI icons in `src/assets/icons/ui/` are from [Tabler Icons](https://tabler.io/icons),
+MIT licensed — see the LICENSE file in that folder.
 
 ## Website
 

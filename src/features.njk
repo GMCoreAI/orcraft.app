@@ -7,32 +7,38 @@ description: "Orcraft features: orchestration, remote endpoints, logs, results a
 
 <section class="section container">
   <h1>Features</h1>
-  <p class="text-muted">Everything needed to develop, distribute and analyze test execution.</p>
+  <p class="text-muted">Everything needed to generate, distribute and analyze test execution.</p>
 
   <div class="grid grid--3">
     <article class="card">
-      <h3 class="card__title">Test development</h3>
-      <p class="card__text">Code-first suites with reusable flows and configurable dimensions.</p>
+      <span class="card__icon">{% icon "code" %}</span>
+      <h3 class="card__title">AI test generation</h3>
+      <p class="card__text">Point the generator at your resources and instructions; it scaffolds suites, tests and flows.</p>
     </article>
     <article class="card">
-      <h3 class="card__title">Execution orchestration</h3>
-      <p class="card__text">Queue, schedule and fan out runs across endpoints.</p>
+      <span class="card__icon">{% icon "route" %}</span>
+      <h3 class="card__title">Run planning</h3>
+      <p class="card__text">Pick groups, tests and cases, set configuration per instance, and preview the plan before launch.</p>
     </article>
     <article class="card">
+      <span class="card__icon">{% icon "terminal-2" %}</span>
       <h3 class="card__title">GUI + CLI + CI</h3>
-      <p class="card__text">Same tests from the desktop app, the command line or a pipeline.</p>
+      <p class="card__text">Drive the same suites from the controller, the command line or a CI pipeline.</p>
     </article>
     <article class="card">
+      <span class="card__icon">{% icon "share-3" %}</span>
       <h3 class="card__title">Remote &amp; shared endpoints</h3>
-      <p class="card__text">Reserve, share and manage endpoints across teams.</p>
+      <p class="card__text">Reserve machines across the lab, share them between engineers and run in parallel.</p>
     </article>
     <article class="card">
+      <span class="card__icon">{% icon "file-analytics" %}</span>
       <h3 class="card__title">Logs &amp; results</h3>
-      <p class="card__text">Live logs, historical sessions and aggregated reports.</p>
+      <p class="card__text">Live per-case logs, saved sessions, aggregated results and exportable reports.</p>
     </article>
     <article class="card">
+      <span class="card__icon">{% icon "shield-lock" %}</span>
       <h3 class="card__title">Security</h3>
-      <p class="card__text">mTLS transport and token-based access control.</p>
+      <p class="card__text">mTLS between controller and endpoints, with token-based access control.</p>
     </article>
   </div>
 </section>

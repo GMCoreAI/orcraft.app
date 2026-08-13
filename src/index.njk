@@ -5,20 +5,50 @@ key: home
 
 <h1 class="visually-hidden">Orcraft — test orchestration platform</h1>
 
+<!-- Evaluation -->
+<section class="section container text-center">
+  <h2 class="section__title">Try it now with just:</h2>
+  <div class="install">
+    <code class="install__command">pip install orcraft</code>
+    <button class="button button--ghost install__copy" type="button" data-copy="pip install orcraft">Copy</button>
+  </div>
+</section>
+
 <!-- Product preview -->
 <section class="section container">
+  <h2 class="section__title">How it works</h2>
   <div class="home-preview">
     <article class="card card--panel reveal">
-      <h3 class="card__title">Build tests</h3>
-      <p class="card__text">Author tests with Orcraft Script. Readable, reusable, reliable.</p>
+      <button class="card__shot" type="button" data-lightbox aria-label="Enlarge screenshot">
+        <img src="/assets/images/screenshots/build-tests.png"
+          alt="Orcraft controller generating a test suite" loading="lazy" />
+      </button>
+      <h3 class="card__title">Generate tests</h3>
+      <p class="card__text">Generate a whole test suite with AI from any documentation sources.</p>
     </article>
     <article class="card card--panel reveal">
+      <button class="card__shot" type="button" data-lightbox aria-label="Enlarge screenshot">
+        <img src="/assets/images/screenshots/configure-run.png"
+          alt="Orcraft run configuration for GUI, CLI and CI" loading="lazy" />
+      </button>
+      <h3 class="card__title">Configure for GUI, CLI or CI run</h3>
+      <p class="card__text">One configuration covers all three — no extra config files, scripts or plugins to maintain.</p>
+    </article>
+    <article class="card card--panel reveal">
+      <button class="card__shot" type="button" data-lightbox aria-label="Enlarge screenshot">
+        <img src="/assets/images/screenshots/run-across-endpoints.png"
+          alt="Orcraft controller running a session across endpoints" loading="lazy" />
+      </button>
       <h3 class="card__title">Run across endpoints</h3>
-      <p class="card__text">Distribute and orchestrate tests across any environment.</p>
+      <p class="card__text">Queue a session and fan its cases out to local, remote and shared endpoints.</p>
     </article>
     <article class="card card--panel reveal">
+      <button class="card__shot" type="button" data-lightbox aria-label="Enlarge screenshot">
+        <img src="/assets/images/screenshots/logs-and-results.png"
+          alt="Orcraft test group results with per-endpoint detail" loading="lazy" />
+      </button>
       <h3 class="card__title">Logs &amp; results</h3>
-      <p class="card__text">Detailed logs and results for every run, every endpoint.</p>
+      <p class="card__text">Follow every case live, then dig into per-endpoint results, reports and session history.</p>
     </article>
   </div>
 </section>
@@ -28,86 +58,57 @@ key: home
   <h2 class="section__title">Core capabilities</h2>
   <div class="grid grid--6">
     <article class="card card--feature">
+      <span class="card__icon">{% icon "code" %}</span>
       <h3 class="card__title">Test development</h3>
-      <p class="card__text">Write once in Orcraft Script. Reuse with confidence.</p>
+      <p class="card__text">Suites, groups, tests, cases, flows and steps — all plain Python, versioned with your code.</p>
     </article>
     <article class="card card--feature">
+      <span class="card__icon">{% icon "hierarchy" %}</span>
       <h3 class="card__title">Execution orchestration</h3>
-      <p class="card__text">Queue, schedule and run tests reliably across environments.</p>
+      <p class="card__text">Build a run plan, queue sessions and execute cases in parallel across endpoints.</p>
     </article>
     <article class="card card--feature">
+      <span class="card__icon">{% icon "terminal-2" %}</span>
       <h3 class="card__title">GUI + CLI + CI</h3>
-      <p class="card__text">Test GUIs, CLIs and APIs. Integrate natively with CI/CD pipelines.</p>
+      <p class="card__text">Drive the same suites from the controller, the command line or a CI pipeline.</p>
     </article>
     <article class="card card--feature">
+      <span class="card__icon">{% icon "world" %}</span>
       <h3 class="card__title">Remote &amp; shared endpoints</h3>
-      <p class="card__text">Connect to labs, devices and remote hosts securely.</p>
+      <p class="card__text">Reserve machines in the lab, upload your package and run against real hardware.</p>
     </article>
     <article class="card card--feature">
+      <span class="card__icon">{% icon "file-analytics" %}</span>
       <h3 class="card__title">Logs &amp; results</h3>
-      <p class="card__text">Centralized logs, artifacts and results for complete visibility.</p>
+      <p class="card__text">Live logs, aggregated pass/fail figures and exportable reports for every session.</p>
     </article>
     <article class="card card--feature">
+      <span class="card__icon">{% icon "shield-lock" %}</span>
       <h3 class="card__title">Security</h3>
-      <p class="card__text">mTLS encryption and token-based access control built-in.</p>
+      <p class="card__text">mTLS between controller and endpoints, with token-based access control.</p>
     </article>
   </div>
-</section>
-
-<!-- How it works -->
-<section class="section container">
-  <h2 class="section__title">How it works</h2>
-  <ol class="steps">
-    <li class="step">
-      <span class="step__badge">1</span>
-      <h3 class="step__title">Build tests</h3>
-      <p class="step__text">Create tests with Orcraft Script. Organize, modularize and version your test assets.</p>
-    </li>
-    <li class="step">
-      <span class="step__badge">2</span>
-      <h3 class="step__title">Connect endpoints</h3>
-      <p class="step__text">Add local or remote endpoints. Securely connect to labs, devices and environments.</p>
-    </li>
-    <li class="step">
-      <span class="step__badge">3</span>
-      <h3 class="step__title">Run and analyze</h3>
-      <p class="step__text">Orchestrate execution, monitor progress and review logs and results.</p>
-    </li>
-  </ol>
 </section>
 
 <!-- Audience / platforms -->
 <section class="section container">
   <div class="home-audience">
     <div class="card">
-      <h3 class="card__title text-center">Built for engineering teams</h3>
-      <ul class="grid grid--3">
-        <li class="card__text text-center">Validation labs</li>
-        <li class="card__text text-center">Hardware + software testing</li>
-        <li class="card__text text-center">Cross-platform automation</li>
-        <li class="card__text text-center">CI execution</li>
+      <h2 class="section__title">Built for engineering teams</h2>
+      <ul class="audience-list">
+        <li><span class="card__icon">{% icon "flask" %}</span>Validation labs</li>
+        <li><span class="card__icon">{% icon "cpu" %}</span>Hardware + software testing</li>
+        <li><span class="card__icon">{% icon "devices" %}</span>Cross-platform automation</li>
+        <li><span class="card__icon">{% icon "infinity" %}</span>CI execution</li>
       </ul>
     </div>
     <div class="card">
-      <h3 class="card__title text-center">Runs where you do</h3>
-      <ul class="grid grid--3">
-        <li class="card__text text-center">Windows</li>
-        <li class="card__text text-center">Linux</li>
-        <li class="card__text text-center">macOS</li>
-        <li class="card__text text-center">Python</li>
+      <h2 class="section__title">Supported operating systems</h2>
+      <ul class="audience-list audience-list--row">
+        <li><span class="card__icon">{% icon "brand-windows" %}</span>Windows</li>
+        <li><span class="card__icon">{% icon "brand-ubuntu" %}</span>Linux</li>
+        <li><span class="card__icon">{% icon "brand-apple" %}</span>macOS</li>
       </ul>
-      <p class="card__text text-center">Orcraft is a downloadable desktop application.</p>
     </div>
-  </div>
-</section>
-
-<!-- Call to action -->
-<section class="section--tight container">
-  <div class="home-cta">
-    <div>
-      <h2>Ready to streamline your test execution?</h2>
-      <p class="card__text">Request a demo to see Orcraft in action or talk to our engineering team.</p>
-    </div>
-    <a class="button button--primary" href="/contact/">Request Demo</a>
   </div>
 </section>

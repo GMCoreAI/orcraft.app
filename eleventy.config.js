@@ -1,4 +1,15 @@
+import { readFileSync } from "node:fs";
+
+const ICON_DIR = "src/assets/icons/ui";
+
 export default function (eleventyConfig) {
+  // Inlined so icons inherit currentColor and size from their container.
+  eleventyConfig.addShortcode("icon", (name) =>
+    readFileSync(`${ICON_DIR}/${name}.svg`, "utf8")
+      .replace(/\s+class="[^"]*"/, "")
+      .replace("<svg", '<svg class="icon" aria-hidden="true" focusable="false"')
+  );
+
   // Everything below is served as-is; only .njk files are rendered.
   for (const path of [
     "src/assets",
