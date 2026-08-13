@@ -1,0 +1,22 @@
+{# Persistent frame: unchanged on every page, kept mounted by the router. #}
+<header class="masthead">
+  <div class="container">
+    <a class="masthead__brand" href="/">
+      <img class="masthead__logo logo--spin" src="/assets/images/logo.png" alt="" />
+      <img class="masthead__wordmark" src="/assets/images/wordmark.png" alt="{{ site.name }}" />
+    </a>
+
+    <p class="masthead__subtitle">{{ site.description }}</p>
+    <p class="masthead__title">
+      {{ site.slogan.lead }} <span class="text-accent">{{ site.slogan.leadAccent }}</span>
+      {{ site.slogan.tail }} <span class="text-accent">{{ site.slogan.tailAccent }}</span>
+    </p>
+
+    <nav class="nav" aria-label="Primary">
+      {%- for item in nav.primary %}
+      <a class="nav__link" href="{{ item.url }}"{% if page.url == item.url %} aria-current="page"{% endif %}>{{ item.label }}</a>
+      {%- endfor %}
+      <a class="button button--primary nav__cta" href="/contact/">Request Demo</a>
+    </nav>
+  </div>
+</header>

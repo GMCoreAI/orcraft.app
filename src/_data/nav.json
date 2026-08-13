@@ -1,0 +1,14 @@
+{
+  "primary": [
+    { "label": "Platform", "url": "/platform/" },
+    { "label": "Features", "url": "/features/" },
+    { "label": "Workflow", "url": "/workflow/" },
+    { "label": "Docs", "url": "/docs/" },
+    { "label": "Contact", "url": "/contact/" }
+  ],
+  "footer": [
+    { "label": "Privacy Policy", "url": "/legal/privacy/" },
+    { "label": "Terms of Use", "url": "/legal/terms/" },
+    { "label": "Contact", "url": "/contact/" }
+  ]
+}

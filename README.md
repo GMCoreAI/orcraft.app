@@ -14,45 +14,75 @@ The full site is being built on the `dev` branch. `main` remains the live placeh
 
 ## Structure
 
-Plain static site — no build step, no dependencies. GitHub Pages serves the repository root as-is.
+Static site built with [Eleventy](https://www.11ty.dev/). Source lives in `src/`,
+the build writes plain static files to `_site/` (git-ignored).
 
 ```
-index.html            Landing page (site entry point)
-coming-soon.html      Previous placeholder page, kept for reference
-404.html              Not-found page
-<section>/index.html  One folder per page → clean URLs (/platform/, /docs/, ...)
-legal/<page>/         Privacy policy, terms of use
+eleventy.config.js    Build config: input src/, output _site/, passthrough copies
+package.json          npm run dev | watch | build
 
-styles/
-  main.css            Single CSS entry point (@imports everything below)
-  base/               Design tokens, reset, typography
-  layout/             Container, section, header, footer
-  components/         Reusable blocks: nav, button, card, hero, steps, logo
-  utilities/          Small helper classes
-  pages/              Page-specific styles, linked per page
+src/
+  index.njk           Landing page
+  <page>.njk          One file per page → clean URLs (/platform/, /docs/, ...)
+  legal/<page>.njk    Privacy policy, terms of use
+  404.njk             Not-found page
+  coming-soon.njk     Previous placeholder page, kept for reference
+  sitemap.njk         Generated from the page list
 
-scripts/
-  main.js             Single JS entry point (ES module)
-  core/               Shared helpers and site config
-  components/         Behaviour for reusable blocks
-  pages/              Page modules, dispatched by <body data-page="...">
+  _data/site.json     Name, URL, description, slogan, company details
+  _data/nav.json      Primary and footer menus
+  _includes/layouts/  base.njk (site frame), standalone.njk (no frame)
+  _includes/partials/ masthead.njk, footer.njk
 
-assets/
-  icons/              Favicons and app icons
-  images/             Logo and wordmark
+  styles/
+    main.css          Single CSS entry point (@imports everything below)
+    base/             Design tokens, reset, typography
+    layout/           Container, section, masthead, footer
+    components/       Reusable blocks: nav, button, card, steps, logo
+    utilities/        Small helper classes
+    pages/            Page-specific styles
+
+  scripts/
+    main.js           Single JS entry point (ES module)
+    core/             Shared helpers
+    components/       Router, scroll reveal, current year
+    pages/            Page modules, dispatched by <body data-page="...">
+
+  assets/
+    icons/            Favicons and app icons
+    images/           Logo and wordmark
 ```
 
-Pages link `/styles/main.css`, optionally one file from `styles/pages/`, and `/scripts/main.js`.
+Text that appears on every page — description, slogan, menus, footer — is edited
+once in `src/_data/`, not in each page.
+
+## The persistent frame
+
+`layouts/base.njk` wraps every page in the same masthead (spinning logo,
+wordmark, description, slogan and menu) and puts page content inside
+`<main data-page-content>`.
+
+[src/scripts/components/router.js](src/scripts/components/router.js) intercepts
+clicks on same-origin links, fetches the target page and replaces only that
+region, so the masthead stays mounted and the logo animation never restarts.
+Every page is still a complete document: with JavaScript off, or on a direct hit
+or a refresh, the browser loads it normally and the result is identical.
 
 ## Local preview
 
-Serve the folder over HTTP (ES modules and absolute paths do not work from `file://`):
-
 ```powershell
-python -m http.server 8000
+npm install
+npm run dev      # Eleventy dev server with live reload
 ```
 
-Then open http://localhost:8000.
+To preview through nginx exactly as GitHub Pages serves it, run `npm run watch`
+and start the `orcraft-site` stack in the `virtual-lab` repo (http://localhost:8090).
+
+## Deployment
+
+Pushes to `main` trigger [.github/workflows/deploy.yml](.github/workflows/deploy.yml),
+which builds the site and publishes `_site` to GitHub Pages. This requires the
+repository's **Settings → Pages → Source** to be set to **GitHub Actions**.
 
 ## License
 

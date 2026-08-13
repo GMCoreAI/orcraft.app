@@ -1,0 +1,13 @@
+<footer class="site-footer">
+  <div class="container site-footer__inner">
+    <p>
+      © <span data-current-year>2026</span> {{ site.company }} All rights reserved.<br />
+      {{ site.name }}™ is a trademark of <a href="{{ site.companyUrl }}">{{ site.company }}</a>
+    </p>
+    <nav class="site-footer__links" aria-label="Footer">
+      {%- for item in nav.footer %}
+      <a href="{{ item.url }}">{{ item.label }}</a>
+      {%- endfor %}
+    </nav>
+  </div>
+</footer>

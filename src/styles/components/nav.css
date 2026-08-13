@@ -1,0 +1,28 @@
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+  padding-block: var(--space-4);
+}
+
+.nav__link {
+  color: var(--color-text-muted);
+  transition: color var(--transition-fast);
+}
+
+.nav__link:hover,
+.nav__link[aria-current="page"] {
+  color: var(--color-text);
+}
+
+.nav__cta {
+  padding-block: var(--space-2);
+}
+
+@media (max-width: 560px) {
+  .nav {
+    gap: var(--space-4);
+  }
+}
