@@ -49,3 +49,34 @@
   margin-bottom: var(--space-4);
   color: var(--color-text);
 }
+
+.principles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-8);
+  max-width: 1000px;
+  margin: var(--space-8) auto var(--space-8);
+  text-align: left;
+}
+
+.principles__term {
+  margin-bottom: var(--space-2);
+  color: var(--color-accent-strong);
+  font-family: var(--font-display);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+}
+
+.principles__desc {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+}
+
+@media (max-width: 720px) {
+  .principles {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+}

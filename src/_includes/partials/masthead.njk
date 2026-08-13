@@ -12,12 +12,27 @@
     </p>
     #}
 
-    <p class="lead lead--strong">{{ site.description }}</p>
-    <p class="lead">
-      Orcraft is a <strong>code-first</strong>, <strong>code-once</strong> and <strong>code-only</strong> test platform:
-      everything lives in Python - no JSON, YAML, or configuration layers - while the same code runs through GUI, CLI,
-      CI, and distributed endpoints.
+    <p class="lead lead--strong">
+      A <strong>code-first</strong>, <strong>code-once</strong> and <strong>code-only</strong> platform<br />
+      for AI-assisted test development and orchestration.
     </p>
+    <dl class="principles">
+      <div class="principles__item">
+        <dt class="principles__term">Code-first</dt>
+        <dd class="principles__desc">Suites, groups, tests, flows and steps are all defined in Python, so the exact
+          same code runs unchanged through the GUI, CLI and CI.</dd>
+      </div>
+      <div class="principles__item">
+        <dt class="principles__term">Code-once</dt>
+        <dd class="principles__desc">Write a test suite once, then re-run it with different settings, endpoints or
+          dimensions - without touching the code.</dd>
+      </div>
+      <div class="principles__item">
+        <dt class="principles__term">Code-only</dt>
+        <dd class="principles__desc">No JSON, no YAML, no configuration layers - everything is Python. Even GUI
+          configuration widgets are generated dynamically from the code.</dd>
+      </div>
+    </dl>
 
     {% include "partials/nav.njk" %}
   </div>
