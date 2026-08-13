@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <title>{% if title %}{{ title }} — {{ site.name }}{% else %}{{ site.name }} — Test orchestration platform{% endif %}</title>
+  <title>{{ site.name }}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="{{ description | default(site.description) }}" />
   {% if noindex %}<meta name="robots" content="noindex" />{% else %}<link rel="canonical" href="{{ site.url }}{{ page.url }}" />{% endif %}

@@ -3,7 +3,7 @@ layout: layouts/base.njk
 key: home
 ---
 
-<h1 class="visually-hidden">Orcraft — test orchestration platform</h1>
+<h1 class="visually-hidden">Orcraft: test orchestration platform</h1>
 
 <!-- Evaluation -->
 <section class="section container text-center">
@@ -23,16 +23,16 @@ key: home
         <img src="/assets/images/screenshots/build-tests.png"
           alt="Orcraft controller generating a test suite" loading="lazy" />
       </button>
-      <h3 class="card__title">Generate tests</h3>
-      <p class="card__text">Generate a whole test suite with AI from any documentation sources.</p>
+      <h3 class="card__title">Generate test suites with AI</h3>
+      <p class="card__text">Generate a whole test suite from any documentation sources. Suites can also be developed manually.</p>
     </article>
     <article class="card card--panel reveal">
       <button class="card__shot" type="button" data-lightbox aria-label="Enlarge screenshot">
         <img src="/assets/images/screenshots/configure-run.png"
           alt="Orcraft run configuration for GUI, CLI and CI" loading="lazy" />
       </button>
-      <h3 class="card__title">Configure for GUI, CLI or CI run</h3>
-      <p class="card__text">One configuration covers all three — no extra config files, scripts or plugins to maintain.</p>
+      <h3 class="card__title">Configure the run</h3>
+      <p class="card__text">One configuration covers GUI, CLI and CI runs. No extra config files, scripts or plugins to maintain.</p>
     </article>
     <article class="card card--panel reveal">
       <button class="card__shot" type="button" data-lightbox aria-label="Enlarge screenshot">
@@ -56,11 +56,11 @@ key: home
 <!-- Core capabilities -->
 <section class="section container">
   <h2 class="section__title">Core capabilities</h2>
-  <div class="grid grid--6">
+  <div class="capabilities">
     <article class="card card--feature">
       <span class="card__icon">{% icon "code" %}</span>
       <h3 class="card__title">Test development</h3>
-      <p class="card__text">Suites, groups, tests, cases, flows and steps — all plain Python, versioned with your code.</p>
+      <p class="card__text">A ready structure that AI can generate for you: suites, groups, tests, cases, flows and steps, in plain Python.</p>
     </article>
     <article class="card card--feature">
       <span class="card__icon">{% icon "hierarchy" %}</span>
@@ -75,12 +75,17 @@ key: home
     <article class="card card--feature">
       <span class="card__icon">{% icon "world" %}</span>
       <h3 class="card__title">Remote &amp; shared endpoints</h3>
-      <p class="card__text">Reserve machines in the lab, upload your package and run against real hardware.</p>
+      <p class="card__text">A small agent on any machine, driven by the controller and shared across the team.</p>
+    </article>
+    <article class="card card--feature">
+      <span class="card__icon">{% icon "share-3" %}</span>
+      <h3 class="card__title">Automatic upload &amp; updates</h3>
+      <p class="card__text">Orcraft uploads the test package to each endpoint and updates its software whenever versions differ.</p>
     </article>
     <article class="card card--feature">
       <span class="card__icon">{% icon "file-analytics" %}</span>
-      <h3 class="card__title">Logs &amp; results</h3>
-      <p class="card__text">Live logs, aggregated pass/fail figures and exportable reports for every session.</p>
+      <h3 class="card__title">Centralized logs &amp; results</h3>
+      <p class="card__text">Every endpoint reports into one place: live logs, aggregated results and exportable reports for the whole run.</p>
     </article>
     <article class="card card--feature">
       <span class="card__icon">{% icon "shield-lock" %}</span>
@@ -97,7 +102,7 @@ key: home
       <h2 class="section__title">Built for engineering teams</h2>
       <ul class="audience-list">
         <li><span class="card__icon">{% icon "flask" %}</span>Validation labs</li>
-        <li><span class="card__icon">{% icon "cpu" %}</span>Hardware + software testing</li>
+        <li><span class="card__icon">{% icon "cpu" %}</span>Software / firmware / hardware</li>
         <li><span class="card__icon">{% icon "devices" %}</span>Cross-platform automation</li>
         <li><span class="card__icon">{% icon "infinity" %}</span>CI execution</li>
       </ul>
@@ -105,9 +110,9 @@ key: home
     <div class="card">
       <h2 class="section__title">Supported operating systems</h2>
       <ul class="audience-list audience-list--row">
-        <li><span class="card__icon">{% icon "brand-windows" %}</span>Windows</li>
-        <li><span class="card__icon">{% icon "brand-ubuntu" %}</span>Linux</li>
-        <li><span class="card__icon">{% icon "brand-apple" %}</span>macOS</li>
+        <li><img class="os-icon" src="/assets/images/os/os_windows.png" alt="" />Windows</li>
+        <li><img class="os-icon" src="/assets/images/os/os_linux.png" alt="" />Linux</li>
+        <li><img class="os-icon" src="/assets/images/os/os_macos.png" alt="" />macOS</li>
       </ul>
     </div>
   </div>

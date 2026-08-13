@@ -4,7 +4,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <title>{% if title %}{{ title }} — {{ site.name }}{% else %}{{ site.name }}{% endif %}</title>
+  <title>{{ site.name }}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="{{ description | default(site.description) }}" />
   {% if noindex %}<meta name="robots" content="noindex" />{% endif %}
