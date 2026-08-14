@@ -42,6 +42,10 @@ small,
   color: var(--color-danger);
 }
 
+.text-warning {
+  color: var(--color-warning);
+}
+
 code,
 pre {
   font-family: var(--font-mono);

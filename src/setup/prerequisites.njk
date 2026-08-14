@@ -75,3 +75,19 @@ description: "Supported Python versions and operating systems for Orcraft."
   </tbody>
 </table>
 <p>The controller GUI's best experience is on Windows.</p>
+
+<h2 id="icmp-ping">ICMP (Ping)</h2>
+<p>The controller pings each endpoint to check whether it is reachable, before attempting to
+  connect to the endpoint application. Make sure ICMP echo (ping) requests are allowed between the
+  controller machine and every endpoint machine, in both directions:</p>
+<ul>
+  <li>On Windows, allow inbound "File and Printer Sharing (Echo Request - ICMPv4/ICMPv6)" in
+    Windows Defender Firewall, or the equivalent rule in any third-party firewall.</li>
+  <li>On Linux, make sure <code>iptables</code>/<code>nftables</code> (or the distribution's
+    firewall front-end, such as <code>ufw</code> or <code>firewalld</code>) isn't dropping ICMP
+    traffic.</li>
+  <li>On macOS, allow incoming ping requests in System Settings' firewall, or disable "Block all
+    incoming connections" for testing.</li>
+  <li>Corporate networks, VPNs and cloud security groups may block ICMP by default even when
+    other ports are open - check with your network administrator if ping keeps failing.</li>
+</ul>
