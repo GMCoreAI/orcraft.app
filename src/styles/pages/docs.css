@@ -75,7 +75,7 @@
 }
 
 .docs__article h3 {
-  margin-top: var(--space-8);
+  margin-top: var(--space-12);
   margin-bottom: var(--space-2);
   font-size: var(--font-size-xl);
   color: var(--color-accent-strong);
