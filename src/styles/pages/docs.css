@@ -1,5 +1,10 @@
 /* Documentation pages: sidebar + article layout. */
 
+/* The topbar's own pinned spacer already provides the top gap here. */
+.section--docs {
+  padding-top: 0;
+}
+
 .docs {
   display: grid;
   grid-template-columns: 220px 1fr;
@@ -9,7 +14,8 @@
 
 .docs__sidebar {
   position: sticky;
-  top: var(--space-6);
+  /* Clears the sticky topbar (nav bar + its pinned spacer) below it. */
+  top: calc(56px + var(--space-16));
   font-size: var(--font-size-sm);
 }
 

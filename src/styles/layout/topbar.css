@@ -6,8 +6,6 @@
   left: 0;
   right: 0;
   z-index: 60;
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
   transform: translateY(-100%);
   transition: transform var(--transition-base);
 }
@@ -29,6 +27,17 @@ body:not([data-page="home"]) .topbar {
   justify-content: space-between;
   gap: var(--space-8);
   padding-block: var(--space-2);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.topbar__spacer {
+  height: 0;
+}
+
+/* Part of the pinned topbar box, so this gap scrolls with it and never shrinks. */
+body:not([data-page="home"]) .topbar__spacer {
+  height: var(--space-16);
 }
 
 .topbar__brand {
