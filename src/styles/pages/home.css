@@ -37,7 +37,8 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: var(--space-4);
+  row-gap: var(--space-12);
+  column-gap: var(--space-4);
 }
 
 /* Fixed basis so a trailing partial row stays centered. */
