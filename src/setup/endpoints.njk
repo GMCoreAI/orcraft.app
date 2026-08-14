@@ -1,21 +1,21 @@
 ---
 title: Setup · Adding endpoints
 key: setup
-description: "Install and run Orcraft endpoints, with or without security enabled."
+description: "Install and run an Orcraft endpoint, with or without security enabled."
 ---
 {% import "partials/copy-command.njk" as cmd %}
 
 <h1>Adding endpoints</h1>
-<p>Register endpoints so the controller can distribute test packages and execute steps on them.</p>
+<p>Register an endpoint so the controller can distribute test packages and execute steps on it.</p>
 
-<h2 id="install-endpoints">Install the endpoints</h2>
-<p>If an endpoint machine is connected to the internet, install it the same way as the controller:</p>
+<h2 id="install-endpoint">Install the endpoint</h2>
+<p>If the endpoint machine is connected to the internet, install it the same way as the controller:</p>
 {{ cmd.copyCommand("pip install orcraft") }}
 <p>If it is not connected, download the wheel file instead and install it directly:</p>
 {{ cmd.copyCommand("pip install orcraft-<version>-py3-none-any.whl") }}
 
-<h2 id="run-endpoints">Run the endpoints</h2>
-<p>For a fast setup on a trusted local network, endpoints can be run without security enabled:</p>
+<h2 id="run-endpoint">Run the endpoint</h2>
+<p>For a fast setup on a trusted local network, the endpoint can be run without security enabled:</p>
 {{ cmd.copyCommand("orcraft-endpoint run -secure disabled") }}
 <p>For a secure deployment, follow the security setup procedure in the controller before running
   the endpoint with authentication enabled, which is the default:</p>

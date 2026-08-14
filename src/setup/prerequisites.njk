@@ -1,0 +1,77 @@
+---
+title: Setup · Prerequisites
+key: setup
+description: "Supported Python versions and operating systems for Orcraft."
+---
+{% import "partials/copy-command.njk" as cmd %}
+
+<h1>Prerequisites</h1>
+<p>What's required before installing the controller and endpoints.</p>
+
+<h2 id="python">Python</h2>
+<p>Orcraft requires Python 3.14 or later, installed on <strong>both</strong> the controller
+  machine and every endpoint machine.</p>
+<p>New to Python? Download the installer from
+  <a class="text-accent" href="https://www.python.org/downloads/">python.org</a>, run it, and make
+  sure the "Add python.exe to PATH" option is checked during installation. Once installed, verify
+  it from a terminal:</p>
+{{ cmd.copyCommand("python --version") }}
+
+<h2 id="python-libraries">Python libraries</h2>
+<p>Installing Orcraft via pip automatically installs the Python libraries it depends on - nothing
+  needs to be installed manually. These include:</p>
+<ul>
+  <li><strong>PySide6</strong> - the controller's GUI</li>
+  <li><strong>grpcio</strong> and <strong>protobuf</strong> - RPC communication between the
+    controller and its endpoints</li>
+  <li><strong>cryptography</strong> - mTLS and token-based security</li>
+  <li><strong>anthropic</strong>, <strong>openai</strong> and <strong>google-genai</strong> - AI
+    providers used for test generation and AI-assisted analysis</li>
+</ul>
+
+<h2 id="operating-systems">Operating systems</h2>
+<p>The controller and endpoints can be run on Windows, Linux and macOS.</p>
+<p>Validated on:</p>
+<table>
+  <thead>
+    <tr>
+      <th>OS</th>
+      <th>Version</th>
+      <th>Kernel / build</th>
+      <th>Architecture</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Windows</td>
+      <td>10</td>
+      <td>build 19045</td>
+      <td>x86_64</td>
+    </tr>
+    <tr>
+      <td>Windows</td>
+      <td>11</td>
+      <td>build 26200</td>
+      <td>x86_64</td>
+    </tr>
+    <tr>
+      <td>Ubuntu</td>
+      <td>24.04</td>
+      <td>kernel 6.17</td>
+      <td>x86_64</td>
+    </tr>
+    <tr>
+      <td>Ubuntu</td>
+      <td>24.04</td>
+      <td>kernel 7.0</td>
+      <td>x86_64</td>
+    </tr>
+    <tr>
+      <td>macOS</td>
+      <td>26.2</td>
+      <td>Darwin 25.2.0</td>
+      <td>arm64</td>
+    </tr>
+  </tbody>
+</table>
+<p>The controller GUI's best experience is on Windows.</p>

@@ -21,30 +21,32 @@ description: "Install the controller and run your first suite."
 <h2 id="run-controller">Run the controller</h2>
 {{ cmd.copyCommand("orcraft-controller run") }}
 
-<h2 id="run-first-test">Run your first test</h2>
+<h3 id="add-the-suite">Add the suite</h3>
 <ol>
-  <li>In the controller, click <strong>Add Item</strong>.</li>
+  <li>In the controller, click <strong>Add Item</strong> to add the tutorial suite to the session.</li>
 </ol>
 {{ media.zoomableImage("/assets/images/screenshots/setup-add-suite.png", "Adding the cloned tutorial suite in the Orcraft controller") }}
 <ol start="2">
   <li>Select the cloned tutorial suite's entry point Python file.</li>
 </ol>
 {{ media.zoomableImage("/assets/images/screenshots/setup-select-tutorial-suite-file.png", "Selecting the tutorial suite's entry point Python file in the Orcraft controller") }}
-<ol start="3">
-  <li>Click on the <strong>Hello World</strong> test.</li>
-</ol>
+
+<h3 id="select-the-test">Select the test</h3>
+<p>Click on the <strong>Hello World</strong> test.</p>
 {{ media.zoomableImage("/assets/images/screenshots/setup-hello-world-test.png", "Selecting the Hello World test in the Orcraft controller") }}
-<ol start="4">
-  <li>Click <strong>Run</strong> in configuration panel on the right side.</li>
+
+<h3 id="run-the-test">Run the test</h3>
+<ol>
+  <li>Click <strong>Run</strong> in the configuration panel on the right side.</li>
 </ol>
 {{ media.zoomableImage("/assets/images/screenshots/setup-click-run.png", "Clicking Run in the configuration panel of the Orcraft controller") }}
-<ol start="5">
+<ol start="2">
   <li>Confirm the run.</li>
 </ol>
 {{ media.zoomableImage("/assets/images/screenshots/setup-confirm-run.png", "Confirming the run in the Orcraft controller") }}
-<ol start="6">
-  <li>Follow the test log as it executes.</li>
-</ol>
+
+<h3 id="see-the-result">See the result</h3>
+<p>Follow the test log as it executes.</p>
 {{ media.zoomableImage("/assets/images/screenshots/setup-test-log.png", "Test log of the running Hello World test in the Orcraft controller") }}
 
 <p>A <strong>Pass</strong> result confirms that the Orcraft Test Framework is available for
