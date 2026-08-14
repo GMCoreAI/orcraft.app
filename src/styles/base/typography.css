@@ -38,6 +38,10 @@ small,
   color: var(--color-accent-strong);
 }
 
+.text-danger {
+  color: var(--color-danger);
+}
+
 code,
 pre {
   font-family: var(--font-mono);
