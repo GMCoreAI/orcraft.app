@@ -4,6 +4,7 @@ key: setup
 description: "Install and run an Orcraft endpoint, with or without security enabled."
 ---
 {% import "partials/copy-command.njk" as cmd %}
+{% import "partials/zoomable-image.njk" as media %}
 
 <h1>Adding endpoints</h1>
 <p>Register an endpoint so the controller can distribute test packages and execute steps on it.</p>
@@ -15,8 +16,13 @@ description: "Install and run an Orcraft endpoint, with or without security enab
 {{ cmd.copyCommand("pip install orcraft-<version>-py3-none-any.whl") }}
 
 <h2 id="run-endpoint">Run the endpoint</h2>
+
+<h3 id="insecure-endpoint-connection">Insecure endpoint connection</h3>
 <p>For a fast setup on a trusted local network, the endpoint can be run without security enabled:</p>
 {{ cmd.copyCommand("orcraft-endpoint run -secure disabled") }}
-<p>For a secure deployment, follow the security setup procedure in the controller before running
-  the endpoint with authentication enabled, which is the default:</p>
+
+<h3 id="secure-endpoint-connection">Secure endpoint connection</h3>
+<p>For a secure deployment, follow the security setup procedure in the controller's Security tab:</p>
+{{ media.zoomableImage("/assets/images/screenshots/setup-security-tab.png", "The controller's Security tab, used to generate the authorization token and certificates") }}
+<p>Once that's done, run the endpoint with authentication enabled, which is the default:</p>
 {{ cmd.copyCommand("orcraft-endpoint run") }}

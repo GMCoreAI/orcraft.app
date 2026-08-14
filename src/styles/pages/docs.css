@@ -75,10 +75,9 @@
 }
 
 .docs__article h3 {
-  margin-top: var(--space-12);
+  margin-top: var(--space-8);
   margin-bottom: var(--space-2);
-  font-size: var(--font-size-xl);
-  color: var(--color-accent-strong);
+  color: var(--color-text);
 }
 
 .docs__article img {
