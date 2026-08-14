@@ -13,17 +13,19 @@ description: "Install the controller and run your first suite."
 <p>Install Orcraft from PyPI:</p>
 {{ cmd.copyCommand("pip install orcraft") }}
 
-<h2 id="clone-tutorial">Clone the tutorial suite</h2>
+<h2 id="run-controller">Run the controller</h2>
+{{ cmd.copyCommand("orcraft-controller run") }}
+
+<h2 id="run-the-test">Run the test</h2>
+
+<h3 id="clone-tutorial">Clone the tutorial suite</h3>
 <p>Clone the Orcraft Tutorial repository, which contains a ready-to-run "Hello World" test:</p>
 {{ cmd.copyCommand("git clone https://github.com/GMCoreAI/orcraft-test-suite-tutorial.git") }}
 <p class="text-danger">This repository is currently private; the link above will be updated once it is public.</p>
 
-<h2 id="run-controller">Run the controller</h2>
-{{ cmd.copyCommand("orcraft-controller run") }}
-
-<h2 id="add-the-suite">Add the suite</h2>
+<h3 id="add-the-suite">Add the suite</h3>
 <ol>
-  <li>In the controller, click <strong>Add Item</strong> to add the tutorial suite to the session.</li>
+  <li>In the controller, click <strong class="text-cyan">Add Item</strong> to add the tutorial suite to the session.</li>
 </ol>
 {{ media.zoomableImage("/assets/images/screenshots/setup-add-suite.png", "Adding the cloned tutorial suite in the Orcraft controller") }}
 <ol start="2">
@@ -31,13 +33,13 @@ description: "Install the controller and run your first suite."
 </ol>
 {{ media.zoomableImage("/assets/images/screenshots/setup-select-tutorial-suite-file.png", "Selecting the tutorial suite's entry point Python file in the Orcraft controller") }}
 
-<h2 id="select-the-test">Select the test</h2>
+<h3 id="select-the-test">Select the test</h3>
 <p>Click on the <strong>Hello World</strong> test.</p>
 {{ media.zoomableImage("/assets/images/screenshots/setup-hello-world-test.png", "Selecting the Hello World test in the Orcraft controller") }}
 
-<h2 id="run-the-test">Run the test</h2>
+<h3 id="start-the-run">Start the run</h3>
 <ol>
-  <li>Click <strong>Run</strong> in the configuration panel on the right side.</li>
+  <li>Click <strong class="text-purple">Run</strong> in the configuration panel on the right side.</li>
 </ol>
 {{ media.zoomableImage("/assets/images/screenshots/setup-click-run.png", "Clicking Run in the configuration panel of the Orcraft controller") }}
 <ol start="2">
@@ -45,9 +47,9 @@ description: "Install the controller and run your first suite."
 </ol>
 {{ media.zoomableImage("/assets/images/screenshots/setup-confirm-run.png", "Confirming the run in the Orcraft controller") }}
 
-<h2 id="see-the-result">See the result</h2>
+<h3 id="see-the-result">See the result</h3>
 <p>Follow the test log as it executes.</p>
 {{ media.zoomableImage("/assets/images/screenshots/setup-test-log.png", "Test log of the running Hello World test in the Orcraft controller") }}
 
-<p>A <strong>Pass</strong> result confirms that the Orcraft Test Framework is available for
+<p>A <strong class="text-success">Pass</strong> result confirms that the Orcraft Test Framework is available for
   developing tests, and that local runs already work as expected.</p>

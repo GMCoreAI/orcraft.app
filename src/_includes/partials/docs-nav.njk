@@ -1,7 +1,47 @@
+{# Collapsible tree of the section's pages and their headings. Heading trees come
+   from the docsHeadings global data, keyed by page URL. #}
+
+{% macro headingNodes(nodes, pageUrl, hidden) %}
+<ul class="docs-nav__list"{% if hidden %} hidden{% endif %}>
+  {%- for node in nodes %}
+  <li class="docs-nav__item">
+    <div class="docs-nav__row">
+      {%- if node.children.length %}
+      <button class="docs-nav__toggle" type="button" aria-expanded="true" aria-label="Toggle {{ node.text }}">{% icon "chevron-right" %}</button>
+      {%- else %}
+      <span class="docs-nav__toggle docs-nav__toggle--leaf" aria-hidden="true"></span>
+      {%- endif %}
+      <a class="docs-nav__link" href="{{ pageUrl }}#{{ node.id }}">{{ node.text }}</a>
+    </div>
+    {%- if node.children.length %}
+    {{ headingNodes(node.children, pageUrl) }}
+    {%- endif %}
+  </li>
+  {%- endfor %}
+</ul>
+{% endmacro %}
+
 <aside class="docs__sidebar">
-  <nav aria-label="{{ docsTitle }}">
-    {%- for item in docsItems %}
-    <a href="{{ docsBase }}{{ item.slug }}"{% if page.url == docsBase + item.slug %} aria-current="page"{% endif %}>{{ item.label }}</a>
-    {%- endfor %}
+  <nav class="docs-nav" aria-label="{{ docsTitle }}">
+    <ul class="docs-nav__list docs-nav__list--root">
+      {%- for item in docsItems %}
+      {%- set itemUrl = docsBase + item.slug %}
+      {%- set headings = docsHeadings[itemUrl] %}
+      {%- set isCurrent = page.url == itemUrl %}
+      <li class="docs-nav__item">
+        <div class="docs-nav__row">
+          {%- if headings.length %}
+          <button class="docs-nav__toggle" type="button" aria-expanded="{{ "true" if isCurrent else "false" }}" aria-label="Toggle {{ item.label }}">{% icon "chevron-right" %}</button>
+          {%- else %}
+          <span class="docs-nav__toggle docs-nav__toggle--leaf" aria-hidden="true"></span>
+          {%- endif %}
+          <a class="docs-nav__link docs-nav__link--page" href="{{ itemUrl }}"{% if isCurrent %} aria-current="page"{% endif %}>{{ item.label }}</a>
+        </div>
+        {%- if headings.length %}
+        {{ headingNodes(headings, itemUrl, not isCurrent) }}
+        {%- endif %}
+      </li>
+      {%- endfor %}
+    </ul>
   </nav>
 </aside>

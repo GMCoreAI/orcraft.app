@@ -12,6 +12,8 @@
   --color-success: #34d399;
   --color-danger: #f87171;
   --color-warning: #fbbf24;
+  --color-purple: #a78bfa;
+  --color-cyan: #22d3ee;
 
   /* Typography */
   --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;

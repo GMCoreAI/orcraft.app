@@ -19,17 +19,6 @@
   font-size: var(--font-size-sm);
 }
 
-.docs__sidebar a {
-  display: block;
-  padding: var(--space-1) 0;
-  color: var(--color-text-muted);
-}
-
-.docs__sidebar a:hover,
-.docs__sidebar a[aria-current="page"] {
-  color: var(--color-text);
-}
-
 .docs__article p,
 .docs__article li {
   color: var(--color-text-muted);
@@ -78,6 +67,11 @@
   margin-top: var(--space-8);
   margin-bottom: var(--space-2);
   color: var(--color-text);
+}
+
+/* Keeps the pinned topbar from covering a heading linked from the sidebar. */
+.docs__article :is(h2, h3, h4) {
+  scroll-margin-top: 90px;
 }
 
 .docs__article img {

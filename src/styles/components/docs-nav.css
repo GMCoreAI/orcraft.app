@@ -1,0 +1,71 @@
+/* Docs sidebar tree: pages with their heading levels, collapsible per branch. */
+
+.docs-nav__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.docs-nav__list[hidden] {
+  display: none;
+}
+
+/* Nested levels indent under their parent's label, not under its toggle. */
+.docs-nav__item .docs-nav__list {
+  padding-left: var(--space-4);
+}
+
+.docs-nav__row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-1);
+}
+
+.docs-nav__toggle {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  align-self: center;
+}
+
+.docs-nav__toggle--leaf {
+  cursor: default;
+}
+
+.docs-nav__toggle .icon {
+  display: block;
+  width: 14px;
+  height: 14px;
+  transition: transform var(--transition-fast);
+}
+
+.docs-nav__toggle[aria-expanded="true"] .icon {
+  transform: rotate(90deg);
+}
+
+.docs-nav__toggle:hover {
+  color: var(--color-text);
+}
+
+.docs-nav__link {
+  display: block;
+  padding: var(--space-1) 0;
+  color: var(--color-text-muted);
+}
+
+.docs-nav__link:hover {
+  color: var(--color-text);
+}
+
+.docs-nav__link--page {
+  font-weight: 500;
+}
+
+.docs-nav__link[aria-current="page"] {
+  color: var(--color-text);
+}

@@ -6,11 +6,13 @@ import { initLightbox } from "./components/lightbox.js";
 import { initCopy } from "./components/copy.js";
 import { initReveal } from "./components/reveal.js";
 import { initCurrentYear } from "./components/current-year.js";
+import { initDocsNav } from "./components/docs-nav.js";
 import { initPage } from "./pages/index.js";
 
 function initContent(page) {
   initReveal();
   initCurrentYear();
+  initDocsNav();
   initPage(page ?? document.body.dataset.page);
 }
 

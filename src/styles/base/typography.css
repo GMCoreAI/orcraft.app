@@ -42,8 +42,20 @@ small,
   color: var(--color-danger);
 }
 
+.text-success {
+  color: var(--color-success);
+}
+
 .text-warning {
   color: var(--color-warning);
+}
+
+.text-purple {
+  color: var(--color-purple);
+}
+
+.text-cyan {
+  color: var(--color-cyan);
 }
 
 code,

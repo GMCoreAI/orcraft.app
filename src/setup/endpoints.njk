@@ -24,7 +24,7 @@ description: "Install and run an Orcraft endpoint, with or without security enab
 <p>This is how the endpoint's own terminal output looks like when running insecurely:</p>
 {{ media.zoomableImage("/assets/images/screenshots/setup-insecure-endpoint-run.png", "The endpoint's terminal output when started with security disabled") }}
 
-<p>In the controller, add the endpoint by clicking <strong>Add</strong> in the Endpoints frame.</p>
+<p>In the controller, add the endpoint by clicking <strong class="text-accent">Add</strong> in the Endpoints frame.</p>
 {{ media.zoomableImage("/assets/images/screenshots/setup-add-endpoint.png", "Adding an endpoint in the Orcraft controller") }}
 <ol start="2">
   <li>Enter the endpoint's host name or IP and port, with security disabled.</li>
@@ -34,7 +34,7 @@ description: "Install and run an Orcraft endpoint, with or without security enab
   <li>The endpoint appears in the Endpoints frame, connected without security.</li>
 </ol>
 {{ media.zoomableImage("/assets/images/screenshots/setup-add-endpoint-added-insecure.png", "The endpoint added and connected without security in the Orcraft controller") }}
-<p>A <strong>Ready</strong> status means the endpoint can now run test steps remotely.</p>
+<p>A <strong class="text-success">Ready</strong> status means the endpoint can now run test steps remotely.</p>
 
 <h3 id="secure-endpoint-connection">Secure endpoint connection</h3>
 <p>For a secure deployment, follow the security setup procedure in the controller's Security tab:</p>
@@ -49,13 +49,13 @@ description: "Install and run an Orcraft endpoint, with or without security enab
 <p>Otherwise, add the endpoint the same way as before, with the security option checked
   (enabled). Either way, it appears in the Endpoints frame, connected with security:</p>
 {{ media.zoomableImage("/assets/images/screenshots/setup-add-endpoint-added-secure.png", "The endpoint added and connected with security in the Orcraft controller") }}
-<p>A <strong>Ready</strong> status means the endpoint can now run test steps remotely.</p>
+<p>A <strong class="text-success">Ready</strong> status means the endpoint can now run test steps remotely.</p>
 
 <h2 id="troubleshooting">Troubleshooting</h2>
 
 <h3 id="endpoint-status-online">Endpoint status: Online</h3>
 <p>If the endpoint shows as <strong class="text-warning">Online</strong> instead of
-  <strong>Ready</strong>, the controller can ping it, but the controller and endpoint applications
+  <strong class="text-success">Ready</strong>, the controller can ping it, but the controller and endpoint applications
   are failing to connect to each other:</p>
 {{ media.zoomableImage("/assets/images/screenshots/setup-endpoint-online.png", "An endpoint showing as Online instead of Ready in the Orcraft controller") }}
 <p>Possible causes:</p>
