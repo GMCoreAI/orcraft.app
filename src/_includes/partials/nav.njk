@@ -2,4 +2,5 @@
   {%- for item in nav.primary %}
   <a class="nav__link" href="{{ item.url }}"{% if page.url == item.url %} aria-current="page"{% endif %}>{{ item.label }}</a>
   {%- endfor %}
+  <a class="nav__link" href="{{ nav.login.url }}"{% if page.url == nav.login.url %} aria-current="page"{% endif %}>{{ nav.login.label }}</a>
 </nav>
