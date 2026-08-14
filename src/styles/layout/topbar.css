@@ -16,9 +16,10 @@
   transform: none;
 }
 
-/* Off the home page there's no masthead to scroll past: pin the topbar in place. */
+/* Off the home page there's no masthead to scroll past: keep the topbar pinned
+   to the top of the viewport at all times, instead of only on scroll. */
 body:not([data-page="home"]) .topbar {
-  position: static;
+  position: sticky;
   transform: none;
 }
 
