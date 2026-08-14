@@ -27,9 +27,9 @@ body:not([data-page="home"]) .topbar {
 }
 
 .topbar__inner {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   gap: var(--space-8);
   padding-block: var(--space-2);
 }
@@ -48,6 +48,8 @@ body:not([data-page="home"]) .topbar__spacer {
   align-items: center;
   gap: var(--space-3);
   flex-shrink: 0;
+  grid-column: 1;
+  justify-self: start;
 }
 
 .topbar__logo {
@@ -59,9 +61,9 @@ body:not([data-page="home"]) .topbar__spacer {
 }
 
 .topbar .nav {
+  grid-column: 2;
   padding-block: 0;
   gap: var(--space-6);
-  justify-content: flex-end;
 }
 
 @media (max-width: 720px) {
