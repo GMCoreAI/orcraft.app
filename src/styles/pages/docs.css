@@ -43,6 +43,31 @@
   margin-block: var(--space-8);
 }
 
+.docs__article .zoomable-image {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  margin-block: var(--space-8);
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  cursor: zoom-in;
+  transition: border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.docs__article .zoomable-image:hover,
+.docs__article .zoomable-image:focus-visible {
+  border-color: var(--color-accent);
+  transform: translateY(-2px);
+}
+
+.docs__article .zoomable-image img {
+  display: block;
+  width: 100%;
+  margin: 0;
+}
+
 .docs__article .install {
   margin-top: var(--space-4);
   margin-bottom: 0;

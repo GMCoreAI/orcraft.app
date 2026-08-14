@@ -1,0 +1,5 @@
+{% macro zoomableImage(src, alt) %}
+<button class="zoomable-image" type="button" data-lightbox aria-label="Enlarge screenshot">
+  <img src="{{ src }}" alt="{{ alt }}" loading="lazy" />
+</button>
+{% endmacro %}

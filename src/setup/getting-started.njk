@@ -4,6 +4,7 @@ key: setup
 description: "Install the controller and run your first suite."
 ---
 {% import "partials/copy-command.njk" as cmd %}
+{% import "partials/zoomable-image.njk" as media %}
 
 <h1>Getting started</h1>
 <p>Install the controller and run your first test.</p>
@@ -24,27 +25,27 @@ description: "Install the controller and run your first suite."
 <ol>
   <li>In the controller, click <strong>Add Item</strong>.</li>
 </ol>
-<img src="/assets/images/screenshots/setup-add-suite.png" alt="Adding the cloned tutorial suite in the Orcraft controller" loading="lazy" />
+{{ media.zoomableImage("/assets/images/screenshots/setup-add-suite.png", "Adding the cloned tutorial suite in the Orcraft controller") }}
 <ol start="2">
   <li>Select the cloned tutorial suite's entry point Python file.</li>
 </ol>
-<img src="/assets/images/screenshots/setup-select-tutorial-suite-file.png" alt="Selecting the tutorial suite's entry point Python file in the Orcraft controller" loading="lazy" />
+{{ media.zoomableImage("/assets/images/screenshots/setup-select-tutorial-suite-file.png", "Selecting the tutorial suite's entry point Python file in the Orcraft controller") }}
 <ol start="3">
   <li>Click on the <strong>Hello World</strong> test.</li>
 </ol>
-<img src="/assets/images/screenshots/setup-hello-world-test.png" alt="Selecting the Hello World test in the Orcraft controller" loading="lazy" />
+{{ media.zoomableImage("/assets/images/screenshots/setup-hello-world-test.png", "Selecting the Hello World test in the Orcraft controller") }}
 <ol start="4">
   <li>Click <strong>Run</strong> in configuration panel on the right side.</li>
 </ol>
-<img src="/assets/images/screenshots/setup-click-run.png" alt="Clicking Run in the configuration panel of the Orcraft controller" loading="lazy" />
+{{ media.zoomableImage("/assets/images/screenshots/setup-click-run.png", "Clicking Run in the configuration panel of the Orcraft controller") }}
 <ol start="5">
   <li>Confirm the run.</li>
 </ol>
-<img src="/assets/images/screenshots/setup-confirm-run.png" alt="Confirming the run in the Orcraft controller" loading="lazy" />
+{{ media.zoomableImage("/assets/images/screenshots/setup-confirm-run.png", "Confirming the run in the Orcraft controller") }}
 <ol start="6">
   <li>Follow the test log as it executes.</li>
 </ol>
-<img src="/assets/images/screenshots/setup-test-log.png" alt="Test log of the running Hello World test in the Orcraft controller" loading="lazy" />
+{{ media.zoomableImage("/assets/images/screenshots/setup-test-log.png", "Test log of the running Hello World test in the Orcraft controller") }}
 
 <p>A <strong>Pass</strong> result confirms that the Orcraft Test Framework is available for
   developing tests, and that local runs already work as expected.</p>

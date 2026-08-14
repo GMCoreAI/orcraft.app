@@ -3,10 +3,12 @@ title: Orcraft Setup Overview
 key: setup
 description: "Install and configure Orcraft: controller, endpoints and requirements."
 ---
+{% import "partials/zoomable-image.njk" as media %}
+
 <h1>Orcraft Setup Overview</h1>
 <p>This is how a typical Orcraft setup looks like.</p>
 
-<img src="/assets/images/Diagrams/Orcraft-Setup.png" alt="Orcraft setup diagram: controller connected to an external network and to internal endpoints and a CI runner" loading="lazy" />
+{{ media.zoomableImage("/assets/images/Diagrams/Orcraft-Setup.png", "Orcraft setup diagram: controller connected to an external network and to internal endpoints and a CI runner") }}
 
 <p>A typical Orcraft deployment consists of a single controller and endpoints. The
   controller orchestrates test execution, distributes the test package and collects results,
