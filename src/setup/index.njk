@@ -17,6 +17,11 @@ description: "Install and configure Orcraft: controller, endpoints and requireme
   using the same configuration exported from the original controller as a CI snapshot. This
   allows a pipeline to reproduce a run exactly as it was configured, without a GUI.</p>
 
+<p>The same controller can be used for test development, manual execution and as a CI runner, or
+  these roles can be split across separate controller installations, each dedicated to a single
+  function. In either case, controllers can share endpoints between them, allowing the same
+  infrastructure to serve development, manual and CI workflows.</p>
+
 <p>Endpoints may also be reached over an external network, allowing distributed teams and remote
   labs to participate in the same session. Communication between the controller and its endpoints
   is secured with mutual TLS and token-based authentication, ensuring that connections beyond the
