@@ -1,10 +1,10 @@
 {
   "primary": [
     { "label": "Home", "url": "/" },
-    { "label": "Platform", "url": "/platform/" },
-    { "label": "Features", "url": "/features/" },
-    { "label": "Workflow", "url": "/workflow/" },
-    { "label": "Docs", "url": "/docs/" },
+    { "label": "Setup", "url": "/setup/" },
+    { "label": "Tutorial", "url": "/tutorial/" },
+    { "label": "Framework", "url": "/framework/" },
+    { "label": "Demo", "url": "/demo/" },
     { "label": "Contact", "url": "/contact/" }
   ],
   "footer": [

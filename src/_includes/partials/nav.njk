@@ -2,5 +2,4 @@
   {%- for item in nav.primary %}
   <a class="nav__link" href="{{ item.url }}"{% if page.url == item.url %} aria-current="page"{% endif %}>{{ item.label }}</a>
   {%- endfor %}
-  <a class="button button--primary nav__cta" href="/contact/">Request Demo</a>
 </nav>
