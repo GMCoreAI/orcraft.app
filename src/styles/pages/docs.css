@@ -56,6 +56,10 @@
   transition: border-color var(--transition-fast), transform var(--transition-fast);
 }
 
+.docs__article .zoomable-image--large {
+  max-width: 100%;
+}
+
 .docs__article .zoomable-image:hover,
 .docs__article .zoomable-image:focus-visible {
   border-color: var(--color-accent);
@@ -69,9 +73,17 @@
 }
 
 .docs__article .install {
-  margin-top: var(--space-4);
+  margin-top: var(--space-2);
   margin-bottom: 0;
   max-width: 100%;
+}
+
+/* .install is inline-flex, so its margin never collapses with the next
+   paragraph's own top margin (0) - add the gap explicitly here instead, larger
+   than .install's own top margin so the text reads closer to the command it
+   introduces than to the command before it. */
+.docs__article .install + p {
+  margin-top: var(--space-8);
 }
 
 .docs__article .install__command {
