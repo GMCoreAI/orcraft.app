@@ -4,7 +4,25 @@ key: setup
 description: "Install and configure Orcraft: controller, endpoints and requirements."
 ---
 <h1>Setup</h1>
-<p>Setup content is in preparation.</p>
+<p>This is how a typical Orcraft setup looks like.</p>
 
 <img src="/assets/images/Diagrams/Orcraft-Setup.png" alt="Orcraft setup diagram: controller connected to an external network and to internal endpoints and a CI runner" loading="lazy" />
+
+<p>A typical Orcraft deployment consists of a single controller and endpoints. The
+  controller orchestrates test execution, distributes the test package and collects results,
+  while each endpoint receives the package and executes the assigned steps. Endpoints are
+  registered with the controller prior to use.</p>
+
+<p>A CI runner is not an endpoint: it is a separate controller installation running in CLI mode,
+  using the same configuration exported from the original controller as a CI snapshot. This
+  allows a pipeline to reproduce a run exactly as it was configured, without a GUI.</p>
+
+<p>Endpoints may also be reached over an external network, allowing distributed teams and remote
+  labs to participate in the same session. Communication between the controller and its endpoints
+  is secured with mutual TLS and token-based authentication, ensuring that connections beyond the
+  internal network remain safe.</p>
+
+<p>Endpoints are not a strict requirement. The controller can execute structured tests on
+  localhost, making it possible to develop and run suites on a single machine before extending
+  execution to additional endpoints.</p>
 

@@ -29,6 +29,10 @@
   color: var(--color-text-muted);
 }
 
+.docs__article img {
+  margin-block: var(--space-8);
+}
+
 @media (max-width: 860px) {
   .docs {
     grid-template-columns: 1fr;
