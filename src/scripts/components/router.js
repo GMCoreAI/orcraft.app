@@ -44,7 +44,7 @@ async function loadPage(url, { push }) {
   const target = new URL(url, window.location.origin);
   if (push) window.history.pushState({}, "", target);
   markCurrent(target.pathname);
-  container.scrollIntoView({ behavior: "smooth", block: "start" });
+  window.scrollTo({ top: 0, behavior: "smooth" });
 
   return document.body.dataset.page;
 }

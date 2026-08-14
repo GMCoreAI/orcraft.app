@@ -16,6 +16,12 @@
   transform: none;
 }
 
+/* Off the home page there's no masthead to scroll past: pin the topbar in place. */
+body:not([data-page="home"]) .topbar {
+  position: static;
+  transform: none;
+}
+
 .topbar__inner {
   display: flex;
   align-items: center;

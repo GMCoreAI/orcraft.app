@@ -1,6 +1,8 @@
 {# Persistent frame: unchanged on every page, kept mounted by the router. #}
 <header class="masthead">
   <div class="container">
+    {% include "partials/nav.njk" %}
+
     <a class="masthead__brand" href="/">
       <img class="masthead__logo logo--spin" src="/assets/images/logo.png" alt="" />
       <img class="masthead__wordmark" src="/assets/images/wordmark.png" alt="{{ site.name }}" />
@@ -32,7 +34,5 @@
           including test configuration widgets in the GUI, generated dynamically from the code.</dd>
       </div>
     </dl>
-
-    {% include "partials/nav.njk" %}
   </div>
 </header>

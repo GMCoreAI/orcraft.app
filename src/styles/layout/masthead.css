@@ -7,6 +7,15 @@
   border-bottom: 1px solid var(--color-border);
 }
 
+/* Only the home page shows the full masthead; other pages use the topbar. */
+body:not([data-page="home"]) .masthead {
+  display: none;
+}
+
+.masthead .nav {
+  margin-bottom: var(--space-8);
+}
+
 .masthead__brand {
   display: block;
 }
