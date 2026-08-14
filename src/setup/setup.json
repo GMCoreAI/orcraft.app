@@ -5,7 +5,6 @@
   "docsItems": [
     { "label": "Overview", "slug": "" },
     { "label": "Getting started", "slug": "getting-started/" },
-    { "label": "Concepts", "slug": "concepts/" },
-    { "label": "Reference", "slug": "reference/" }
+    { "label": "Adding endpoints", "slug": "endpoints/" }
   ]
 }

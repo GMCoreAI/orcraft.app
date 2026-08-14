@@ -1,7 +1,16 @@
 ---
 title: Setup · Getting started
 key: setup
-description: "Install the controller, register an endpoint and run your first suite."
+description: "Install the controller and run your first suite."
 ---
+{% import "partials/copy-command.njk" as cmd %}
+
 <h1>Getting started</h1>
 <p>Install the controller, register an endpoint and run your first suite.</p>
+
+<h2 id="install-controller">Install the controller</h2>
+<p>Install Orcraft from PyPI:</p>
+{{ cmd.copyCommand("pip install orcraft") }}
+
+<h2 id="run-controller">Run the controller</h2>
+{{ cmd.copyCommand("orcraft-controller run") }}

@@ -1,0 +1,10 @@
+{% macro copyCommand(command) %}
+<div class="install">
+  <code class="install__command">{{ command }}</code>
+  <button class="button button--ghost install__copy" type="button" data-copy="{{ command }}"
+    aria-label="Copy command" title="Copy command">
+    <span class="install__copy-idle">{% icon "copy" %}</span>
+    <span class="install__copy-done">{% icon "check" %}</span>
+  </button>
+</div>
+{% endmacro %}

@@ -29,8 +29,22 @@
   color: var(--color-text-muted);
 }
 
+.docs__article h2 {
+  margin-top: var(--space-8);
+  margin-bottom: var(--space-2);
+}
+
 .docs__article img {
   margin-block: var(--space-8);
+}
+
+.docs__article .install {
+  margin-block: var(--space-4);
+  max-width: 100%;
+}
+
+.docs__article .install__command {
+  overflow-x: auto;
 }
 
 @media (max-width: 860px) {
