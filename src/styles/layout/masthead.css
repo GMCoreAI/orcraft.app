@@ -55,7 +55,7 @@
   grid-template-columns: repeat(3, 1fr);
   gap: var(--space-8);
   max-width: 1000px;
-  margin: var(--space-8) auto var(--space-8);
+  margin: var(--space-16) auto var(--space-8);
   text-align: left;
 }
 
@@ -63,9 +63,12 @@
   margin-bottom: var(--space-2);
   color: var(--color-text);
   font-family: var(--font-display);
-  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-size: clamp(1.25rem, 2.5vw, 1.5rem);
   font-weight: 600;
   line-height: 1.15;
+  letter-spacing: 0.03em;
+  text-align: center;
+  text-transform: uppercase;
 }
 
 .principles__desc {
