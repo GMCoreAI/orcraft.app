@@ -1,12 +1,14 @@
 {# Compact bar that slides in once the masthead scrolls away. #}
 <div class="topbar" data-topbar>
-  <div class="container topbar__inner">
-    <a class="topbar__brand" href="/">
-      <img class="topbar__logo logo--spin" src="/assets/images/logo.png" alt="" />
-      <img class="topbar__wordmark" src="/assets/images/wordmark.png" alt="{{ site.name }}" />
-    </a>
+  <div class="topbar__bar">
+    <div class="container topbar__inner">
+      <a class="topbar__brand" href="/">
+        <img class="topbar__logo logo--spin" src="/assets/images/logo.png" alt="" />
+        <img class="topbar__wordmark" src="/assets/images/wordmark.png" alt="{{ site.name }}" />
+      </a>
 
-    {% include "partials/nav.njk" %}
+      {% include "partials/nav.njk" %}
+    </div>
   </div>
 
   {# Pinned gap below the bar on non-home pages: stays attached to the topbar
