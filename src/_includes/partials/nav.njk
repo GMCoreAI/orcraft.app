@@ -1,6 +1,6 @@
 <nav class="nav" aria-label="{{ label | default('Primary') }}">
   {%- for item in nav.primary %}
-  <a class="nav__link" href="{{ item.url }}"{% if page.url == item.url %} aria-current="page"{% endif %}>{{ item.label }}</a>
+  <a class="nav__link" href="{{ item.url }}"{% if page.url == item.url or (item.url != "/" and page.url.startsWith(item.url)) %} aria-current="page"{% endif %}>{{ item.label }}</a>
   {%- endfor %}
-  <a class="nav__link" href="{{ nav.login.url }}"{% if page.url == nav.login.url %} aria-current="page"{% endif %}>{{ nav.login.label }}</a>
+  <a class="nav__link" href="{{ nav.login.url }}"{% if page.url == nav.login.url or page.url.startsWith(nav.login.url) %} aria-current="page"{% endif %}>{{ nav.login.label }}</a>
 </nav>

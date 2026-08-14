@@ -13,7 +13,9 @@ function isInternalLink(anchor) {
 
 function markCurrent(pathname) {
   qsa(".nav__link").forEach((link) => {
-    if (new URL(link.href).pathname === pathname) {
+    const linkPath = new URL(link.href).pathname;
+    const isCurrent = linkPath === pathname || (linkPath !== "/" && pathname.startsWith(linkPath));
+    if (isCurrent) {
       link.setAttribute("aria-current", "page");
     } else {
       link.removeAttribute("aria-current");
