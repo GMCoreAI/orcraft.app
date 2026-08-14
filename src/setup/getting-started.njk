@@ -10,8 +10,15 @@ description: "Install the controller and run your first suite."
 <p>Install the controller and run your first test.</p>
 
 <h2 id="install-controller">Install the controller</h2>
-<p>Install Orcraft from PyPI:</p>
+
+<h3 id="install-from-pypi">Install from PyPI</h3>
+<p>If the controller machine is connected to the internet, install Orcraft from PyPI:</p>
 {{ cmd.copyCommand("pip install orcraft") }}
+
+<h3 id="install-from-a-wheel-file">Install from a wheel file</h3>
+<p>If the machine has no internet access, download the wheel on a connected machine, copy it over
+  and install it directly:</p>
+{{ cmd.copyCommand("pip install orcraft-<version>-py3-none-any.whl") }}
 
 <h2 id="run-controller">Run the controller</h2>
 {{ cmd.copyCommand("orcraft-controller run") }}
@@ -47,7 +54,7 @@ description: "Install the controller and run your first suite."
 </ol>
 {{ media.zoomableImage("/assets/images/screenshots/setup-confirm-run.png", "Confirming the run in the Orcraft controller") }}
 
-<h3 id="see-the-result">See the result</h3>
+<h3 id="check-the-result">Check the result</h3>
 <p>Follow the test log as it executes.</p>
 {{ media.zoomableImage("/assets/images/screenshots/setup-test-log.png", "Test log of the running Hello World test in the Orcraft controller") }}
 

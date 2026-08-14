@@ -24,6 +24,12 @@
   color: var(--color-text-muted);
 }
 
+/* Sections are nested by heading level (see the docsSections transform), so the
+   indent compounds: h2 sits one step in, h3 two, and so on. */
+.docs-section {
+  padding-left: var(--space-6);
+}
+
 .docs__article ul {
   margin: 0 0 var(--space-4);
   padding-left: var(--space-6);
