@@ -13,5 +13,16 @@ description: "Run the Hello World test from the controller's GUI and from the CL
 <p>The test's <code>main</code> function makes it directly runnable as a script - from the test's own directory:</p>
 {{ cmd.copyCommand("cd orcraft-test-suite-tutorial/test_group_intro/test_hello_world") }}
 {{ cmd.copyCommand("python test_hello_world.py") }}
+<h3 id="ansi-output">ANSI output</h3>
 <p>This prints the test's description, its configuration, the case result and the overall test result:</p>
 {% ansiOutput "hello-world-run.ansi" %}
+<p>Notice the <code>Hello World</code> name and description in the output - these are exactly the <code>name</code>
+  and <code>description</code> fields set on <code>TestHelloWorldConfig</code> earlier. The rest of the output -
+  timing, cycles, the configuration table, the pass/fail rollups - is the framework at work: the test itself only
+  logged one line, and the framework did everything else. Each of these built-in pieces is covered in its own
+  place, later in this tutorial and in the <a class="text-accent" href="/framework/">Framework</a> section.</p>
+<h3 id="log-files">Log files</h3>
+<p>This same output is also saved alongside the test, in a <code>Logs</code> folder created next to it:</p>
+{{ cmd.copyCommand("cd Logs") }}
+{{ cmd.copyCommand("ls") }}
+{% ansiOutput "hello-world-logs-dir.txt" %}
