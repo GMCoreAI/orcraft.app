@@ -1,0 +1,81 @@
+---
+title: Tutorial · Adding configuration parameter
+key: tutorial
+description: "Add a Folder configuration parameter and use it to locate the Maze app executable."
+---
+{% import "partials/copy-command.njk" as cmd %}
+{% import "partials/code-block.njk" as codeblock %}
+{% import "partials/zoomable-image.njk" as media %}
+<h1>Adding configuration parameter</h1>
+<p>Now that we have the <a class="text-accent" href="/tutorial/maze-application/">Maze application</a> downloaded,
+  let's write a test that runs it. This test introduces its first configuration parameter - a
+  <code>Folder</code> field pointing at the folder holding the Maze executable.</p>
+
+<h2 id="folder-parameter-test">Folder Parameter test</h2>
+<p>This test lives in the tutorial suite's <strong>Basic Configuration Parameters</strong> test group, alongside
+  the other parameter tests we'll cover in this and the next few chapters:</p>
+{{ media.zoomableImage("/assets/images/screenshots/adding-folder-parameter-test-gui.png", "Folder Parameter test selected under the Basic Configuration Parameters test group in the Orcraft controller's Test Explorer") }}
+<p>Let's review the code of the file named <code>test_folder_parameter.py</code>, residing in this path:</p>
+{{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_basic_configuration_parameters/test_folder_parameter/") }}
+
+<h2 id="imports">Imports</h2>
+{{ codeblock.block('from __future__ import annotations
+
+from orcraft import (
+	OrcraftTest,
+	OrcraftTestConfig,
+	OrcraftTestCase,
+	OrcraftConfigField,
+)
+
+from common.maze_app import MazeApp') }}
+<p>Alongside the same framework building blocks used by the <a class="text-accent"
+  href="/tutorial/hello-world-test-structure/#imports">Hello World test</a>, this test also imports
+  <code>MazeApp</code> - a small helper, shared across the tutorial suite, that locates the Maze executable in a
+  folder and runs it, logging its output.</p>
+{{ cmd.copyPath("orcraft-test-suite-tutorial/common/maze_app.py") }}
+
+<h2 id="config-class">Config class</h2>
+{{ codeblock.block('class TestFolderParameterConfig(OrcraftTestConfig):
+	name = OrcraftConfigField.Text(default="Folder Parameter")
+
+	description = OrcraftConfigField.Text(
+		default=(
+			"Demonstrates a folder configuration parameter.\\n"
+			"Runs the maze app executable with no arguments to display its help page and logs the output."
+		)
+	)
+	
+	maze_executable_folder = OrcraftConfigField.Folder(default="", label="Maze Executable Folder", required=True)') }}
+<p><code>maze_executable_folder</code> is this test's first configuration parameter beyond the built-in
+  <code>name</code> and <code>description</code>. It's declared with <code>OrcraftConfigField.Folder</code>, which
+  renders as a folder picker in the controller's GUI.</p>
+<p><code>label</code> sets the field's display name in the GUI, separate from its Python attribute name.
+  <code>required=True</code> means the test can't be run until a folder is selected - there's no meaningful
+  default, since it depends entirely on where you downloaded the Maze application to.</p>
+
+<h2 id="test-class">Test class</h2>
+{{ codeblock.block('class TestFolderParameter(OrcraftTest):
+	def __init__(self, config: TestFolderParameterConfig | None = None) -> None:
+		super().__init__(config or TestFolderParameterConfig())
+
+	def _run_case(self, case: OrcraftTestCase):
+
+		maze_app = MazeApp(self.config.maze_executable_folder)
+
+		maze_app.run()
+
+		return case.result') }}
+<p><code>_run_case</code> reads <code>self.config.maze_executable_folder</code> - the folder selected in the
+  GUI (or the CLI) - and passes it to <code>MazeApp</code>. Called with no command, <code>MazeApp</code> runs the
+  executable with no arguments, which - as we saw in the <a class="text-accent"
+  href="/tutorial/maze-application/#usage">Maze application</a> chapter - prints its help page.</p>
+
+<h2 id="main">Main</h2>
+{{ codeblock.block('def main() -> None:
+	test = TestFolderParameter()
+	test.run()
+
+
+if __name__ == "__main__":
+	main()') }}

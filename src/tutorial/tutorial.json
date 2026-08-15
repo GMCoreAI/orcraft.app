@@ -6,6 +6,7 @@
     { "label": "Orcraft tutorial overview", "slug": "" },
     { "label": "Hello World test structure", "slug": "hello-world-test-structure/" },
     { "label": "Running Hello World test", "slug": "running-hello-world-test/" },
-    { "label": "Maze application", "slug": "maze-application/" }
+    { "label": "Maze application", "slug": "maze-application/" },
+    { "label": "Adding configuration parameter", "slug": "adding-configuration-parameter/" }
   ]
 }
