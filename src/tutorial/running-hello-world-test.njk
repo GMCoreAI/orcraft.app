@@ -38,12 +38,15 @@ description: "Run the Hello World test from the controller's GUI and from the CL
   <a class="text-accent" href="#ansi-output">ANSI output</a> section, while the test is running:</p>
 {{ media.zoomableImage("/assets/images/screenshots/setup-test-log.png", "Test log of the running Hello World test in the Orcraft controller") }}
 
-<h3 id="test-configuration">Test configuration</h3>
+<h2 id="editing-run-configuration">Editing run configuration</h2>
+<h3 id="selecting-test-vs-test-run">Selecting Test vs Test Run</h3>
 <p>First of all, let's look into the execution tree and select the test node itself, not the test run instance.
   The difference is that the test node (<strong>Hello World</strong>) is the test's definition, shared by every
   run, while the test run instance (<strong>Test Run: Hello World</strong>) is one specific execution of it, with
   its own status and results.</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial-test-selection.png", "Selecting the Hello World test node, as opposed to its test run instance, in the Orcraft controller's execution tree") }}
+
+<h3 id="changing-a-parameter">Changing a parameter</h3>
 <p>Let's focus on the configuration tab, next to the log. Currently, you can see only one config parameter,
   <code>Cycles</code>. If you remember, we didn't define it in the
   <a class="text-accent" href="/tutorial/hello-world-test-structure/#config-class">test's code</a> - that's because
@@ -51,6 +54,8 @@ description: "Run the Hello World test from the controller's GUI and from the CL
 {{ media.zoomableImage("/assets/images/screenshots/tutorial-hellow-world-config.png", "Configuration tab of the Hello World test in the Orcraft controller, showing the built-in Cycles field") }}
 <p>Let's change the number of cycles to 2:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial-hellow-world-config-2-cycles.png", "Cycles field of the Hello World test set to 2 in the Orcraft controller") }}
+
+<h3 id="running-unplanned">Running unplanned</h3>
 <p>As you can see, the <code class="text-purple">Cycles</code> field is now purple - meaning it changed from its
   default - and an <strong class="text-orange">orange dot</strong> appears next to it, meaning the configuration
   is now different from the plan. Notice that <strong class="text-accent">Update Plan</strong> and
@@ -61,3 +66,16 @@ description: "Run the Hello World test from the controller's GUI and from the CL
   badge - indicating that something changed since the plan was last updated (maybe by mistake, or just to try
   something out), so this run isn't included in the statistics. The previous run is dimmed because it was
   superseded by this new run on the same endpoint configuration (which is just <code>localhost</code> here).</p>
+
+<h3 id="updating-the-plan">Updating the plan</h3>
+<p>Now let's click <strong class="text-accent">Update Plan</strong>, and click <strong>Yes</strong> on the
+  confirmation dialog:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial-hello-world-update-plan.png", "Execution tree and configuration panel of the Hello World test after updating the plan", "large") }}
+<p>Now we see <code class="text-accent">Cycles</code> is blue, meaning this is the new plan, different from the
+  default. Pay attention that the <strong class="text-warning">Plan Mismatch</strong> badge went to the previous
+  run, since the last run now matches the plan (2 cycles) and previous one doesn't (1 cycle). Also notice that the
+  statistics columns now show 2 in each column - the planned run is now counted.</p>
+<p>It's worth emphasizing that the statistics don't simply sum up every test run. Instead, they select which runs
+  to count based on criteria such as: whether the run is planned or unplanned, whether it was superseded by a
+  later run, and whether the endpoints configuration matches (we'll cover endpoints configuration later in this
+  tutorial).</p>
