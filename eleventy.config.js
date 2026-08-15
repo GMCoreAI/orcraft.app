@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { AnsiUp } from "ansi_up";
 
 const ICON_DIR = "src/assets/icons/ui";
 const DOCS_ARTICLE = /(<article class="docs__article">)([\s\S]*?)(<\/article>)/;
@@ -37,6 +38,14 @@ export default function (eleventyConfig) {
       .replace(/\s+class="[^"]*"/, "")
       .replace("<svg", '<svg class="icon" aria-hidden="true" focusable="false"')
   );
+
+  // Renders a captured .ansi controller log (src/_includes/data/*.ansi) as HTML,
+  // so CLI output docs reproduce the real colors and spacing instead of hand-placed spans.
+  eleventyConfig.addShortcode("ansiOutput", (filename) => {
+    const raw = readFileSync(`src/_includes/data/${filename}`, "utf8").replace(/^\n+|\n+$/g, "");
+    const html = new AnsiUp().ansi_to_html(raw);
+    return `<div class="code-block-wrap"><pre class="code-block"><code>${html}</code></pre></div>`;
+  });
 
   eleventyConfig.addTransform("docsSections", function (content) {
     if (!this.page.outputPath?.endsWith(".html")) return content;

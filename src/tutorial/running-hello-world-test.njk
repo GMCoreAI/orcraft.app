@@ -3,7 +3,14 @@ title: Tutorial · Running Hello World test
 key: tutorial
 description: "Run the Hello World test from the controller's GUI and from the CLI."
 ---
+{% import "partials/copy-command.njk" as cmd %}
 <h1>Running Hello World test</h1>
 <p>With the test's code reviewed, let's run it. As code developers, we'll start from the CLI, then revisit the
   same run through the controller's GUI, which the <a class="text-accent" href="/setup/getting-started/">Getting
   started</a> guide already walked through click by click.</p>
+
+<h2 id="running-from-cli">Running from CLI</h2>
+<p>The test's <code>main</code> function makes it directly runnable as a script - from the test's own directory:</p>
+{{ cmd.copyCommand("python test_hello_world.py") }}
+<p>This prints the test's description, its configuration, the case result and the overall test result:</p>
+{% ansiOutput "hello-world-run.ansi" %}
