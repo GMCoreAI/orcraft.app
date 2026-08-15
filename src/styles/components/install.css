@@ -9,6 +9,13 @@
   border-radius: var(--radius-md);
 }
 
+/* .install is block-level now (so consecutive docs snippets stack), which drops the
+   centering text-align: center used to give it on the home page - restore it directly. */
+.text-center .install {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .install__command {
   color: var(--color-text);
   font-size: var(--font-size-base);
