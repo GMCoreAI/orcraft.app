@@ -75,7 +75,15 @@ description: "Run the Hello World test from the controller's GUI and from the CL
   default. Pay attention that the <strong class="text-warning">Plan Mismatch</strong> badge went to the previous
   run, since the last run now matches the plan (2 cycles) and previous one doesn't (1 cycle). Also notice that the
   statistics columns now show 2 in each column - the planned run is now counted.</p>
+<h3 id="note-on-statistics">Note on statistics</h3>
 <p>It's worth emphasizing that the statistics don't simply sum up every test run. Instead, they select which runs
   to count based on criteria such as: whether the run is planned or unplanned, whether it was superseded by a
   later run, and whether the endpoints configuration matches (we'll cover endpoints configuration later in this
   tutorial).</p>
+
+<h3 id="resetting-to-defaults">Resetting to defaults</h3>
+<p>Now let's click <strong class="text-muted">Reset To Defaults</strong>:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial-hello-world-reset-to-defaults.png", "Configuration panel of the Hello World test after resetting Cycles to its default value", "large") }}
+<p>Now you can see that <code>Cycles</code> went back from <strong class="text-accent">blue</strong> to white,
+  meaning it's back to its default value - and the <strong class="text-orange">orange dot</strong> appears again,
+  because we changed the plan from the last update (from 2 cycles back to 1).</p>
