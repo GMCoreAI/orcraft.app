@@ -14,6 +14,8 @@ function initContent(page) {
   initCurrentYear();
   initDocsNav();
   initPage(page ?? document.body.dataset.page);
+  // Router swaps content without a page load, so Prism's auto DOMContentLoaded highlight misses it.
+  window.Prism?.highlightAllUnder(document.querySelector("[data-page-content]") ?? document.body);
 }
 
 function boot() {
