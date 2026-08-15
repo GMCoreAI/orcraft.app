@@ -1,0 +1,43 @@
+
+Maze App (v3.0.0)
+=================
+
+USAGE
+  maze <command> [options]
+  maze -h | --help
+
+COMMANDS
+  generate    Generate and print a maze (no solving)
+  solve       Generate or load a maze, then solve and print the path
+  save        Generate a maze and save it to a JSON file
+  load        Load a maze from a JSON file and print it
+
+GENERATION OPTIONS  (generate / solve / save)
+  --width   INT       Maze width in columns            (default: 20)
+  --height  INT       Maze height in rows              (default: 10)
+  --seed    INT       Random seed for reproducibility  (default: random)
+  --start   ROW,COL   Start coordinate                 (default: 0,0)
+  --end     ROW,COL   End coordinate                   (default: last cell)
+
+SOLVE OPTIONS
+  --algorithm NAME    Solver: bfs | dfs | astar        (default: bfs)
+  --file    FILE      Load maze from FILE instead of generating
+
+SAVE OPTIONS
+  --output  FILE      Output file path                 (default: maze.json)
+
+LOAD OPTIONS
+  --file    FILE      Path to a saved maze JSON file   (required)
+
+EXAMPLES
+  # Generate and print a 30×15 maze with a fixed seed
+  maze generate --width 30 --height 15 --seed 42
+
+  # Solve the same maze using A* (custom start/end)
+  maze solve --width 30 --height 15 --seed 42 \
+      --start 0,0 --end 14,29 --algorithm astar
+
+  # Save a maze to file, then load and solve it with DFS
+  maze save --width 20 --height 10 --seed 7 --output my_maze.json
+  maze load --file my_maze.json
+  maze solve --file my_maze.json --algorithm dfs
