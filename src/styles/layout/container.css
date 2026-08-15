@@ -8,3 +8,7 @@
 .container--narrow {
   max-width: 760px;
 }
+
+.container--wide {
+  max-width: 1320px;
+}
