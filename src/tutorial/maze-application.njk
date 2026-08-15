@@ -3,20 +3,53 @@ title: Tutorial · Maze application
 key: tutorial
 description: "The Maze application - a small system under test built for this tutorial."
 ---
+{% import "partials/code-block.njk" as codeblock %}
+{% import "partials/copy-command.njk" as cmd %}
 <h1>Maze application</h1>
 <p>For tutorial purposes, we developed an application to act as a system under test - software under test, in
   this case - called <strong>Maze</strong>, which we'll use as the target of the tests we develop throughout this
   tutorial.</p>
 
 <h2 id="download">Download</h2>
-<p>We'll need all three versions later on in this tutorial - download all of them into the same folder:</p>
+<p>We'll need all three versions later on in this tutorial. Create a <code>bin</code> folder with a subfolder per
+  version, and download the executable matching your operating system into its version's subfolder:</p>
 <ul>
   <li><a class="text-accent" href="https://github.com/GMCoreAI/orcraft-maze-app/releases/tag/maze-v1.0.0">1.0.0</a></li>
   <li><a class="text-accent" href="https://github.com/GMCoreAI/orcraft-maze-app/releases/tag/maze-v2.0.0">2.0.0</a></li>
   <li><a class="text-accent" href="https://github.com/GMCoreAI/orcraft-maze-app/releases/tag/maze-v3.0.0">3.0.0</a></li>
 </ul>
+<p>Each release provides a Windows, Linux and macOS executable, so the result looks like this (keep only the one
+  matching your operating system):</p>
+{{ codeblock.block('bin/
+  v1.0.0/
+    maze-v1.0.0-win.exe
+    maze-v1.0.0-linux
+    maze-v1.0.0-macos
+  v2.0.0/
+    maze-v2.0.0-win.exe
+    maze-v2.0.0-linux
+    maze-v2.0.0-macos
+  v3.0.0/
+    maze-v3.0.0-win.exe
+    maze-v3.0.0-linux
+    maze-v3.0.0-macos', 'text') }}
 <p class="text-danger">This repository is currently private; the links above will be updated once it is public.</p>
 
 <h2 id="usage">Usage</h2>
 <p>Run the executable with <code>--help</code> to see its available commands and options:</p>
 {% ansiOutput "maze-help.ansi" %}
+
+<h2 id="run-examples">Run examples</h2>
+
+<h3 id="generating-a-maze">Generating a maze</h3>
+<p>Generate a 20×8 maze with a fixed seed, so it comes out identical on every run:</p>
+{{ cmd.copyCommand("maze generate --width 20 --height 8 --seed 42") }}
+{% ansiOutput "maze-generate.txt" %}
+<p>The maze is printed as ASCII art, with <code>S</code> marking the start cell and <code>E</code> the end cell.</p>
+
+<h3 id="solving-a-maze">Solving a maze</h3>
+<p>Solve that same maze with the A* algorithm:</p>
+{{ cmd.copyCommand("maze solve --width 20 --height 8 --seed 42 --algorithm astar") }}
+{% ansiOutput "maze-solve.txt" %}
+<p>The solved maze shows the path from start to end as arrows, followed by the number of steps and the algorithm
+  that was used.</p>
