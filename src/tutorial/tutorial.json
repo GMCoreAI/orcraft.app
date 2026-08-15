@@ -3,7 +3,7 @@
   "docsTitle": "Tutorial",
   "docsBase": "/tutorial/",
   "docsItems": [
-    { "label": "Overview", "slug": "" },
+    { "label": "Orcraft tutorial overview", "slug": "" },
     { "label": "Getting started", "slug": "getting-started/" },
     { "label": "Concepts", "slug": "concepts/" },
     { "label": "Reference", "slug": "reference/" }
