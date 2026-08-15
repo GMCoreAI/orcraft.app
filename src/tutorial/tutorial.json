@@ -5,8 +5,6 @@
   "docsItems": [
     { "label": "Orcraft tutorial overview", "slug": "" },
     { "label": "Hello World test structure", "slug": "hello-world-test-structure/" },
-    { "label": "Running Hello World test", "slug": "running-hello-world-test/" },
-    { "label": "Concepts", "slug": "concepts/" },
-    { "label": "Reference", "slug": "reference/" }
+    { "label": "Running Hello World test", "slug": "running-hello-world-test/" }
   ]
 }
