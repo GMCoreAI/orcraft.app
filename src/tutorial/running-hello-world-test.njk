@@ -4,6 +4,7 @@ key: tutorial
 description: "Run the Hello World test from the controller's GUI and from the CLI."
 ---
 {% import "partials/copy-command.njk" as cmd %}
+{% import "partials/zoomable-image.njk" as media %}
 <h1>Running Hello World test</h1>
 <p>With the test's code reviewed, let's run it. As code developers, we'll start from the CLI, then revisit the
   same run through the controller's GUI, which the <a class="text-accent" href="/setup/getting-started/">Getting
@@ -26,3 +27,37 @@ description: "Run the Hello World test from the controller's GUI and from the CL
 {{ cmd.copyCommand("cd Logs") }}
 {{ cmd.copyCommand("ls") }}
 {% ansiOutput "hello-world-logs-dir.txt" %}
+
+<h2 id="running-from-gui">Running from GUI</h2>
+<p>Running this test from the controller's GUI - adding the suite, selecting the test and starting the run - is
+  already covered step by step in the <a class="text-accent" href="/setup/getting-started/">Getting started</a>
+  guide.</p>
+
+<h3 id="test-log">Test log</h3>
+<p>The controller's GUI shows the <strong>very same log</strong> shown earlier in the
+  <a class="text-accent" href="#ansi-output">ANSI output</a> section, while the test is running:</p>
+{{ media.zoomableImage("/assets/images/screenshots/setup-test-log.png", "Test log of the running Hello World test in the Orcraft controller") }}
+
+<h3 id="test-configuration">Test configuration</h3>
+<p>First of all, let's look into the execution tree and select the test node itself, not the test run instance.
+  The difference is that the test node (<strong>Hello World</strong>) is the test's definition, shared by every
+  run, while the test run instance (<strong>Test Run: Hello World</strong>) is one specific execution of it, with
+  its own status and results.</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial-test-selection.png", "Selecting the Hello World test node, as opposed to its test run instance, in the Orcraft controller's execution tree") }}
+<p>Let's focus on the configuration tab, next to the log. Currently, you can see only one config parameter,
+  <code>Cycles</code>. If you remember, we didn't define it in the
+  <a class="text-accent" href="/tutorial/hello-world-test-structure/#config-class">test's code</a> - that's because
+  it's a built-in parameter that will always be shown for any test.</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial-hellow-world-config.png", "Configuration tab of the Hello World test in the Orcraft controller, showing the built-in Cycles field") }}
+<p>Let's change the number of cycles to 2:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial-hellow-world-config-2-cycles.png", "Cycles field of the Hello World test set to 2 in the Orcraft controller") }}
+<p>As you can see, the <code class="text-purple">Cycles</code> field is now purple - meaning it changed from its
+  default - and an <strong class="text-orange">orange dot</strong> appears next to it, meaning the configuration
+  is now different from the plan. Notice that <strong class="text-accent">Update Plan</strong> and
+  <strong class="text-muted">Reset To Defaults</strong> both became available. We won't press either of those for
+  now - let's just run:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial-hello-world-plan-mismatch.png", "Execution tree showing a second Hello World test run instance with a Plan Mismatch badge", "large") }}
+<p>As you can see, another test run instance appeared, with a <strong class="text-warning">Plan Mismatch</strong>
+  badge - indicating that something changed since the plan was last updated (maybe by mistake, or just to try
+  something out), so this run isn't included in the statistics. The previous run is dimmed because it was
+  superseded by this new run on the same endpoint configuration (which is just <code>localhost</code> here).</p>

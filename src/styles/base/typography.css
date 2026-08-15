@@ -50,6 +50,10 @@ small,
   color: var(--color-warning);
 }
 
+.text-orange {
+  color: var(--color-orange);
+}
+
 .text-purple {
   color: var(--color-purple);
 }
