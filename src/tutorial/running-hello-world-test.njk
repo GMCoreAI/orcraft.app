@@ -90,3 +90,31 @@ description: "Run the Hello World test from the controller's GUI and from the CL
 <p>Finally, let's click <strong class="text-accent">Update Plan</strong> once more. This brings us back to the
   default, planned state we started with:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial-hello-world-update-plan-after-reset-to-defaults.png", "Execution tree and configuration panel of the Hello World test after updating the plan back to its default", "large") }}
+
+<h2 id="rerunning-test-runs">Rerunning test runs</h2>
+
+<h3 id="rerunning-a-planned-test">Rerunning a planned test</h3>
+<p>Let's click on the first planned test run instance we ran. Its configuration tab now shows the exact
+  configuration it was run with, and we can rerun it with that very same configuration:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial-hello-world-rerun-planned.png", "Configuration panel of a planned Hello World test run instance, ready to be rerun with its original configuration", "large") }}
+<p>Let's click <strong class="text-purple">Rerun</strong> and see another planned instance appear, while the two
+  previous ones are now superseded:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial-hello-world-rerun-planned-finished.png", "Execution tree showing a new planned Hello World test run instance after rerunning, with the two previous runs superseded", "large") }}
+
+<h3 id="rerunning-an-unplanned-test">Rerunning an unplanned test</h3>
+<p>Let's click on the <strong class="text-warning">Plan Mismatch</strong> test run instance instead. Its
+  configuration tab shows <code class="text-accent">Cycles</code> set to 2, different from the current plan (1) -
+  this run was unplanned, but its configuration is still preserved and can be rerun just the same:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial-hello-world-rerun-unplanned.png", "Configuration panel of an unplanned Hello World test run instance, showing its Cycles value different from the current plan", "large") }}
+<p>Also notice that <strong class="text-muted">Reset To Defaults</strong> is enabled now, since 2 isn't the
+  default value (1 is).</p>
+
+<h3 id="resetting-to-run-settings">Resetting to Run Settings</h3>
+<p>Now let's say we change this previous run's config to 3 cycles:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial-hello-world-rerun-changed-test-run-config.png", "Configuration panel of a Hello World test run instance after changing its Cycles field to 3", "large") }}
+<p>You can see that it now appears as different from both the default and the plan, and that
+  <strong class="text-muted">Reset To Run Settings</strong> is enabled too. Clicking it takes us back to this run's
+  original configuration.</p>
+<p>It's worth emphasizing that each test run instance carries its own configuration, independent of the test's
+  current plan. Whether a given run shows up as planned or unplanned depends solely on whether its own
+  configuration happens to match the plan at the time - not on which one you're looking at.</p>
