@@ -1,59 +1,17 @@
 ---
-title: Tutorial · Hello World test
+title: Tutorial · Hello World test structure
 key: tutorial
 description: "Install the controller, register an endpoint and run the Hello World test."
 ---
-<h1>Hello World test</h1>
-<p>Assuming you read the <a class="text-accent" href="/tutorial/">Orcraft tutorial overview</a>, we can start developing a first test. Let's look at its code and review it.</p>
+{% import "partials/copy-command.njk" as cmd %}
+{% import "partials/code-block.njk" as codeblock %}
+<h1>Hello World test structure</h1>
+<p>Assuming you read the <a class="text-accent" href="/tutorial/">Orcraft tutorial overview</a>, we can start developing a first test. This is a minimal implementation of an Orcraft test.</p>
+<p>Open the following file in your preferred IDE (we use VS Code for this demonstration) and let's review its code:</p>
+{{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_intro/test_hello_world/test_hello_world.py") }}
 
-<div class="code-block-wrap">
-  <button class="button button--ghost install__copy code-copy" type="button"
-    data-copy='from __future__ import annotations
-
-from orcraft import (
-	OrcraftLogger as Logger,
-	OrcraftTest,
-	OrcraftTestConfig,
-	OrcraftTestCase,
-	OrcraftConfigField,
-)
-
-
-class TestHelloWorldConfig(OrcraftTestConfig):
-	name = OrcraftConfigField.Text(default="Hello World")
-	
-	description = OrcraftConfigField.Text(
-		default=(
-			"This is a minimal implementation of an Orcraft Test.\n"
-			"It demonstrates how to define a test config, inherit from OrcraftTest, and implement a single test case.\n"
-			"When executed, the test logs a simple Hello World message and returns a passing test result."
-		)
-	)
-
-
-class TestHelloWorld(OrcraftTest):
-	def __init__(self, config: TestHelloWorldConfig | None = None) -> None:
-		super().__init__(config or TestHelloWorldConfig())
-
-	def _run_case(self, case: OrcraftTestCase):
-
-		Logger.log("Hello World", color=Logger.Color.BLUE)
-
-		return case.result
-
-
-def main() -> None:
-	test = TestHelloWorld()
-	test.run()
-
-
-if __name__ == "__main__":
-	main()'
-    aria-label="Copy code" title="Copy code">
-    <span class="install__copy-idle">{% icon "copy" %}</span>
-    <span class="install__copy-done">{% icon "check" %}</span>
-  </button>
-  <pre class="code-block"><code class="language-python">from __future__ import annotations
+<h2 id="imports">Imports</h2>
+{{ codeblock.block('from __future__ import annotations
 
 from orcraft import (
 	OrcraftLogger as Logger,
@@ -61,22 +19,34 @@ from orcraft import (
 	OrcraftTestConfig,
 	OrcraftTestCase,
 	OrcraftConfigField,
-)
+)') }}
+<p><code>from __future__ import annotations</code> lets the type hints below (e.g. <code>TestHelloWorldConfig | None</code>)
+  use the modern union syntax regardless of the Python version running the test.</p>
+<p>The test imports the building blocks it needs from the <code>orcraft</code> package: a logger, the base test and config classes, the test case type, and the config field helpers.</p>
 
-
-class TestHelloWorldConfig(OrcraftTestConfig):
+<h2 id="config-class">Config class</h2>
+{{ codeblock.block('class TestHelloWorldConfig(OrcraftTestConfig):
 	name = OrcraftConfigField.Text(default="Hello World")
 	
 	description = OrcraftConfigField.Text(
 		default=(
-			"This is a minimal implementation of an Orcraft Test.\n"
-			"It demonstrates how to define a test config, inherit from OrcraftTest, and implement a single test case.\n"
+			"This is a minimal implementation of an Orcraft Test.\\n"
+			"It demonstrates how to define a test config, inherit from OrcraftTest, and implement a single test case.\\n"
 			"When executed, the test logs a simple Hello World message and returns a passing test result."
 		)
-	)
+	)') }}
+<p><code>TestHelloWorldConfig</code> is this test's user-defined config, inheriting from the framework's
+  <code>OrcraftTestConfig</code>. Its fields (<code>name</code> and
+  <code>description</code>) drive what is shown for this test in the controller's GUI and in the CLI's run tables.</p>
+<p><code>name</code> and <code>description</code> are both built into <code>OrcraftTestConfig</code> itself, not
+  something this test adds - every test config exposes them. Overriding <code>default</code> here only replaces
+  the value shown when no other value is configured; it does not change what the field is used for.</p>
+<p>Some fields are editable from the controller's GUI, while others are not - <code>name</code> and
+  <code>description</code> are examples of fields that aren't configurable there. Complete documentation of
+  config fields is available in the <a class="text-accent" href="/framework/">Framework</a> page.</p>
 
-
-class TestHelloWorld(OrcraftTest):
+<h2 id="test-class">Test class</h2>
+{{ codeblock.block('class TestHelloWorld(OrcraftTest):
 	def __init__(self, config: TestHelloWorldConfig | None = None) -> None:
 		super().__init__(config or TestHelloWorldConfig())
 
@@ -84,15 +54,17 @@ class TestHelloWorld(OrcraftTest):
 
 		Logger.log("Hello World", color=Logger.Color.BLUE)
 
-		return case.result
+		return case.result') }}
+<p><code>TestHelloWorld</code> is the test itself. It accepts an optional config in <code>__init__</code>, falling
+  back to the default, and implements <code>_run_case</code>, which is invoked once per configured test case.</p>
 
-
-def main() -> None:
+<h2 id="main">Main</h2>
+{{ codeblock.block('def main() -> None:
 	test = TestHelloWorld()
 	test.run()
 
 
 if __name__ == "__main__":
-	main()
-</code></pre>
-</div>
+	main()') }}
+<p>Finally, <code>main</code> lets the test run standalone, outside the controller, when the file is executed
+  directly as a script.</p>

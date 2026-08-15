@@ -8,3 +8,14 @@
   </button>
 </div>
 {% endmacro %}
+
+{% macro copyPath(path) %}
+<div class="install install--path">
+  <code class="install__command">{{ path }}</code>
+  <button class="button button--ghost install__copy" type="button" data-copy="{{ path }}"
+    aria-label="Copy path" title="Copy path">
+    <span class="install__copy-idle">{% icon "copy" %}</span>
+    <span class="install__copy-done">{% icon "check" %}</span>
+  </button>
+</div>
+{% endmacro %}

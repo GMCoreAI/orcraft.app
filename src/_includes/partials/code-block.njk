@@ -1,0 +1,10 @@
+{% macro block(code, lang="python") %}
+<div class="code-block-wrap">
+  <button class="button button--ghost install__copy code-copy" type="button" data-copy='{{ code }}'
+    aria-label="Copy code" title="Copy code">
+    <span class="install__copy-idle">{% icon "copy" %}</span>
+    <span class="install__copy-done">{% icon "check" %}</span>
+  </button>
+  <pre class="code-block"><code class="language-{{ lang }}">{{ code }}</code></pre>
+</div>
+{% endmacro %}

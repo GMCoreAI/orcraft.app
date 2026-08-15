@@ -19,6 +19,14 @@
   color: var(--color-accent-strong);
 }
 
+.install--path {
+  padding-left: var(--space-4);
+}
+
+.install--path .install__command::before {
+  content: none;
+}
+
 .install__copy {
   padding: var(--space-2) var(--space-3);
 }
