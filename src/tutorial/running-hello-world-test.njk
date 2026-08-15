@@ -11,6 +11,7 @@ description: "Run the Hello World test from the controller's GUI and from the CL
 
 <h2 id="running-from-cli">Running from CLI</h2>
 <p>The test's <code>main</code> function makes it directly runnable as a script - from the test's own directory:</p>
+{{ cmd.copyCommand("cd orcraft-test-suite-tutorial/test_group_intro/test_hello_world") }}
 {{ cmd.copyCommand("python test_hello_world.py") }}
 <p>This prints the test's description, its configuration, the case result and the overall test result:</p>
 {% ansiOutput "hello-world-run.ansi" %}
