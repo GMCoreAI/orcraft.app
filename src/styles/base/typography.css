@@ -62,6 +62,15 @@ small,
   color: var(--color-cyan);
 }
 
+.text-ai {
+  font-weight: 700;
+  background: linear-gradient(90deg, var(--color-cyan), var(--color-accent-strong));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 18px rgba(34, 211, 238, 0.35);
+}
+
 code,
 pre {
   font-family: var(--font-mono);
