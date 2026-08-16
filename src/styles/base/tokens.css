@@ -46,6 +46,11 @@
 
   /* Layout */
   --container-width: 1120px;
+  /* Docs pages run wider than marketing pages so code blocks and wide log
+     output fit; prose inside them is capped separately by --docs-prose-width. */
+  --container-width-docs: 1440px;
+  --docs-sidebar-width: 280px;
+  --docs-prose-width: 820px;
 
   /* Motion */
   --transition-fast: 120ms ease;

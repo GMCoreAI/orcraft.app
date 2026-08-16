@@ -5,13 +5,23 @@
   padding-top: 0;
 }
 
+.section--docs.container {
+  max-width: var(--container-width-docs);
+}
+
 .docs {
   display: grid;
   /* minmax(0, 1fr), not 1fr: a 1fr track's auto minimum would let wide code
      blocks stretch the article column instead of scrolling inside it. */
-  grid-template-columns: 220px minmax(0, 1fr);
+  grid-template-columns: var(--docs-sidebar-width) minmax(0, 1fr);
   gap: var(--space-8);
   align-items: start;
+}
+
+/* The article spans the full width so code blocks, tables and screenshots can
+   use it, while running text is capped at a readable measure. */
+.docs__article :is(p, ul, ol, blockquote) {
+  max-width: var(--docs-prose-width);
 }
 
 .docs__sidebar {
@@ -88,7 +98,7 @@
 
 .docs__article .zoomable-image {
   display: block;
-  width: 100%;
+  width: fit-content;
   max-width: 320px;
   margin-block: var(--space-8);
   padding: 0;
@@ -109,9 +119,12 @@
   transform: translateY(-2px);
 }
 
+/* auto width, not 100%: a screenshot narrower than the article renders at its
+   native size instead of being upscaled into a blur. */
 .docs__article .zoomable-image img {
   display: block;
-  width: 100%;
+  width: auto;
+  max-width: 100%;
   margin: 0;
 }
 
