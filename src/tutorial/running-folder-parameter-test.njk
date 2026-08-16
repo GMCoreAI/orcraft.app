@@ -1,0 +1,43 @@
+---
+title: Tutorial · Running Folder Parameter test
+key: tutorial
+description: "Run the Folder Parameter test from the CLI and from the controller's GUI."
+---
+{% import "partials/copy-command.njk" as cmd %}
+{% import "partials/code-block.njk" as codeblock %}
+{% import "partials/zoomable-image.njk" as media %}
+<h1>Running Folder Parameter test</h1>
+<p>Unlike the <a class="text-accent" href="/tutorial/running-hello-world-test/">Hello World test</a>, this test
+  can't just be run as-is: its <code>maze_executable_folder</code> parameter is
+  <a class="text-accent" href="/tutorial/adding-configuration-parameter/#config-class">required</a> and has no
+  meaningful default, so a value has to be supplied before the test can do anything.</p>
+
+<h2 id="running-from-cli">Running from CLI</h2>
+<p>Running the test file as-is fails, because the required folder was never set:</p>
+{{ cmd.copyCommand("python test_folder_parameter.py") }}
+<p>To run it from the CLI, pass a config with the folder you downloaded the Maze application into. Adjust the
+  test's <code>main</code> function like this:</p>
+{{ codeblock.block('def main() -> None:
+	test = TestFolderParameter(
+		TestFolderParameterConfig(
+			maze_executable_folder=r"C:\\Orcraft\\Maze\\bin\\v3.0.0",
+		)
+	)
+	test.run()') }}
+<p>This is exactly what the controller does for you when you pick a folder in the GUI - it constructs the test's
+  config with the values you chose.</p>
+
+<h3 id="ansi-output">ANSI output</h3>
+<p>With a valid folder, the test runs the Maze executable and logs its output as part of the test's own log:</p>
+{% ansiOutput "folder-parameter-run.ansi" %}
+<p>Notice the <strong>Maze Executable Folder</strong> column in the configuration table - every config parameter
+  a test declares shows up there, so the log always records exactly what the test was run with. The indented
+  block in the middle is the Maze application's own stdout, captured and logged by the test.</p>
+
+<h2 id="running-from-gui">Running from GUI</h2>
+<p>From the controller's GUI there's no code to edit: select the <strong>Folder Parameter</strong> test, and its
+  configuration tab now shows the <strong>Maze Executable Folder</strong> field alongside the built-in
+  <code>Cycles</code> field we met earlier. Pick the version folder holding the Maze executable, then click
+  <strong class="text-purple">Run</strong>.</p>
+<p>Since the field is <code>required</code>, the run is blocked until a folder is selected - an empty value is
+  reported as a configuration error rather than a test failure.</p>

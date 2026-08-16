@@ -1,0 +1,92 @@
+
+Orcraft Controller (v0.1.0.dev139)
+----------------------------------
+
+[30;48;5;248m                            Test: Folder Parameter | Description                            [00m
+
+Demonstrates a folder configuration parameter.
+Runs the maze app executable with no arguments to display its help page and logs the output.
+
+
+[30;48;5;248m                                                    Test: Folder Parameter | Configuration                                                    [00m
+
+Name                   | Version | Update Endpoint App | Cycles | Case Cycles | Start Time               | Matrix | Maze Executable Folder    
+----------------------------------------------------------------------------------------------------------------------------------------------
+Test: Folder Parameter | -       | on_mismatch         | 1      | 1           | 2026-08-16  11:22:24.002 | -      | C:\Orcraft\Maze\bin\v3.0.0
+
+
+[00m    [30;48;5;248m                           Test Cycle 1 | Configuration                          [00m
+
+    Name         | Start Time               | Number Of Cycles | Cycle | Total Cycles
+    ---------------------------------------------------------------------------------
+    Test Cycle 1 | 2026-08-16  11:22:24.004 | 1                | 1     | 1           
+
+    Running from C:\Orcraft\Maze\bin\v3.0.0:
+    	maze-v3.0.0-win.exe
+
+    [94m[00m
+    [94mMaze App (v3.0.0)[00m
+    [94m=================[00m
+    [94m[00m
+    [94mUSAGE[00m
+    [94m  maze <command> [options][00m
+    [94m  maze -h | --help[00m
+    [94m[00m
+    [94mCOMMANDS[00m
+    [94m  generate    Generate and print a maze (no solving)[00m
+    [94m  solve       Generate or load a maze, then solve and print the path[00m
+    [94m  save        Generate a maze and save it to a JSON file[00m
+    [94m  load        Load a maze from a JSON file and print it[00m
+    [94m[00m
+    [94mGENERATION OPTIONS  (generate / solve / save)[00m
+    [94m  --width   INT       Maze width in columns            (default: 20)[00m
+    [94m  --height  INT       Maze height in rows              (default: 10)[00m
+    [94m  --seed    INT       Random seed for reproducibility  (default: random)[00m
+    [94m  --start   ROW,COL   Start coordinate                 (default: 0,0)[00m
+    [94m  --end     ROW,COL   End coordinate                   (default: last cell)[00m
+    [94m[00m
+    [94mSOLVE OPTIONS[00m
+    [94m  --algorithm NAME    Solver: bfs | dfs | astar        (default: bfs)[00m
+    [94m  --file    FILE      Load maze from FILE instead of generating[00m
+    [94m[00m
+    [94mSAVE OPTIONS[00m
+    [94m  --output  FILE      Output file path                 (default: maze.json)[00m
+    [94m[00m
+    [94mLOAD OPTIONS[00m
+    [94m  --file    FILE      Path to a saved maze JSON file   (required)[00m
+    [94m[00m
+    [94mEXAMPLES[00m
+    [94m  # Generate and print a 30×15 maze with a fixed seed[00m
+    [94m  maze generate --width 30 --height 15 --seed 42[00m
+    [94m[00m
+    [94m  # Solve the same maze using A* (custom start/end)[00m
+    [94m  maze solve --width 30 --height 15 --seed 42 \[00m
+    [94m      --start 0,0 --end 14,29 --algorithm astar[00m
+    [94m[00m
+    [94m  # Save a maze to file, then load and solve it with DFS[00m
+    [94m  maze save --width 20 --height 10 --seed 7 --output my_maze.json[00m
+    [94m  maze load --file my_maze.json[00m
+    [94m  maze solve --file my_maze.json --algorithm dfs[00m
+    [94m[00m
+
+[00m    [30;48;5;248m                     Test Cycle 1 | Result                     [00m
+
+    Name         | Status | Finish Time              | Elapsed Time
+    ---------------------------------------------------------------
+    Test Cycle 1 | [92mPASS[00m   | 2026-08-16  11:22:24.664 | 0.660 s     
+
+
+[00m    [30;48;5;248mTest Cycles | Results[00m
+
+    Test Cycle   | Status
+    ---------------------
+    Test Cycle 1 | [92mPASS[00m  
+
+
+
+[30;48;5;248m                     Test: Folder Parameter | Result                     [00m
+
+Name                   | Status | Finish Time              | Elapsed Time
+-------------------------------------------------------------------------
+Test: Folder Parameter | [92mPASS[00m   | 2026-08-16  11:22:24.665 | 0.663 s     
+

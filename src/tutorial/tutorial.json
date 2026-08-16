@@ -8,6 +8,7 @@
     { "label": "Running Hello World test", "slug": "running-hello-world-test/" },
     { "label": "Editing run configuration", "slug": "editing-run-configuration/" },
     { "label": "Maze application", "slug": "maze-application/" },
-    { "label": "Adding configuration parameter", "slug": "adding-configuration-parameter/" }
+    { "label": "Adding configuration parameter", "slug": "adding-configuration-parameter/" },
+    { "label": "Running Folder Parameter test", "slug": "running-folder-parameter-test/" }
   ]
 }
