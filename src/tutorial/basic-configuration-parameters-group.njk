@@ -188,7 +188,9 @@ if __name__ == "__main__":
 <h3 id="numeric-parameter">Numeric Parameter</h3>
 <p>Adds several numeric fields - <code>Width</code>, <code>Height</code>, <code>Seed</code> and the
   <code>Start</code>/<code>End</code> coordinates - which are passed to the maze app as its generation options.
-  This test also shows how fields are arranged into rows in the configuration panel.</p>
+  This test also shows how fields are arranged into rows, which only applies to the
+  <a class="text-accent" href="#expanded-view">expanded view</a> - the compact view always lists them one per
+  row.</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/basic-configuration-parameters-group/numeric-parameter.png", "Configuration panel of the Numeric Parameter test, showing the Width, Height, Seed and Start/End coordinate fields", "large") }}
 
 <h3 id="multi-selector-parameter">Multi-Selector Parameter</h3>
@@ -202,3 +204,88 @@ if __name__ == "__main__":
   <code>Use String Command Line</code> toggle that decides whether that string is passed through as-is or the
   arguments are built from the other fields.</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/basic-configuration-parameters-group/string-parameter.png", "Configuration panel of the String Parameter test, showing the Use String Command Line toggle and the raw Command Line text field", "large") }}
+
+<h2 id="expanded-view">Expanded view</h2>
+<p>All the screenshots so far in this chapter were taken in <strong>compact view</strong> - the default. It's a
+  dense layout that fits more fields on screen, which helps with tests that declare many parameters like the
+  String Parameter test above.</p>
+<p>The button in the configuration panel's top-right corner switches to the <strong>expanded view</strong>, where
+  each field is drawn as its own labelled box. Its tooltip names the view you'll switch to -
+  <strong>Expanded View</strong> while compact, <strong>Compact View</strong> while expanded - and the choice is
+  remembered for the session. Here's the String Parameter test in the expanded view:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/basic-configuration-parameters-group/compact-full-view.png", "Configuration panel of the String Parameter test in the expanded view, with the view toggle button in the top-right corner", "large") }}
+<p>The choice only affects how the panel is drawn - the configuration itself is identical in both views.</p>
+
+<h2 id="arranging-the-fields">Arranging the fields</h2>
+<p>The order and grouping of fields in the panel isn't decided by the controller - it follows the config class.
+  Fields are laid out in declaration order, and each one can carry a <code>layout</code> hint:</p>
+<table>
+  <thead>
+    <tr>
+      <th>Layout</th>
+      <th>Effect</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>(none)</td>
+      <td>Continues the current row, to the right of the previous field.</td>
+    </tr>
+    <tr>
+      <td><code>OrcraftConfigField.Layout.NewRow</code></td>
+      <td>Starts a new row.</td>
+    </tr>
+    <tr>
+      <td><code>OrcraftConfigField.Layout.UnderPrevious</code></td>
+      <td>Places the field directly below the previous one, in the same column.</td>
+    </tr>
+  </tbody>
+</table>
+<p>Here's how the String Parameter test uses them to produce the panel shown above:</p>
+{{ codeblock.block('	maze_executable_folder = OrcraftConfigField.Folder(
+		default="",
+		label="Maze Executable Folder",
+		required=True,
+		layout=OrcraftConfigField.Layout.NewRow,
+	)
+
+	maze_file = OrcraftConfigField.File(
+		default="",
+		label="Maze Save/Load File",
+		layout=OrcraftConfigField.Layout.UnderPrevious,
+	)
+
+	use_command_line = OrcraftConfigField.Boolean(
+		default=True,
+		label="Use String Command Line",
+		layout=OrcraftConfigField.Layout.NewRow,
+	)
+
+	command_line = OrcraftConfigField.Text(
+		default="solve --width 20 --height 10 --seed 42 --start 0,0 --end 9,19",
+		label="Command Line",
+		width=520,
+	)
+
+	command = OrcraftConfigField.Select(
+		default="solve",
+		label="Command",
+		options=("generate", "solve", "save", "load"),
+		layout=OrcraftConfigField.Layout.NewRow,
+	)
+
+	height = OrcraftConfigField.Numeric(default=10, label="Height")
+	start_row = OrcraftConfigField.Numeric(default=0, label="Start Row", layout=OrcraftConfigField.Layout.UnderPrevious)
+	end_row = OrcraftConfigField.Numeric(default=9, label="End Row", layout=OrcraftConfigField.Layout.UnderPrevious)
+
+	width = OrcraftConfigField.Numeric(default=20, label="Width")
+	start_col = OrcraftConfigField.Numeric(default=0, label="Start Col", layout=OrcraftConfigField.Layout.UnderPrevious)
+	end_col = OrcraftConfigField.Numeric(default=19, label="End Col", layout=OrcraftConfigField.Layout.UnderPrevious)
+
+	seed = OrcraftConfigField.Numeric(default=42, label="Seed")') }}
+<p>The folder and file fields each take a full row of their own. <code>Use String Command Line</code> opens a new
+  row, and <code>Command Line</code> follows it on the same row - which is also why it sets an explicit
+  <code>width</code>. The numeric fields form the grid at the bottom: <code>Height</code>,
+  <code>Start Row</code> and <code>End Row</code> stack into one column, <code>Width</code> starts the next
+  column beside it with <code>Start Col</code> and <code>End Col</code> underneath, and <code>Seed</code> sits on
+  its own.</p>
