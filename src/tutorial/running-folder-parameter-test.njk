@@ -13,31 +13,38 @@ description: "Run the Folder Parameter test from the CLI and from the controller
   meaningful default, so a value has to be supplied before the test can do anything.</p>
 
 <h2 id="running-from-cli">Running from CLI</h2>
+<h3 id="required-field-unset-error">Required field unset error</h3>
 <p>Running the test file as-is fails, because the required folder was never set:</p>
 {{ cmd.copyCommand("python test_folder_parameter.py") }}
-<p>To run it from the CLI, pass a config with the folder you downloaded the Maze application into. Adjust the
-  test's <code>main</code> function like this:</p>
-{{ codeblock.block('def main() -> None:
-	test = TestFolderParameter(
-		TestFolderParameterConfig(
-			maze_executable_folder=r"C:\\Orcraft\\Maze\\bin\\v3.0.0",
-		)
-	)
-	test.run()') }}
-<p>This is exactly what the controller does for you when you pick a folder in the GUI - it constructs the test's
-  config with the values you chose.</p>
+<p>With no folder to run the executable from, the case ends in an <strong class="text-warning">ERROR</strong>
+  status, and the reason is carried into both the case's and the test's result tables:</p>
+{% ansiOutput "folder-parameter-run-failed.ansi" %}
+<p>To run it from the CLI, set the parameter's <code>default</code> in the config class to the folder you
+  downloaded the Maze application into:</p>
+{{ codeblock.block('	maze_executable_folder = OrcraftConfigField.Folder(
+		default=r"C:\\Orcraft\\Maze\\bin\\v3.0.0",
+		label="Maze Executable Folder",
+		required=True,
+	)') }}
+<p>Now the test has a value to work with when run directly, without changing anything else.</p>
 
-<h3 id="ansi-output">ANSI output</h3>
+<h3 id="pass-run-output">Pass run output</h3>
 <p>With a valid folder, the test runs the Maze executable and logs its output as part of the test's own log:</p>
 {% ansiOutput "folder-parameter-run.ansi" %}
 <p>Notice the <strong>Maze Executable Folder</strong> column in the configuration table - every config parameter
   a test declares shows up there, so the log always records exactly what the test was run with. The indented
   block in the middle is the Maze application's own stdout, captured and logged by the test.</p>
+<p>We could keep this default as is, if as test developers we want whoever executes the test to always start from
+  this folder. For demonstration purposes, though, let's reset it back to an empty default:</p>
+{{ codeblock.block('	maze_executable_folder = OrcraftConfigField.Folder(
+		default="",
+		label="Maze Executable Folder",
+		required=True,
+	)') }}
 
 <h2 id="running-from-gui">Running from GUI</h2>
-<p>From the controller's GUI there's no code to edit: select the <strong>Folder Parameter</strong> test, and its
-  configuration tab now shows the <strong>Maze Executable Folder</strong> field alongside the built-in
-  <code>Cycles</code> field we met earlier. Pick the version folder holding the Maze executable, then click
-  <strong class="text-purple">Run</strong>.</p>
-<p>Since the field is <code>required</code>, the run is blocked until a folder is selected - an empty value is
-  reported as a configuration error rather than a test failure.</p>
+<p>Let's click on the <strong>Folder Parameter</strong> test. Its configuration tab now shows the
+  <strong>Maze Executable Folder</strong> field alongside the built-in <code>Cycles</code> field we met earlier.
+  You can see the field is empty and marked in <strong class="text-orange">orange</strong> - meaning it's a
+  required field that isn't set:</p>
+{{ media.zoomableImage("/assets/images/screenshots/running-folder-parameter-test-gui-empty.png", "Folder Parameter test selected in the Orcraft controller, with its empty required Maze Executable Folder field marked in orange", "large") }}

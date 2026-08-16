@@ -15,16 +15,16 @@ description: "Edit a test's config fields, understand plans vs. run instances, a
   The difference is that the test node (<strong>Hello World</strong>) is the test's definition, shared by every
   run, while the test run instance (<strong>Test Run: Hello World</strong>) is one specific execution of it, with
   its own status and results.</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial-test-selection.png", "Selecting the Hello World test node, as opposed to its test run instance, in the Orcraft controller's execution tree") }}
+{{ media.zoomableImage("/assets/images/screenshots/tutorial-test-selection.png", "Selecting the Hello World test node, as opposed to its test run instance, in the Orcraft controller's execution tree", "large") }}
 
 <h3 id="changing-a-parameter">Changing a parameter</h3>
 <p>Let's focus on the configuration tab, next to the log. Currently, you can see only one config parameter,
   <code>Cycles</code>. If you remember, we didn't define it in the
   <a class="text-accent" href="/tutorial/hello-world-test-structure/#config-class">test's code</a> - that's because
   it's a built-in parameter that will always be shown for any test.</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial-hellow-world-config.png", "Configuration tab of the Hello World test in the Orcraft controller, showing the built-in Cycles field") }}
+{{ media.zoomableImage("/assets/images/screenshots/tutorial-hellow-world-config.png", "Configuration tab of the Hello World test in the Orcraft controller, showing the built-in Cycles field", "large") }}
 <p>Let's change the number of cycles to 2:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial-hellow-world-config-2-cycles.png", "Cycles field of the Hello World test set to 2 in the Orcraft controller") }}
+{{ media.zoomableImage("/assets/images/screenshots/tutorial-hellow-world-config-2-cycles.png", "Cycles field of the Hello World test set to 2 in the Orcraft controller", "large") }}
 <p>As you can see, the <code class="text-purple">Cycles</code> field is now purple - meaning it changed from its
   default - and an <strong class="text-orange">orange dot</strong> appears next to it, meaning the configuration
   is now different from the plan. Notice that <strong class="text-accent">Update Plan</strong> and

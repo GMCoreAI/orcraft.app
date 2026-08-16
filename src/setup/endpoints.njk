@@ -27,35 +27,35 @@ description: "Install and run an Orcraft endpoint, with or without security enab
   the endpoint can be run without security enabled:</p>
 {{ cmd.copyCommand("orcraft-endpoint run -secure disabled") }}
 <p>This is how the endpoint's own terminal output looks like when running insecurely:</p>
-{{ media.zoomableImage("/assets/images/screenshots/setup-insecure-endpoint-run.png", "The endpoint's terminal output when started with security disabled") }}
+{{ media.zoomableImage("/assets/images/screenshots/setup-insecure-endpoint-run.png", "The endpoint's terminal output when started with security disabled", "large") }}
 
 <p>In the controller, add the endpoint by clicking <strong class="text-accent">Add</strong> in the Endpoints frame.</p>
-{{ media.zoomableImage("/assets/images/screenshots/setup-add-endpoint.png", "Adding an endpoint in the Orcraft controller") }}
+{{ media.zoomableImage("/assets/images/screenshots/setup-add-endpoint.png", "Adding an endpoint in the Orcraft controller", "large") }}
 <ol start="2">
   <li>Enter the endpoint's host name or IP and port, with security disabled.</li>
 </ol>
-{{ media.zoomableImage("/assets/images/screenshots/setup-add-endpoint-dialog.png", "The Add Endpoint dialog, with security disabled") }}
+{{ media.zoomableImage("/assets/images/screenshots/setup-add-endpoint-dialog.png", "The Add Endpoint dialog, with security disabled", "large") }}
 <ol start="3">
   <li>The endpoint appears in the Endpoints frame, connected without security.</li>
 </ol>
-{{ media.zoomableImage("/assets/images/screenshots/setup-add-endpoint-added-insecure.png", "The endpoint added and connected without security in the Orcraft controller") }}
+{{ media.zoomableImage("/assets/images/screenshots/setup-add-endpoint-added-insecure.png", "The endpoint added and connected without security in the Orcraft controller", "large") }}
 <p>A <strong class="text-success">Ready</strong> status means the endpoint can now run test steps remotely.</p>
 <p>Not interested in a secure connection right now? Skip ahead to the
   <a class="text-accent" href="/tutorial/">Tutorial</a> and come back to security setup later.</p>
 
 <h3 id="secure-endpoint-connection">Secure endpoint connection</h3>
 <p>For a secure deployment, follow the security setup procedure in the controller's Security tab:</p>
-{{ media.zoomableImage("/assets/images/screenshots/setup-security-tab.png", "The controller's Security tab, used to generate the authorization token and certificates") }}
+{{ media.zoomableImage("/assets/images/screenshots/setup-security-tab.png", "The controller's Security tab, used to generate the authorization token and certificates", "large") }}
 <p>Once that's done, run the endpoint with authentication enabled, which is the default:</p>
 {{ cmd.copyCommand("orcraft-endpoint run") }}
 <p>This is how the endpoint's own terminal output looks like when running securely:</p>
-{{ media.zoomableImage("/assets/images/screenshots/setup-secure-endpoint-run.png", "The endpoint's terminal output when started with security enabled") }}
+{{ media.zoomableImage("/assets/images/screenshots/setup-secure-endpoint-run.png", "The endpoint's terminal output when started with security enabled", "large") }}
 <p>If the endpoint was already added without security, right-click it in the controller and edit it
   to enable security instead of adding it again:</p>
-{{ media.zoomableImage("/assets/images/screenshots/setup-edit-endpoint.png", "Editing an existing endpoint in the Orcraft controller to enable security") }}
+{{ media.zoomableImage("/assets/images/screenshots/setup-edit-endpoint.png", "Editing an existing endpoint in the Orcraft controller to enable security", "large") }}
 <p>Otherwise, add the endpoint the same way as before, with the security option checked
   (enabled). Either way, it appears in the Endpoints frame, connected with security:</p>
-{{ media.zoomableImage("/assets/images/screenshots/setup-add-endpoint-added-secure.png", "The endpoint added and connected with security in the Orcraft controller") }}
+{{ media.zoomableImage("/assets/images/screenshots/setup-add-endpoint-added-secure.png", "The endpoint added and connected with security in the Orcraft controller", "large") }}
 <p>A <strong class="text-success">Ready</strong> status means the endpoint can now run test steps remotely.</p>
 <p>You can now proceed to the <a class="text-accent" href="/tutorial/">Tutorial</a>.</p>
 
@@ -65,7 +65,7 @@ description: "Install and run an Orcraft endpoint, with or without security enab
 <p>If the endpoint shows as <strong class="text-warning">Online</strong> instead of
   <strong class="text-success">Ready</strong>, the controller can ping it, but the controller and endpoint applications
   are failing to connect to each other:</p>
-{{ media.zoomableImage("/assets/images/screenshots/setup-endpoint-online.png", "An endpoint showing as Online instead of Ready in the Orcraft controller") }}
+{{ media.zoomableImage("/assets/images/screenshots/setup-endpoint-online.png", "An endpoint showing as Online instead of Ready in the Orcraft controller", "large") }}
 <p>Possible causes:</p>
 <ul>
   <li>A security mismatch: one side is running in secure mode and the other isn't.</li>
@@ -78,7 +78,7 @@ description: "Install and run an Orcraft endpoint, with or without security enab
 
 <h3 id="endpoint-status-offline">Endpoint status: Offline</h3>
 <p>If the endpoint shows as <strong>Offline</strong>, the controller cannot even ping it:</p>
-{{ media.zoomableImage("/assets/images/screenshots/setup-endpoint-offline.png", "An endpoint showing as Offline in the Orcraft controller") }}
+{{ media.zoomableImage("/assets/images/screenshots/setup-endpoint-offline.png", "An endpoint showing as Offline in the Orcraft controller", "large") }}
 <p>Possible causes:</p>
 <ul>
   <li>The endpoint machine is powered off, asleep, or disconnected from the network.</li>

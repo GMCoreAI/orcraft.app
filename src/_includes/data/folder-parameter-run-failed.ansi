@@ -1,0 +1,43 @@
+
+Orcraft Controller (v0.1.0.dev139)
+----------------------------------
+
+[30;48;5;248m                            Test: Folder Parameter | Description                            [00m
+
+Demonstrates a folder configuration parameter.
+Runs the maze app executable with no arguments to display its help page and logs the output.
+
+
+[30;48;5;248m                                                  Test: Folder Parameter | Configuration                                                  [00m
+
+Name                   | Version | Update Endpoint App | Cycles | Case Cycles | Start Time               | Matrix | Maze Executable Folder
+------------------------------------------------------------------------------------------------------------------------------------------
+Test: Folder Parameter | -       | on_mismatch         | 1      | 1           | 2026-08-16  11:37:48.219 | -      | -                     
+
+
+[00m    [30;48;5;248m                           Test Cycle 1 | Configuration                          [00m
+
+    Name         | Start Time               | Number Of Cycles | Cycle | Total Cycles
+    ---------------------------------------------------------------------------------
+    Test Cycle 1 | 2026-08-16  11:37:48.220 | 1                | 1     | 1           
+
+    Running from :
+    	maze-win.exe
+
+[91mTraceback (most recent call last):[00m
+[91m    ...[00m
+[91mOSError: [WinError 123] The filename, directory name, or volume label syntax is incorrect[00m
+
+[00m    [30;48;5;248m                                                              Test Cycle 1 | Result                                                               [00m
+
+    Name         | Status | Error Description                                                                | Finish Time              | Elapsed Time
+    --------------------------------------------------------------------------------------------------------------------------------------------------
+    Test Cycle 1 | [33mERROR[00m  | [33m[WinError 123] The filename, directory name, or volume label syntax is incorrect[00m | 2026-08-16  11:37:48.227 | 0.007 s     
+
+
+[30;48;5;248m                                                              Test: Folder Parameter | Result                                                               [00m
+
+Name                   | Status | Error Description                                                                | Finish Time              | Elapsed Time
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+Test: Folder Parameter | [33mERROR[00m  | [33m[WinError 123] The filename, directory name, or volume label syntax is incorrect[00m | 2026-08-16  11:37:48.229 | 0.010 s     
+
