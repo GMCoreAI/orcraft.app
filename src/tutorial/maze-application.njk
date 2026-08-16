@@ -53,3 +53,25 @@ description: "The Maze application - a small system under test built for this tu
 {% ansiOutput "maze-solve.txt" %}
 <p>The solved maze shows the path from start to end as arrows, followed by the number of steps and the algorithm
   that was used.</p>
+
+<h2 id="generating-maze-save-files">Generating maze save files</h2>
+<p>Later in this tutorial we'll need saved mazes to feed into tests as file parameters. The <code>save</code>
+  command generates a maze and writes it to a JSON file:</p>
+{{ cmd.copyCommand("maze save --width 20 --height 10 --seed 7 --output maze.json") }}
+{% ansiOutput "maze-save.txt" %}
+<p>Let's create three of them, each with different dimensions and a fixed seed, so everyone following this
+  tutorial ends up with the exact same mazes:</p>
+{{ cmd.copyCommand("maze save --width 20 --height 10 --seed 7 --output maze.json") }}
+{{ cmd.copyCommand("maze save --width 30 --height 15 --seed 42 --output maze2.json") }}
+{{ cmd.copyCommand("maze save --width 40 --height 20 --seed 99 --output maze3.json") }}
+<p>Run these from the <code>v3.0.0</code> folder, so the three files sit next to the executable:</p>
+{{ codeblock.block('bin/
+  v3.0.0/
+    maze-v3.0.0-win.exe
+    maze.json
+    maze2.json
+    maze3.json', 'text') }}
+<p>A saved maze can be printed again with <code>load</code>, or solved with <code>solve --file</code>, without
+  regenerating it:</p>
+{{ cmd.copyCommand("maze load --file maze.json") }}
+{{ cmd.copyCommand("maze solve --file maze.json --algorithm dfs") }}

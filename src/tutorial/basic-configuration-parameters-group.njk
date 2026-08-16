@@ -105,47 +105,100 @@ if __name__ == "__main__":
     <tr>
       <td><a class="text-accent" href="/tutorial/adding-configuration-parameter/">Folder Parameter</a></td>
       <td><code>OrcraftConfigField.Folder</code></td>
-      <td>Runs the maze app executable with no arguments to display its help page.</td>
+      <td>A single folder path, picked through a folder browser.</td>
     </tr>
     <tr>
       <td>Boolean Parameter</td>
       <td><code>OrcraftConfigField.Boolean</code></td>
-      <td>Runs the maze app executable with or without the <code>--help</code> switch based on a toggle.</td>
+      <td>An on/off toggle, shown as a checkbox.</td>
     </tr>
     <tr>
       <td>Selector Parameter</td>
       <td><code>OrcraftConfigField.Select</code></td>
-      <td>Presents the available maze app commands as options and runs the selected one.</td>
+      <td>A single choice out of a predefined list of options.</td>
     </tr>
     <tr>
       <td>Folder List Parameter</td>
       <td><code>OrcraftConfigField.FolderList</code></td>
-      <td>Selects multiple folders and runs once per selected folder.</td>
+      <td>Several folder paths at once, held as a list.</td>
     </tr>
     <tr>
       <td>File Parameter</td>
       <td><code>OrcraftConfigField.File</code></td>
-      <td>Uses a file path for save/load operations with the maze app.</td>
+      <td>A single file path, picked through a file browser.</td>
     </tr>
     <tr>
       <td>File List Parameter</td>
       <td><code>OrcraftConfigField.FileList</code></td>
-      <td>Selects multiple files, using each one for a save/load operation, running once per file.</td>
+      <td>Several file paths at once, held as a list.</td>
     </tr>
     <tr>
       <td>Numeric Parameter</td>
       <td><code>OrcraftConfigField.Numeric</code></td>
-      <td>Configures maze dimensions, seed, and start/end coordinates.</td>
+      <td>A number, optionally bounded by a minimum and maximum.</td>
     </tr>
     <tr>
       <td>Multi-Selector Parameter</td>
       <td><code>OrcraftConfigField.MultiSelect</code></td>
-      <td>Selects one or more solving algorithms and runs once per selection.</td>
+      <td>Any number of choices out of a predefined list of options.</td>
     </tr>
     <tr>
       <td>String Parameter</td>
       <td><code>OrcraftConfigField.Text</code></td>
-      <td>Optionally passes a raw command-line string to the maze app.</td>
+      <td>Free-form text, typed directly into the field.</td>
     </tr>
   </tbody>
 </table>
+
+<h3 id="folder-parameter">Folder Parameter</h3>
+<p>Covered in detail in the two previous chapters -
+  <a class="text-accent" href="/tutorial/adding-configuration-parameter/">Adding configuration parameter</a> and
+  <a class="text-accent" href="/tutorial/running-folder-parameter-test/">Running Folder Parameter test</a>. The
+  test declares a single <code>Maze Executable Folder</code> field and runs the executable found in it.</p>
+
+<h3 id="boolean-parameter">Boolean Parameter</h3>
+<p>Adds a <code>Use --help Switch</code> toggle next to the folder field. When it's on, the maze app is run with
+  the <code>--help</code> switch; when off, it's run without it.</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/basic-configuration-parameters-group/boolean-parameter.png", "Configuration panel of the Boolean Parameter test, showing the Use --help Switch checkbox", "large") }}
+
+<h3 id="selector-parameter">Selector Parameter</h3>
+<p>Adds a <code>Command</code> field offering the maze app's commands - <code>generate</code>,
+  <code>solve</code> and <code>save</code> - as a drop-down, and runs the one selected.</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/basic-configuration-parameters-group/selector-parameter.png", "Configuration panel of the Selector Parameter test with the Command drop-down open, showing Generate, Solve and Save", "large") }}
+
+<h3 id="folder-list-parameter">Folder List Parameter</h3>
+<p>Replaces the single folder field with a <code>Maze Executable Folders</code> list, so several version folders
+  can be selected at once. The test loops over them, running the selected command against each maze app version
+  in turn.</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/basic-configuration-parameters-group/folder-list-parameter.png", "Configuration panel of the Folder List Parameter test, showing the v1.0.0, v2.0.0 and v3.0.0 maze folders selected", "large") }}
+
+<h3 id="file-parameter">File Parameter</h3>
+<p>Adds a required <code>Maze Save/Load File</code> field, used as the target of the <code>save</code>,
+  <code>load</code> and <code>solve</code> commands - this is where the
+  <a class="text-accent" href="/tutorial/maze-application/#generating-maze-save-files">maze save files</a> we
+  generated earlier come in.</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/basic-configuration-parameters-group/file-parameter.png", "Configuration panel of the File Parameter test, showing the Maze Save/Load File field set to a saved maze JSON file", "large") }}
+
+<h3 id="file-list-parameter">File List Parameter</h3>
+<p>Takes a <code>Maze Save/Load Files</code> list instead of a single file, running the selected command once per
+  file - for example solving <code>maze.json</code>, <code>maze2.json</code> and <code>maze3.json</code> in one
+  test.</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/basic-configuration-parameters-group/file-list-parameter.png", "Configuration panel of the File List Parameter test, showing maze.json, maze2.json and maze3.json listed in the Maze Save/Load Files field", "large") }}
+
+<h3 id="numeric-parameter">Numeric Parameter</h3>
+<p>Adds several numeric fields - <code>Width</code>, <code>Height</code>, <code>Seed</code> and the
+  <code>Start</code>/<code>End</code> coordinates - which are passed to the maze app as its generation options.
+  This test also shows how fields are arranged into rows in the configuration panel.</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/basic-configuration-parameters-group/numeric-parameter.png", "Configuration panel of the Numeric Parameter test, showing the Width, Height, Seed and Start/End coordinate fields", "large") }}
+
+<h3 id="multi-selector-parameter">Multi-Selector Parameter</h3>
+<p>Adds an <code>Algorithms</code> field where any combination of <code>BFS</code>, <code>DFS</code> and
+  <code>ASTAR</code> can be selected, alongside <code>Solve Switches</code> and <code>Generation Switches</code>
+  fields that pick which switches are passed to the maze app. The test runs it once per selected algorithm.</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/basic-configuration-parameters-group/multi-selector-parameter.png", "Configuration panel of the Multi-Selector Parameter test, showing the Solve Switches, Algorithms and Generation Switches multi-select fields", "large") }}
+
+<h3 id="string-parameter">String Parameter</h3>
+<p>Adds a free-text <code>Command Line</code> field holding a raw argument string, together with a
+  <code>Use String Command Line</code> toggle that decides whether that string is passed through as-is or the
+  arguments are built from the other fields.</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/basic-configuration-parameters-group/string-parameter.png", "Configuration panel of the String Parameter test, showing the Use String Command Line toggle and the raw Command Line text field", "large") }}
