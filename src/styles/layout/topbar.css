@@ -26,12 +26,15 @@ body:not([data-page="home"]) .topbar {
   border-bottom: 1px solid var(--color-border);
 }
 
+/* Widest layout on the site, so the logo lands in the same spot on every page
+   (and stays aligned with the docs sidebar's left edge). */
 .topbar__inner {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: var(--space-8);
   padding-block: var(--space-2);
+  max-width: var(--container-width-docs);
 }
 
 .topbar__spacer {
