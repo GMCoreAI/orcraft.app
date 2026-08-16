@@ -48,3 +48,22 @@ description: "Run the Folder Parameter test from the CLI and from the controller
   You can see the field is empty and marked in <strong class="text-orange">orange</strong> - meaning it's a
   required field that isn't set:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/running-folder-parameter-test/gui-empty.png", "Folder Parameter test selected in the Orcraft controller, with its empty required Maze Executable Folder field marked in orange", "large") }}
+<h3 id="missing-argument">Missing argument</h3>
+<p>If we click <strong class="text-purple">Run</strong> now, we'll see a warning regarding the missing arguments:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/running-folder-parameter-test/missing-arguments.png", "Missing Arguments dialog in the Orcraft controller, listing Maze Executable Folder as a required argument", "large") }}
+
+<h3 id="setting-the-folder">Setting the folder</h3>
+<p>Let's click <strong>Browse</strong> and select version <strong>2.0.0</strong> of the Maze app to test it:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/running-folder-parameter-test/browse-for-maze-folder.png", "Browse dialog in the Orcraft controller with the Maze app's v2.0.0 folder selected", "large") }}
+<p>As you can see now, the field changed from its default, but is unplanned yet. Remember the details from the
+  <a class="text-accent" href="/tutorial/editing-run-configuration/#field-and-badge-legend">Editing run
+  configuration chapter's summary</a>:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/running-folder-parameter-test/maze-folder-selected.png", "Maze Executable Folder field set to the v2.0.0 folder in the Orcraft controller, shown in purple with an orange dot indicating an unplanned change", "large") }}
+<p>We can run it as unplanned, but we'll click <strong class="text-accent">Update Plan</strong>:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/running-folder-parameter-test/update-plan-clicked.png", "Maze Executable Folder field shown in blue after clicking Update Plan in the Orcraft controller", "large") }}
+
+<h3 id="running-the-test">Running the test</h3>
+<p>Let's click <strong class="text-purple">Run</strong> and see the same log we saw earlier from the CLI - note
+  that here we ran with the <strong>v2.0.0</strong> folder, while in the CLI we ran with the default
+  <strong>v3.0.0</strong>:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/running-folder-parameter-test/run-result.png", "Log tab of the Folder Parameter test run in the Orcraft controller, showing the same output as the CLI run", "large") }}
