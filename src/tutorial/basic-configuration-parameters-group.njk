@@ -1,0 +1,151 @@
+---
+title: Tutorial · Basic Configuration Parameters group
+key: tutorial
+description: "The test group that bundles together every basic configuration parameter test."
+---
+{% import "partials/copy-command.njk" as cmd %}
+{% import "partials/code-block.njk" as codeblock %}
+{% import "partials/zoomable-image.njk" as media %}
+<h1>Basic Configuration Parameters group</h1>
+<p>The <a class="text-accent" href="/tutorial/adding-configuration-parameter/">Folder Parameter test</a> we just
+  built doesn't stand on its own - it's one of several tests bundled together under a <strong>test group</strong>
+  called <strong>Basic Configuration Parameters</strong>, each demonstrating a different configuration field type.
+  You've already seen this group in the execution tree:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/adding-configuration-parameter/folder-parameter-test-gui.png", "Basic Configuration Parameters test group expanded in the Orcraft controller's Test Explorer, showing all its parameter tests", "large") }}
+<p>Let's review the code of the file that defines this group:</p>
+{{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_basic_configuration_parameters/") }}
+
+<h2 id="group-file-structure">Group file structure</h2>
+
+<h3 id="imports">Imports</h3>
+{{ codeblock.block('from __future__ import annotations
+
+from orcraft import (
+	OrcraftTestGroup,
+	OrcraftTestGroupConfig,
+	OrcraftTestGroupResult,
+	OrcraftConfigField,
+)
+
+from test_group_basic_configuration_parameters.test_folder_parameter.test_folder_parameter import TestFolderParameter
+from test_group_basic_configuration_parameters.test_boolean_parameter.test_boolean_parameter import TestBooleanParameter
+from test_group_basic_configuration_parameters.test_selector_parameter.test_selector_parameter import TestSelectorParameter
+from test_group_basic_configuration_parameters.test_folder_list_parameter.test_folder_list_parameter import TestFolderListParameter
+from test_group_basic_configuration_parameters.test_file_parameter.test_file_parameter import TestFileParameter
+from test_group_basic_configuration_parameters.test_file_list_parameter.test_file_list_parameter import TestFileListParameter
+from test_group_basic_configuration_parameters.test_numeric_parameter.test_numeric_parameter import TestNumericParameter
+from test_group_basic_configuration_parameters.test_multi_selector_parameter.test_multi_selector_parameter import TestMultiSelectorParameter
+from test_group_basic_configuration_parameters.test_string_parameter.test_string_parameter import TestStringParameter') }}
+<p>Unlike a test, a group imports <code>OrcraftTestGroup</code> and <code>OrcraftTestGroupConfig</code> instead of
+  <code>OrcraftTest</code> and <code>OrcraftTestConfig</code> - plus one import per test it bundles together.</p>
+
+<h3 id="config-class">Config class</h3>
+{{ codeblock.block('class TestGroupBasicConfigurationParametersConfig(OrcraftTestGroupConfig):
+	name = OrcraftConfigField.Text(default="Basic Configuration Parameters")
+	description = OrcraftConfigField.Text(
+		default="Covers tests that demonstrate configuration parameters used with the maze app."
+	)
+	tests = OrcraftConfigField.Tests(
+		default_factory=lambda: [
+			TestFolderParameter(),
+			TestBooleanParameter(),
+			TestSelectorParameter(),
+			TestFolderListParameter(),
+			TestFileParameter(),
+			TestFileListParameter(),
+			TestNumericParameter(),
+			TestMultiSelectorParameter(),
+			TestStringParameter(),
+		]
+	)') }}
+<p>Just like <code>name</code> and <code>description</code> on a test config, a group config has the same two
+  fields - shown for the group itself in the execution tree. The field that matters here is <code>tests</code>,
+  declared with <code>OrcraftConfigField.Tests</code>: it's a list of test instances, each one becoming a child
+  node of this group in the execution tree, in the order given.</p>
+<p>If you want to remove a test from showing up - and running - under this group, you can just comment out its
+  line in this list, instead of deleting it.</p>
+
+<h3 id="group-class">Group class</h3>
+{{ codeblock.block('class TestGroupBasicConfigurationParametersResult(OrcraftTestGroupResult):
+	pass
+
+
+class TestGroupBasicConfigurationParameters(OrcraftTestGroup):
+	def __init__(self) -> None:
+		super().__init__(config=TestGroupBasicConfigurationParametersConfig())
+		self.result = TestGroupBasicConfigurationParametersResult()') }}
+<p>Unlike a test, a group has no <code>_run_case</code> to implement - running it simply means running every test
+  it contains. <code>TestGroupBasicConfigurationParametersResult</code> is empty here, since this group doesn't
+  add any result fields of its own beyond what <code>OrcraftTestGroupResult</code> already provides.</p>
+
+<h3 id="main">Main</h3>
+{{ codeblock.block('def main() -> None:
+	group = TestGroupBasicConfigurationParameters()
+	group.run()
+
+
+if __name__ == "__main__":
+	main()') }}
+<p>Running the group's <code>main</code> runs every test it contains, one after another, the same way the
+  controller does when you run the group node itself.</p>
+
+<h2 id="basic-configuration-parameters">Basic configuration parameters</h2>
+<p>Here's a short summary of each test in this group and the parameter type it demonstrates. See the
+  <a class="text-accent" href="/framework/">Framework</a> chapter for complete implementation details of each
+  field type.</p>
+<table>
+  <thead>
+    <tr>
+      <th>Test</th>
+      <th>Field type</th>
+      <th>What it demonstrates</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><a class="text-accent" href="/tutorial/adding-configuration-parameter/">Folder Parameter</a></td>
+      <td><code>OrcraftConfigField.Folder</code></td>
+      <td>Runs the maze app executable with no arguments to display its help page.</td>
+    </tr>
+    <tr>
+      <td>Boolean Parameter</td>
+      <td><code>OrcraftConfigField.Boolean</code></td>
+      <td>Runs the maze app executable with or without the <code>--help</code> switch based on a toggle.</td>
+    </tr>
+    <tr>
+      <td>Selector Parameter</td>
+      <td><code>OrcraftConfigField.Select</code></td>
+      <td>Presents the available maze app commands as options and runs the selected one.</td>
+    </tr>
+    <tr>
+      <td>Folder List Parameter</td>
+      <td><code>OrcraftConfigField.FolderList</code></td>
+      <td>Selects multiple folders and runs once per selected folder.</td>
+    </tr>
+    <tr>
+      <td>File Parameter</td>
+      <td><code>OrcraftConfigField.File</code></td>
+      <td>Uses a file path for save/load operations with the maze app.</td>
+    </tr>
+    <tr>
+      <td>File List Parameter</td>
+      <td><code>OrcraftConfigField.FileList</code></td>
+      <td>Selects multiple files, using each one for a save/load operation, running once per file.</td>
+    </tr>
+    <tr>
+      <td>Numeric Parameter</td>
+      <td><code>OrcraftConfigField.Numeric</code></td>
+      <td>Configures maze dimensions, seed, and start/end coordinates.</td>
+    </tr>
+    <tr>
+      <td>Multi-Selector Parameter</td>
+      <td><code>OrcraftConfigField.MultiSelect</code></td>
+      <td>Selects one or more solving algorithms and runs once per selection.</td>
+    </tr>
+    <tr>
+      <td>String Parameter</td>
+      <td><code>OrcraftConfigField.Text</code></td>
+      <td>Optionally passes a raw command-line string to the maze app.</td>
+    </tr>
+  </tbody>
+</table>

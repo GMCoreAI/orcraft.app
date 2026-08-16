@@ -7,7 +7,9 @@
 
 .docs {
   display: grid;
-  grid-template-columns: 220px 1fr;
+  /* minmax(0, 1fr), not 1fr: a 1fr track's auto minimum would let wide code
+     blocks stretch the article column instead of scrolling inside it. */
+  grid-template-columns: 220px minmax(0, 1fr);
   gap: var(--space-8);
   align-items: start;
 }
@@ -146,7 +148,7 @@
   display: block;
   color: var(--color-text);
   font-family: var(--font-mono);
-  font-size: 0.9em;
+  font-size: 0.8em;
   line-height: 1.6;
   white-space: pre;
 }
@@ -164,7 +166,7 @@
 
 .docs__article code[class*="language-"] {
   font-family: var(--font-mono);
-  font-size: 0.9em;
+  font-size: 0.8em;
   line-height: 1.6;
 }
 
@@ -184,6 +186,7 @@
 
 .docs__article .install__command {
   overflow-x: auto;
+  font-size: var(--font-size-sm);
 }
 
 .docs__article .screenshot-placeholder {
