@@ -6,12 +6,14 @@
   font-size: var(--font-size-sm);
 }
 
+/* Match the topbar's widest layout so the copyright text lines up under the logo. */
 .site-footer__inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-6);
   flex-wrap: wrap;
+  max-width: var(--container-width-docs);
 }
 
 .site-footer__inner p {
