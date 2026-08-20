@@ -4,8 +4,7 @@
     { "label": "Setup", "url": "/setup/" },
     { "label": "Tutorial", "url": "/tutorial/" },
     { "label": "Framework", "url": "/framework/" },
-    { "label": "Demo", "url": "/demo/" },
-    { "label": "Contact", "url": "/contact/" }
+    { "label": "Demo", "url": "/demo/" }
   ],
   "login": { "label": "Login", "url": "/login/" },
   "footer": [
