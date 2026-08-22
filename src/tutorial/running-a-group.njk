@@ -95,17 +95,40 @@ description: "Configure and run every test in a test group."
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/running-a-group/selected-test-keeps-configs.png", "Standalone Folder List Parameter configuration retaining the three folders configured through the group", "large") }}
 
 <h2 id="running-the-group">Running the group</h2>
-<p>Select <strong>Run</strong> from the group configuration. Orcraft validates every selected test before the run
-  begins. If a required value is missing, the Missing Arguments dialog identifies the test and field that still
-  need attention; return to that test in the configuration tree, set the value and run again.</p>
-<p>Once validation passes, the group runs its child tests in their declared order, from Folder Parameter through
-  String Parameter. Each child keeps its own log and result, while the group node shows the aggregate progress
-  and final outcome.</p>
+<p>Let's select the <strong>Basic Configuration Parameters</strong> group again and click <strong>Run</strong>.
+  Even though we selected Folder List Parameter on its own in the previous step, every test's configuration is
+  still present when we return to the group - changing the selection doesn't discard any values. Orcraft then
+  confirms the complete scope before starting: in this configuration, 9 test cases across 9 tests.</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/running-a-group/running-confirmation.png", "Confirm Run dialog for running nine test cases across all nine tests in the Basic Configuration Parameters group", "large") }}
+<p>Select <strong>Yes</strong> to continue. Orcraft validates every selected test before the run begins. If a
+  required value is missing, the Missing Arguments dialog identifies the test and field that still need
+  attention; return to that test in the configuration tree, set the value and run again.</p>
+<p>Once validation passes, Orcraft creates a run for every child test and starts all nine in parallel. Their test
+  run rows appear beneath the group, with live progress in the Status column and a <strong>Running 9</strong>
+  summary above the tree:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/running-a-group/tests-started-running.png", "All nine Basic Configuration Parameters child test runs executing in parallel with live progress", "large") }}
+<p>Each child keeps its own log and result, while the group node provides one place to follow the complete run.</p>
 
 <h2 id="reading-the-results">Reading the results</h2>
-<p>Expand the completed group run in the execution tree to inspect each test. Select a child result to read its
-  command, captured Maze application output and final status. Select the group result for the combined view of
-  the run.</p>
-<p>A group can finish successfully only when all of its child tests finish successfully. If one fails or errors,
-  open that test's result first: its configuration table records the exact parameter values used for that run,
-  followed by the command output and failure details.</p>
+<p>When execution finishes, the summary changes to <strong class="text-success">Pass 9</strong> and every child
+  run shows its own <strong class="text-success">Pass</strong> status:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/running-a-group/tests-finished.png", "Completed Basic Configuration Parameters group with all nine child test runs passing", "large") }}
+<p>Expand the completed group in the execution tree to inspect each test. Select a child result to read its
+  command, captured Maze application output and final status.</p>
+
+<h3 id="group-details">Group details</h3>
+<p>The GUI doesn't assign a status to the group itself - running a group creates and runs its child tests, and
+  each test run has its own status. To inspect the combined execution data, right-click the group and select
+  <strong>Details</strong>:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/running-a-group/right-clicking-group-details.png", "Details action in the context menu of the completed Basic Configuration Parameters group", "large") }}
+<p>The Details dialog brings the group configuration and child results together. On the left, each test compares
+  its default, planned and run values. On the right, the results tree lists every test and cycle with its
+  endpoint, status, timing and controller version, while the summary reports aggregate counts and progress:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/running-a-group/group-details-view.png", "Basic Configuration Parameters Details dialog showing test configurations, aggregate counts and the test and cycle result hierarchy", "large") }}
+<p>This group contains one case and one cycle per test, so the hierarchy is still simple. The Details view becomes
+  more useful later in the tutorial, when runs include multiple cases, flows and steps that can be inspected at
+  their corresponding levels.</p>
+<p>Details aren't limited to groups. Double-click any node in the execution tree - from the Session node through
+  suites, groups and tests down to an individual test-run instance - to open the Details view for that scope.
+  These details can also be exported to an XLSX workbook. We'll cover the deeper result hierarchy and XLSX export
+  later in the tutorial.</p>
