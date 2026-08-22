@@ -149,3 +149,70 @@ def fetch_maze_app_release_versions(filter_text: str = "") -> tuple[str, ...]:
 	return case.result') }}
 <p>The configuration value is a tuple of selected tags. <code>_run_case</code> loops over it, resolves each
   release through <code>MazeApp.from_release</code>, and runs the configured command once per version.</p>
+
+<h2 id="matrix-and-cases">Matrix and Cases</h2>
+<p><strong>Matrix and Cases</strong> generates one test case for every combination of values declared by the
+	test's matrix. Select the test to see the generated cases below its regular configuration fields:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/advanced-configuration-parameters-group/matrix-and-cases-config.png", "Matrix and Cases test selected under the Advanced Configuration Parameters group, showing 24 selected cases generated from algorithm, seed, height and width dimensions", "large") }}
+<p>The summary reports <strong>Total Cases: 24</strong>, and the table shows how each case was assembled. The
+	<strong>algorithm</strong>, <strong>seed</strong>, <strong>height</strong> and <strong>width</strong> columns come
+	directly from the matrix dimensions. <strong>Case</strong> is the generated case number, while
+	<strong>Order</strong> is the position in which that case will run. With <strong>Run Order</strong> set to
+	<strong>In Order</strong>, those values are the same.</p>
+<p>Each check mark in <strong>Select</strong> includes that case in the run. Clearing one omits only that
+	combination; it does not change the matrix definition. <strong>Case Cycles</strong> controls how many times
+	each selected case runs, independently of the test-level <strong>Cycles</strong> value.</p>
+
+<h3 id="defining-the-matrix">Defining the matrix</h3>
+<p>The test lives in this tutorial-suite folder:</p>
+{{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_advanced_configuration_parameters/test_matrix_and_cases/") }}
+<p>Declare a <code>Matrix</code> field on the test config and add one <code>Dimension</code> for each case
+	parameter. The first argument is the key used in the generated case; the second is the set of values that
+	dimension can take:</p>
+{{ codeblock.block('matrix = OrcraftConfigField.Matrix(
+	OrcraftConfigField.Dimension("algorithm", ("BFS", "DFS", "ASTAR")),
+	OrcraftConfigField.Dimension("seed", (42, 100)),
+	OrcraftConfigField.Dimension("height", (5, 10)),
+	OrcraftConfigField.Dimension("width", (15, 20)),
+)') }}
+<p>Orcraft builds the Cartesian product of those values. This matrix therefore creates
+	<code>3 × 2 × 2 × 2 = 24</code> cases. In the default order, the last dimension changes fastest: width
+	alternates first, followed by height, seed and then algorithm, which is the sequence visible in the table.</p>
+
+<h3 id="using-matrix-values">Using matrix values</h3>
+<p>You do not create the <code>case</code> object yourself. Orcraft builds an <code>OrcraftTestCase</code> for each
+	row in the Cartesian product, stores that row's dimension choices in the case's <code>params</code> mapping,
+	and passes the case to your test's <code>_run_case</code> method.</p>
+<p>For example, the first row in the screenshot produces a mapping equivalent to:</p>
+{{ codeblock.block('{
+	"algorithm": "BFS",
+	"seed": 42,
+	"height": 5,
+	"width": 15,
+}') }}
+<p>The complete test class receives that generated case and uses its values to configure the Maze application:</p>
+{{ codeblock.block('class TestMatrixAndCases(OrcraftTest):
+	def __init__(self, config: TestMatrixAndCasesConfig | None = None) -> None:
+		super().__init__(config or TestMatrixAndCasesConfig())
+
+	def _run_case(self, case: OrcraftTestCase):
+
+		maze_app = MazeApp(
+			self.config.maze_executable_folder,
+			"solve",
+			width=case.params["width"],
+			height=case.params["height"],
+			seed=case.params["seed"],
+			start_row=0,
+			start_col=0,
+			end_row=case.params["height"] - 1,
+			end_col=case.params["width"] - 1,
+			algorithm=case.params["algorithm"],
+		)
+
+		maze_app.run()
+
+		return case.result') }}
+<p>The <code>case: OrcraftTestCase</code> parameter in the method signature is the handoff from the framework.
+	Each key used with <code>case.params</code> matches a dimension key in the matrix declaration above. Orcraft
+	calls <code>_run_case</code> once for each selected combination, using the configured order and cycle counts.</p>
