@@ -166,6 +166,12 @@ if __name__ == "__main__":
   <code>solve</code> and <code>save</code> - as a drop-down, and runs the one selected.</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/basic-configuration-parameters-group/selector-parameter.png", "Configuration panel of the Selector Parameter test with the Command drop-down open, showing Generate, Solve and Save", "large") }}
 
+<h4 id="selector-parameter-run-example">Run example</h4>
+<p>Here the <code>solve</code> command is selected. The run log records that value in the configuration table,
+  invokes the Maze application with <code>solve</code>, captures its output and finishes with a
+  <strong class="text-success">PASS</strong> result:</p>
+{% ansiOutput "selector-parameter-run.ansi" %}
+
 <h3 id="folder-list-parameter">Folder List Parameter</h3>
 <p>Replaces the single folder field with a <code>Maze Executable Folders</code> list, so several version folders
   can be selected at once. The test loops over them, running the selected command against each maze app version
