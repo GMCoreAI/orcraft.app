@@ -85,6 +85,15 @@ description: "Configure and run every test in a test group."
 <p>We could also run the group with unplanned values, just as we did with an individual test, but every required
   field would still need to be complete.</p>
 
+<h3 id="test-configuration">Test configuration is preserved</h3>
+<p>The group configuration isn't a separate copy. Every value configured here is also available when we select
+  that child test for an individual run. While we're editing the group, those values are preserved as the test's
+  draft configuration; after <strong class="text-accent">Update Plan</strong>, they become that test's planned
+  values as well. There is no need to configure the test again.</p>
+<p>For example, selecting Folder List Parameter on its own still shows the three Maze application folders we set
+  while configuring the group:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/running-a-group/selected-test-keeps-configs.png", "Standalone Folder List Parameter configuration retaining the three folders configured through the group", "large") }}
+
 <h2 id="running-the-group">Running the group</h2>
 <p>Select <strong>Run</strong> from the group configuration. Orcraft validates every selected test before the run
   begins. If a required value is missing, the Missing Arguments dialog identifies the test and field that still
