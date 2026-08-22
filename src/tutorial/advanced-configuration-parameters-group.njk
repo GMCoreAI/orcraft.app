@@ -1,7 +1,7 @@
 ---
 title: Tutorial · Advanced Configuration Parameters group
 key: tutorial
-description: "Use a Lambda Selector parameter to fetch configuration choices at runtime."
+description: "Use Lambda Selector parameters to fetch one or more configuration choices at runtime."
 ---
 {% import "partials/copy-command.njk" as cmd %}
 {% import "partials/code-block.njk" as codeblock %}
@@ -96,3 +96,56 @@ def fetch_maze_app_release_versions(filter_text: str = "") -> tuple[str, ...]:
 <p>At run time, the selected release tag is passed to <code>MazeApp.from_release</code>. The helper downloads the
   matching binary for the current platform, or reuses its cached copy unless
   <strong>Re-download (ignore cached binary)</strong> is enabled, then runs the selected command.</p>
+
+<h2 id="lambda-multi-selector-parameter">Lambda Multi-Selector Parameter</h2>
+<p><strong>Lambda Multi-Selector Parameter</strong> follows the same principle, but lets you select several
+  values returned by the callback. In this test, that means choosing multiple Maze app releases and running the
+  same command against every selected version.</p>
+
+<h3 id="selecting-multiple-versions">Selecting multiple versions</h3>
+<p>Open <strong>Maze App Versions</strong> and select <strong>Fetch</strong>, just as you did for the single-value
+  selector. The same callback returns the available release tags, but this dialog displays a checkbox beside
+  each one. Select every version you want to run, then select <strong>OK</strong>:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/advanced-configuration-parameters-group/lambda-multi-selector-parameter.png", "Maze App Versions dialog for Lambda Multi-Selector Parameter, with Maze-v3.0.0 and Maze-v1.0.0 selected and Maze-v2.0.0 unselected", "large") }}
+<p>The selected tags are stored together in the <strong>Maze App Versions</strong> field:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/advanced-configuration-parameters-group/selected-versions.png", "Lambda Multi-Selector Parameter configuration with maze-v3.0.0 and maze-v1.0.0 assigned to Maze App Versions", "large") }}
+<p>When the test runs, each selected release is downloaded in the background or loaded from the cache. You no
+  longer need to download several binaries manually and add their folders to a folder-list field.</p>
+
+<h3 id="how-multi-selector-works">How it works</h3>
+<p>The test lives in this tutorial-suite folder:</p>
+{{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_advanced_configuration_parameters/test_lambda_multi_selector_parameter/") }}
+
+<h4 id="multi-selector-config-field">Config field</h4>
+<p>In your test's config class, declare <code>MultiSelectLambda</code> instead of <code>SelectLambda</code>. The
+  field uses an empty tuple as its default because its value is a collection, and <code>required=True</code>
+  prevents the test from running until at least one version is selected:</p>
+{{ codeblock.block('maze_app_versions = OrcraftConfigField.MultiSelectLambda(
+	default=(),
+	label="Maze App Versions",
+	input_placeholder="Filter versions (e.g. v3)",
+	button_text="Fetch",
+	options_lambda=lambda text: fetch_maze_app_release_versions(text),
+	required=True,
+	layout=OrcraftConfigField.Layout.NewRow,
+)') }}
+<p>This field reuses the same <code>fetch_maze_app_release_versions</code> provider shown in
+  <a class="text-accent" href="#versions-provider">Returning Maze app versions</a>. The callback only supplies
+  the available choices; the field type determines whether the user can select one value or several.</p>
+
+<h4 id="using-the-selected-versions">Using the selected versions</h4>
+{{ codeblock.block('def _run_case(self, case: OrcraftTestCase):
+
+	for tag in self.config.maze_app_versions:
+
+		maze_app = MazeApp.from_release(
+			tag,
+			self.config.command,
+			force=self.config.force_redownload,
+		)
+
+		maze_app.run()
+
+	return case.result') }}
+<p>The configuration value is a tuple of selected tags. <code>_run_case</code> loops over it, resolves each
+  release through <code>MazeApp.from_release</code>, and runs the configured command once per version.</p>
