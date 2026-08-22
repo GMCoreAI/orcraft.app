@@ -1,0 +1,98 @@
+---
+title: Tutorial · Advanced Configuration Parameters group
+key: tutorial
+description: "Use a Lambda Selector parameter to fetch configuration choices at runtime."
+---
+{% import "partials/copy-command.njk" as cmd %}
+{% import "partials/code-block.njk" as codeblock %}
+{% import "partials/zoomable-image.njk" as media %}
+<h1>Advanced Configuration Parameters group</h1>
+<p>The <strong>Advanced Configuration Parameters</strong> group demonstrates configuration that is generated or
+	evaluated at runtime. Its tests fetch choices from external sources, generate test cases from matrices of
+	values, exclude invalid combinations, randomize dimension values and case order, and populate matrix
+	dimensions through functions. These features go beyond choosing or entering the fixed values covered in the
+	<a class="text-accent" href="/tutorial/basic-configuration-parameters-group/">Basic Configuration Parameters
+	group</a>.</p>
+
+<h2 id="lambda-selector-parameter">Lambda Selector Parameter</h2>
+<p>Earlier Maze tests required you to download the application yourself and select the folder containing its
+	executable. This test replaces that manual setup with a version selector: choose a Maze app release from
+	GitHub, and the test downloads the matching binary in the background or reuses its cached copy.</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/advanced-configuration-parameters-group/lambda-selector-parameter-test.png", "Lambda Selector Parameter test selected under the Advanced Configuration Parameters group, showing an empty Maze App Version field with its selection button", "large") }}
+
+<h3 id="selecting-a-version">Selecting a version</h3>
+<p>Select the button at the right of <strong>Maze App Version</strong> to open its dialog. Leave the filter empty
+	to request every available release, or enter part of a tag such as <code>v3</code>, then select
+	<strong>Fetch</strong>. The returned release tags populate the drop-down:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/advanced-configuration-parameters-group/selection-drop-box.png", "Maze App Version selection dialog after fetching releases, with Maze-v3.0.0, Maze-v2.0.0 and Maze-v1.0.0 shown in the open drop-down", "large") }}
+<p>Choose one version and select <strong>OK</strong> to assign its tag to the test configuration:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/advanced-configuration-parameters-group/selected-version.png", "Lambda Selector Parameter configuration after confirming the selection, with maze-v3.0.0 assigned to Maze App Version", "large") }}
+<p>Fetching again replaces the available choices with the callback's latest result while preserving the current
+	selection when that value is still available.</p>
+
+<h3 id="how-it-works">How it works</h3>
+<p>The test lives in this tutorial-suite folder:</p>
+{{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_advanced_configuration_parameters/test_lambda_selector_parameter/") }}
+
+<p>A regular <code>OrcraftConfigField.Select</code> receives its choices through <code>options</code> when the
+  config class is defined. <code>OrcraftConfigField.SelectLambda</code> instead receives an
+  <code>options_lambda</code> callback that the controller can invoke when the user asks for choices. This is
+  useful when the available values come from an external or changing source.</p>
+
+<h4 id="config-field">Config field</h4>
+<p>To use a Lambda selector in your own test, declare a <code>SelectLambda</code> field in the test's config
+  class. You provide the callback through <code>options_lambda</code>, as this test does:</p>
+{{ codeblock.block('maze_app_version = OrcraftConfigField.SelectLambda(
+	default="",
+	label="Maze App Version",
+	input_placeholder="Filter versions (e.g. v3)",
+	button_text="Fetch",
+	options_lambda=lambda text: fetch_maze_app_release_versions(text),
+	layout=OrcraftConfigField.Layout.NewRow,
+)') }}
+<p>The field starts empty. <code>input_placeholder</code> describes the optional filter accepted by the callback,
+  while <code>button_text</code> labels the action that invokes it. The lambda receives the text entered in the
+  dialog and returns the values supplied by <code>fetch_maze_app_release_versions</code>.</p>
+
+<h4 id="versions-provider">Returning Maze app versions</h4>
+<p>You also write the function that supplies the choices. It can read from any source appropriate for your test;
+	here, the tutorial suite uses a shared GitHub helper. The helper requests the Maze app's releases, ignores
+	drafts and returns their tag names as a tuple. When filter text is present, only tags containing that text are
+	returned:</p>
+{{ codeblock.block('def fetch_github_release_versions(owner: str, repo: str, filter_text: str = "") -> tuple[str, ...]:
+	url = f"https://api.github.com/repos/{owner}/{repo}/releases"
+	request = Request(url, headers=_gh_headers())
+	try:
+		with urlopen(request, timeout=8) as response:
+			releases = json.loads(response.read().decode("utf-8"))
+	except Exception:
+		return tuple()
+
+	versions = [release["tag_name"] for release in releases if not release.get("draft")]
+	query = filter_text.strip().lower()
+	if query:
+		versions = [version for version in versions if query in version.lower()]
+	return tuple(versions)
+
+
+def fetch_maze_app_release_versions(filter_text: str = "") -> tuple[str, ...]:
+	return fetch_github_release_versions(MAZE_APP_OWNER, MAZE_APP_REPO, filter_text)') }}
+<p>The constants passed by the wrapper identify the <code>GMCoreAI/orcraft-maze-app</code> repository. Keeping
+  the repository-specific wrapper separate lets the generic helper serve other GitHub-backed selectors too.</p>
+{{ cmd.copyPath("orcraft-test-suite-tutorial/common/github_repo_access.py") }}
+
+<h4 id="using-the-selected-version">Using the selected version</h4>
+{{ codeblock.block('def _run_case(self, case: OrcraftTestCase):
+
+	maze_app = MazeApp.from_release(
+		self.config.maze_app_version,
+		self.config.command,
+		force=self.config.force_redownload,
+	)
+
+	maze_app.run()
+
+	return case.result') }}
+<p>At run time, the selected release tag is passed to <code>MazeApp.from_release</code>. The helper downloads the
+  matching binary for the current platform, or reuses its cached copy unless
+  <strong>Re-download (ignore cached binary)</strong> is enabled, then runs the selected command.</p>

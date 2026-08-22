@@ -109,6 +109,12 @@
   color: var(--color-text);
 }
 
+.docs__article h4 {
+  margin-top: var(--space-6);
+  margin-bottom: var(--space-2);
+  color: var(--color-text);
+}
+
 /* Keeps the pinned topbar from covering a heading linked from the sidebar. */
 .docs__article :is(h2, h3, h4) {
   scroll-margin-top: 90px;

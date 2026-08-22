@@ -11,6 +11,7 @@
     { "label": "Adding configuration parameter", "slug": "adding-configuration-parameter/" },
     { "label": "Running Folder Parameter test", "slug": "running-folder-parameter-test/" },
     { "label": "Basic Configuration Parameters group", "slug": "basic-configuration-parameters-group/" },
-    { "label": "Running a group", "slug": "running-a-group/" }
+    { "label": "Running a group", "slug": "running-a-group/" },
+    { "label": "Advanced Configuration Parameters group", "slug": "advanced-configuration-parameters-group/" }
   ]
 }
