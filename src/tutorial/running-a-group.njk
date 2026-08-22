@@ -132,3 +132,39 @@ description: "Configure and run every test in a test group."
   suites, groups and tests down to an individual test-run instance - to open the Details view for that scope.
   These details can also be exported to an XLSX workbook. We'll cover the deeper result hierarchy and XLSX export
   later in the tutorial.</p>
+
+<h2 id="rerunning-and-clearing">Rerunning and clearing</h2>
+
+<h3 id="rerunning-with-a-change">Rerunning with a change</h3>
+<p>We can rerun the entire group with a changed value without updating the plan first. Here we change only Folder
+  Parameter's <strong>Maze Executable Folder</strong> from <code>v3.0.0</code> to <code>v2.0.0</code>, leave the
+  orange diamond in place and click <strong>Run</strong>:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/running-a-group/changing-and-running-unplanned.png", "Basic Configuration Parameters group ready to rerun with only Folder Parameter changed to the unplanned v2.0.0 folder", "large") }}
+<p>Running the group creates a new run for every child test, even though only one value changed. The latest Folder
+  Parameter run receives a <strong class="text-warning">Plan Mismatch</strong> badge because it used
+  <code>v2.0.0</code> instead of its planned <code>v3.0.0</code>; the other eight new runs still match their
+  plans:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/running-a-group/only-one-test-plan-mismatch.png", "Second Basic Configuration Parameters group run with only Folder Parameter marked as a plan mismatch", "large") }}
+<p>The Details dialog makes the difference explicit by placing the planned and run values side by side. Folder
+  Parameter's <code>v3.0.0</code> Plan Value and <code>v2.0.0</code> Run Value are
+  <strong class="text-warning">highlighted</strong>, while the other
+  tests retain matching values:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/running-a-group/plan-mismatch-in-details.png", "Group Details dialog comparing the planned v3.0.0 folder with Folder Parameter's unplanned v2.0.0 run value", "large") }}
+
+<h3 id="cleaning-up-runs">Cleaning up superseded runs</h3>
+<p>After repeated group runs, the execution tree can accumulate several run instances under every test. Select
+  the group and choose <strong class="text-orange">Clean Up</strong> to remove all but the latest running or
+  finished instance under each child:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/running-a-group/clean-up-option.png", "Clean Up action for retaining only the latest run instance under each test in the group", "large") }}
+<p>The older, dimmed superseded runs disappear, leaving the latest run for each test. The Folder Parameter run
+  keeps its Plan Mismatch badge because cleanup changes only which run instances are retained:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/running-a-group/clean-up-removed-superseeded.png", "Basic Configuration Parameters group after cleanup removed superseded runs and retained each latest run", "large") }}
+
+<h3 id="clearing-runs">Clearing all run instances</h3>
+<p>To remove every run instance beneath the group, including running, queued and completed runs, select
+  <strong class="text-danger">Clear</strong>. This keeps the group and all of its child tests:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/running-a-group/clear-option.png", "Clear action for removing every run instance beneath the Basic Configuration Parameters group", "large") }}
+<p>After clearing, no test-run rows remain, but the configuration is untouched. The unplanned
+  <code>v2.0.0</code> Folder Parameter value is still present, along with the other test values, so clearing run
+  history doesn't reset drafts or planned configuration:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/running-a-group/all-cleared-config-stays.png", "Basic Configuration Parameters group after all run instances were cleared while its test configuration remained", "large") }}
