@@ -1,0 +1,102 @@
+---
+title: Tutorial · Running a group
+key: tutorial
+description: "Configure and run every test in a test group."
+---
+{% import "partials/zoomable-image.njk" as media %}
+<h1>Running a group</h1>
+<p>We've run individual tests and reviewed every parameter type in the
+  <a class="text-accent" href="/tutorial/basic-configuration-parameters-group/">Basic Configuration Parameters
+  group</a>. Now we'll configure the group as one run and execute all nine tests together.</p>
+
+<h2 id="reloading-the-session">Reloading the session</h2>
+<p>For this demonstration, we'll first reload the session so every test starts from its source defaults. Select
+  the session node, then click <strong class="text-danger">Reload</strong>:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/running-a-group/reloading-session.png", "Reload action for reloading all reloadable suites and top-level groups in the current Orcraft session from source", "large") }}
+<p>The Reload action reloads <strong>every</strong> reloadable suite and top-level group in the current session,
+  not only the item currently selected. We can use it here because our session contains only one added item - the
+  Tutorial suite. In a normal session containing several items, we usually wouldn't reload the entire session
+  just to prepare one group for a run.</p>
+
+<h2 id="selecting-the-group">Selecting the group</h2>
+<p>In the Test Explorer, select the <strong>Basic Configuration Parameters</strong> group rather than one of its
+  child tests. The Configuration tab switches to a multi-test view: the tests appear in a tree on the left, and
+  selecting a test opens its configuration on the right.</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/running-a-group/selecting-basic-config-params-group.png", "Basic Configuration Parameters group selected in the Orcraft Test Explorer, with the multi-test configuration table and Folder Parameter editor visible", "large") }}
+<p>This is still one group run, but every test keeps its own fields, cases and planned values. Move through the
+  test list to configure each one before starting the run. The table provides a quick overview of all test
+  values, while the editor below it lets us configure the selected test.</p>
+<p><strong>All action buttons at the bottom now apply to the entire group.</strong> For example,
+  <strong class="text-accent">Update Plan</strong> saves the configuration of every child test, and
+  <strong>Reset To Defaults</strong> resets every child test - not only the test currently selected in the editor.
+  The same group-wide scope applies to <strong>Export for CI</strong> and <strong>Run</strong>. Selecting a child in
+  the table only chooses which test's fields are shown for editing.</p>
+
+<h2 id="configuring-the-tests">Configuring the tests</h2>
+<p>Every child test must have valid values. Fields marked as required can't be left empty:</p>
+<ul>
+  <li>Set <strong>Maze Executable Folder</strong> for Folder, Boolean, Selector, File, File List, Numeric,
+    Multi-Selector and String Parameter.</li>
+  <li>Add at least one entry to <strong>Maze Executable Folders</strong> for Folder List Parameter.</li>
+  <li>Select a saved maze file for <strong>Maze Save/Load File</strong> in File Parameter.</li>
+  <li>Select one or more saved maze files for <strong>Maze Save/Load Files</strong> in File List Parameter.</li>
+</ul>
+<p>The other fields already have usable defaults. You can leave them unchanged for the first group run, or vary
+  them to see how each test turns its selected values into a Maze application command.</p>
+
+<h3 id="shared-values">Setting repeated values</h3>
+<p>Several tests need the same <strong>Maze Executable Folder</strong>. Start with Folder Parameter, click
+  <strong>Browse</strong> and select the Maze application's <code>v3.0.0</code> folder. The selected value appears
+  in both the test editor and its row in the overview table:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/running-a-group/configure-one-test-folder.png", "Folder Parameter configured with the Maze v3.0.0 executable folder in the group configuration", "large") }}
+<p>Instead of entering the same folder separately for every test, use the value from that table cell. Hover over
+  the configured <strong>Maze Executable Folder</strong> value and select
+  <strong>Apply this value to all tests</strong>:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/running-a-group/apply-to-all-tests-menu.png", "Apply this value to all tests action shown for the configured Maze Executable Folder table cell", "large") }}
+<p>The folder is copied to every test with the same <strong>Maze Executable Folder</strong> field:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/running-a-group/apply-clicked-on-folder.png", "Group configuration after applying the Maze Executable Folder value to all tests with that field", "large") }}
+<p>Folder List Parameter remains empty because it declares the separate <strong>Maze Executable Folders</strong>
+  list field. Configure that test independently by adding one or more Maze application folders.</p>
+
+<h3 id="updating-the-plan">Updating the plan</h3>
+<p>Changed values are shown as unplanned until they are added to the run plan. If we click
+  <strong class="text-accent">Update Plan</strong> now, Orcraft validates the whole group and stops because three
+  required fields are still empty:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/running-a-group/updating-plan-partially-config.png", "Missing Arguments dialog after trying to update the partially configured Basic Configuration Parameters group plan", "large") }}
+<p>The dialog lists <strong>Maze Executable Folders</strong> for Folder List Parameter,
+  <strong>Maze Save/Load File</strong> for File Parameter and <strong>Maze Save/Load Files</strong> for File List
+  Parameter. No values are committed to the plan, and the existing plan remains unchanged. After we close the
+  dialog, Orcraft takes us to the first missing field so we can continue configuring the group.</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/running-a-group/clicking-ok-next-missing.png", "Folder List Parameter and its missing Maze Executable Folders field revealed after closing the Missing Arguments dialog", "large") }}
+<p>Clicking <strong>OK</strong> selects Folder List Parameter, scrolls the overview table to the missing
+  <strong>Maze Executable Folders</strong> column and reveals the field in the editor. Add one or more Maze
+  application folders here, then repeat the update attempt to find and configure any remaining missing
+  arguments.</p>
+<p>After configuring the folder list and the required file fields, every test is valid. The orange diamonds and
+  purple values show that these changes are complete but still different from the current plan:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/running-a-group/all-configured-unplanned.png", "Fully configured Basic Configuration Parameters group with unplanned values marked by orange diamonds", "large") }}
+<p>Select <strong class="text-accent">Update Plan</strong> again. Validation now passes, so Orcraft asks us to
+  confirm that the current configuration should overwrite the existing planned values:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/running-a-group/update-plan-confirmation-dialog.png", "Confirmation dialog asking whether to apply the current group configuration as the new plan", "large") }}
+<p>Select <strong>Yes</strong> to update the plan for every test in the group. The values turn blue, the orange
+  diamonds disappear and <strong class="text-accent">Update Plan</strong> becomes disabled because the current
+  configuration now matches the plan:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/running-a-group/updated-plan.png", "Basic Configuration Parameters group after all current values have been saved to the plan", "large") }}
+<p>We could also run the group with unplanned values, just as we did with an individual test, but every required
+  field would still need to be complete.</p>
+
+<h2 id="running-the-group">Running the group</h2>
+<p>Select <strong>Run</strong> from the group configuration. Orcraft validates every selected test before the run
+  begins. If a required value is missing, the Missing Arguments dialog identifies the test and field that still
+  need attention; return to that test in the configuration tree, set the value and run again.</p>
+<p>Once validation passes, the group runs its child tests in their declared order, from Folder Parameter through
+  String Parameter. Each child keeps its own log and result, while the group node shows the aggregate progress
+  and final outcome.</p>
+
+<h2 id="reading-the-results">Reading the results</h2>
+<p>Expand the completed group run in the execution tree to inspect each test. Select a child result to read its
+  command, captured Maze application output and final status. Select the group result for the combined view of
+  the run.</p>
+<p>A group can finish successfully only when all of its child tests finish successfully. If one fails or errors,
+  open that test's result first: its configuration table records the exact parameter values used for that run,
+  followed by the command output and failure details.</p>
