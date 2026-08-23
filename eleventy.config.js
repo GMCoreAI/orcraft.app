@@ -1,9 +1,39 @@
-import { readFileSync } from "node:fs";
+import { closeSync, openSync, readFileSync, readSync } from "node:fs";
 import { AnsiUp } from "ansi_up";
 
 const ICON_DIR = "src/assets/icons/ui";
 const DOCS_ARTICLE = /(<article class="docs__article">)([\s\S]*?)(<\/article>)/;
 const DOCS_HEADING = /<h([2-4])\b[^>]*>[\s\S]*?<\/h\1>/g;
+const PNG_SIGNATURE = "\x89PNG\r\n\x1a\n";
+const PNG_HEADER_BYTES = 24;
+const imageSizeCache = new Map();
+
+/* Reads a PNG's IHDR dimensions. Emitting them as width/height lets a lazy
+   image reserve its box before it loads; otherwise each screenshot grows from
+   zero mid-scroll and drags the anchor the browser is smooth-scrolling to. */
+function readPngSize(file) {
+  const header = Buffer.alloc(PNG_HEADER_BYTES);
+  let descriptor;
+
+  try {
+    descriptor = openSync(file, "r");
+    if (readSync(descriptor, header, 0, PNG_HEADER_BYTES, 0) < PNG_HEADER_BYTES) return null;
+  } catch {
+    return null;
+  } finally {
+    if (descriptor !== undefined) closeSync(descriptor);
+  }
+
+  if (header.toString("latin1", 0, 8) !== PNG_SIGNATURE) return null;
+  return { width: header.readUInt32BE(16), height: header.readUInt32BE(20) };
+}
+
+function imageSize(src) {
+  if (!imageSizeCache.has(src)) {
+    imageSizeCache.set(src, readPngSize(`src/${String(src).replace(/^\//, "")}`));
+  }
+  return imageSizeCache.get(src);
+}
 
 /* Nests each heading and the content that follows it in a <section>, so the
    docs stylesheet can indent whole sections by their heading level. */
@@ -32,6 +62,8 @@ function wrapDocsSections(inner) {
 }
 
 export default function (eleventyConfig) {
+  eleventyConfig.addNunjucksGlobal("imageSize", imageSize);
+
   // Inlined so icons inherit currentColor and size from their container.
   eleventyConfig.addShortcode("icon", (name) =>
     readFileSync(`${ICON_DIR}/${name}.svg`, "utf8")

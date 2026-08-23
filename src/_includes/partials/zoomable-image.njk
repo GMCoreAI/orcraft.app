@@ -1,5 +1,6 @@
 {% macro zoomableImage(src, alt, size) %}
-<button class="zoomable-image{% if size %} zoomable-image--{{ size }}{% endif %}" type="button" data-lightbox aria-label="Enlarge screenshot">
-  <img src="{{ src }}" alt="{{ alt }}" loading="lazy" />
+{% set dimensions = imageSize(src) %}
+<button class="zoomable-image{% if size %} zoomable-image--{{ size }}{% endif %}" type="button" data-lightbox aria-label="Enlarge screenshot"{% if dimensions %} style="--native-width: {{ dimensions.width }}px"{% endif %}>
+  <img src="{{ src }}" alt="{{ alt }}" loading="lazy"{% if dimensions %} width="{{ dimensions.width }}" height="{{ dimensions.height }}"{% endif %} />
 </button>
 {% endmacro %}

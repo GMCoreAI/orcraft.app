@@ -126,7 +126,8 @@
 
 .docs__article .zoomable-image {
   display: block;
-  width: fit-content;
+  /* Capped at the screenshot's own width so it is never upscaled into a blur. */
+  width: min(var(--native-width, 100%), 100%);
   max-width: 320px;
   margin-block: var(--space-8);
   padding: 0;
@@ -147,12 +148,13 @@
   transform: translateY(-2px);
 }
 
-/* auto width, not 100%: a screenshot narrower than the article renders at its
-   native size instead of being upscaled into a blur. */
+/* A definite width lets the img width/height attributes reserve the box before
+   the lazy file loads; with width:auto an unloaded image collapses to 0 and
+   drags every anchor below it while the page smooth-scrolls. */
 .docs__article .zoomable-image img {
   display: block;
-  width: auto;
-  max-width: 100%;
+  width: 100%;
+  height: auto;
   margin: 0;
 }
 
