@@ -15,12 +15,12 @@ description: "Use Lambda Selector parameters to fetch one or more configuration 
 	group</a>.</p>
 
 <h2 id="lambda-selector-parameter">Lambda Selector Parameter</h2>
-<p>Earlier Maze tests required you to download the application yourself and select the folder containing its
-	executable. This test replaces that manual setup with a version selector: choose a Maze app release from
-	GitHub, and the test downloads the matching binary in the background or reuses its cached copy.</p>
+<p>Earlier Maze tests require a manually downloaded application and the folder containing its executable. This
+	test replaces that setup with a version selector. Selecting a Maze app release from GitHub downloads the
+	matching binary in the background or reuses its cached copy.</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/advanced-configuration-parameters-group/lambda-selector-parameter-test.png", "Lambda Selector Parameter test selected under the Advanced Configuration Parameters group, showing an empty Maze App Version field with its selection button", "large") }}
 
-<h3 id="selecting-a-version">Selecting a version</h3>
+<h3 id="selecting-a-version">Selecting a value</h3>
 <p>Select the button at the right of <strong>Maze App Version</strong> to open its dialog. Leave the filter empty
 	to request every available release, or enter part of a tag such as <code>v3</code>, then select
 	<strong>Fetch</strong>. The returned release tags populate the drop-down:</p>
@@ -30,18 +30,17 @@ description: "Use Lambda Selector parameters to fetch one or more configuration 
 <p>Fetching again replaces the available choices with the callback's latest result while preserving the current
 	selection when that value is still available.</p>
 
-<h3 id="how-it-works">How it works</h3>
-<p>The test lives in this tutorial-suite folder:</p>
+<h3 id="config-field">Defining a dynamic selector</h3>
+<p>Source directory:</p>
 {{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_advanced_configuration_parameters/test_lambda_selector_parameter/") }}
 
 <p>A regular <code>OrcraftConfigField.Select</code> receives its choices through <code>options</code> when the
-  config class is defined. <code>OrcraftConfigField.SelectLambda</code> instead receives an
-  <code>options_lambda</code> callback that the controller can invoke when the user asks for choices. This is
-  useful when the available values come from an external or changing source.</p>
+	configuration class is defined. <code>OrcraftConfigField.SelectLambda</code> instead receives an
+	<code>options_lambda</code> callback that the controller invokes when options are requested. This mechanism
+	supports values obtained from external or changing sources.</p>
 
-<h4 id="config-field">Config field</h4>
-<p>To use a Lambda selector in your own test, declare a <code>SelectLambda</code> field in the test's config
-  class. You provide the callback through <code>options_lambda</code>, as this test does:</p>
+<p>The test developer declares a <code>SelectLambda</code> field in the test's configuration class and assigns
+	its provider callback through <code>options_lambda</code>:</p>
 {{ codeblock.block('maze_app_version = OrcraftConfigField.SelectLambda(
 	default="",
 	label="Maze App Version",
@@ -54,11 +53,11 @@ description: "Use Lambda Selector parameters to fetch one or more configuration 
   while <code>button_text</code> labels the action that invokes it. The lambda receives the text entered in the
   dialog and returns the values supplied by <code>fetch_maze_app_release_versions</code>.</p>
 
-<h4 id="versions-provider">Returning Maze app versions</h4>
-<p>You also write the function that supplies the choices. It can read from any source appropriate for your test;
-	here, the tutorial suite uses a shared GitHub helper. The helper requests the Maze app's releases, ignores
-	drafts and returns their tag names as a tuple. When filter text is present, only tags containing that text are
-	returned:</p>
+<h3 id="versions-provider">Supplying dynamic options</h3>
+<p>The test developer implements the option-provider function separately from the configuration field. The
+	function may read from any source appropriate to the test. In this tutorial, the provider calls a shared
+	GitHub helper that requests the Maze app releases, excludes drafts, and returns the release tags as a tuple.
+	When filter text is present, the provider returns only tags containing that text:</p>
 {{ codeblock.block('def fetch_github_release_versions(owner: str, repo: str, filter_text: str = "") -> tuple[str, ...]:
 	url = f"https://api.github.com/repos/{owner}/{repo}/releases"
 	request = Request(url, headers=_gh_headers())
@@ -78,10 +77,10 @@ description: "Use Lambda Selector parameters to fetch one or more configuration 
 def fetch_maze_app_release_versions(filter_text: str = "") -> tuple[str, ...]:
 	return fetch_github_release_versions(MAZE_APP_OWNER, MAZE_APP_REPO, filter_text)') }}
 <p>The constants passed by the wrapper identify the <code>GMCoreAI/orcraft-maze-app</code> repository. Keeping
-  the repository-specific wrapper separate lets the generic helper serve other GitHub-backed selectors too.</p>
+	the repository-specific wrapper separate allows the generic helper to serve other GitHub-backed selectors.</p>
 {{ cmd.copyPath("orcraft-test-suite-tutorial/common/github_repo_access.py") }}
 
-<h4 id="using-the-selected-version">Using the selected version</h4>
+<h3 id="using-the-selected-version">Reading the selected value</h3>
 {{ codeblock.block('def _run_case(self, case: OrcraftTestCase):
 
 	maze_app = MazeApp.from_release(
@@ -98,28 +97,26 @@ def fetch_maze_app_release_versions(filter_text: str = "") -> tuple[str, ...]:
   <strong>Re-download (ignore cached binary)</strong> is enabled, then runs the selected command.</p>
 
 <h2 id="lambda-multi-selector-parameter">Lambda Multi-Selector Parameter</h2>
-<p><strong>Lambda Multi-Selector Parameter</strong> follows the same principle, but lets you select several
-  values returned by the callback. In this test, that means choosing multiple Maze app releases and running the
-  same command against every selected version.</p>
+<p><strong>Lambda Multi-Selector Parameter</strong> follows the same principle but supports several values from
+	the callback. This test selects multiple Maze app releases and runs the same command against every selected
+	version.</p>
 
-<h3 id="selecting-multiple-versions">Selecting multiple versions</h3>
-<p>Open <strong>Maze App Versions</strong> and select <strong>Fetch</strong>, just as you did for the single-value
-  selector. The same callback returns the available release tags, but this dialog displays a checkbox beside
-  each one. Select every version you want to run, then select <strong>OK</strong>:</p>
+<h3 id="selecting-multiple-versions">Selecting multiple values</h3>
+<p>Open <strong>Maze App Versions</strong> and select <strong>Fetch</strong>, as in the single-value selector. The
+	same callback returns the available release tags, while this dialog displays a checkbox beside each option.
+	Select each version to include, then select <strong>OK</strong>:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/advanced-configuration-parameters-group/lambda-multi-selector-parameter.png", "Maze App Versions dialog for Lambda Multi-Selector Parameter, with Maze-v3.0.0 and Maze-v1.0.0 selected and Maze-v2.0.0 unselected", "large") }}
 <p>The selected tags are stored together in the <strong>Maze App Versions</strong> field:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/advanced-configuration-parameters-group/selected-versions.png", "Lambda Multi-Selector Parameter configuration with maze-v3.0.0 and maze-v1.0.0 assigned to Maze App Versions", "large") }}
-<p>When the test runs, each selected release is downloaded in the background or loaded from the cache. You no
-  longer need to download several binaries manually and add their folders to a folder-list field.</p>
+<p>When the test runs, each selected release is downloaded in the background or loaded from the cache. This
+	workflow eliminates manual binary downloads and folder-list configuration.</p>
 
-<h3 id="how-multi-selector-works">How it works</h3>
-<p>The test lives in this tutorial-suite folder:</p>
+<h3 id="defining-a-dynamic-multi-selector">Defining a dynamic multi-selector</h3>
+<p>The implementation differs from the single-value selector in two respects: the configuration uses
+	<code>MultiSelectLambda</code> with a tuple default, and the test iterates over the selected values.</p>
+<p>Source directory:</p>
 {{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_advanced_configuration_parameters/test_lambda_multi_selector_parameter/") }}
 
-<h4 id="multi-selector-config-field">Config field</h4>
-<p>In your test's config class, declare <code>MultiSelectLambda</code> instead of <code>SelectLambda</code>. The
-  field uses an empty tuple as its default because its value is a collection, and <code>required=True</code>
-  prevents the test from running until at least one version is selected:</p>
 {{ codeblock.block('maze_app_versions = OrcraftConfigField.MultiSelectLambda(
 	default=(),
 	label="Maze App Versions",
@@ -129,11 +126,12 @@ def fetch_maze_app_release_versions(filter_text: str = "") -> tuple[str, ...]:
 	required=True,
 	layout=OrcraftConfigField.Layout.NewRow,
 )') }}
-<p>This field reuses the same <code>fetch_maze_app_release_versions</code> provider shown in
-  <a class="text-accent" href="#versions-provider">Returning Maze app versions</a>. The callback only supplies
+<p><code>required=True</code> prevents the test from running until at least one version is selected. The field
+	reuses the same <code>fetch_maze_app_release_versions</code> provider shown in
+	<a class="text-accent" href="#versions-provider">Supplying dynamic options</a>. The callback only supplies
   the available choices; the field type determines whether the user can select one value or several.</p>
 
-<h4 id="using-the-selected-versions">Using the selected versions</h4>
+<h3 id="reading-multiple-selected-values">Reading multiple selected values</h3>
 {{ codeblock.block('def _run_case(self, case: OrcraftTestCase):
 
 	for tag in self.config.maze_app_versions:
@@ -164,7 +162,7 @@ def fetch_maze_app_release_versions(filter_text: str = "") -> tuple[str, ...]:
 	each selected case runs, independently of the test-level <strong>Cycles</strong> value.</p>
 
 <h3 id="defining-the-matrix">Defining the matrix</h3>
-<p>The test lives in this tutorial-suite folder:</p>
+<p>Source directory:</p>
 {{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_advanced_configuration_parameters/test_matrix_and_cases/") }}
 <p>Declare a <code>Matrix</code> field on the test config and add one <code>Dimension</code> for each case
 	parameter. The first argument is the key used in the generated case; the second is the set of values that
@@ -180,9 +178,9 @@ def fetch_maze_app_release_versions(filter_text: str = "") -> tuple[str, ...]:
 	alternates first, followed by height, seed and then algorithm, which is the sequence visible in the table.</p>
 
 <h3 id="using-matrix-values">Using matrix values</h3>
-<p>You do not create the <code>case</code> object yourself. Orcraft builds an <code>OrcraftTestCase</code> for each
-	row in the Cartesian product, stores that row's dimension choices in the case's <code>params</code> mapping,
-	and passes the case to your test's <code>_run_case</code> method.</p>
+<p>Orcraft creates an <code>OrcraftTestCase</code> for each row in the Cartesian product, stores that row's
+	dimension choices in the case's <code>params</code> mapping, and passes the case to the test's
+	<code>_run_case</code> method.</p>
 <p>For example, the first row in the screenshot produces a mapping equivalent to:</p>
 {{ codeblock.block('{
 	"algorithm": "BFS",
@@ -213,6 +211,6 @@ def fetch_maze_app_release_versions(filter_text: str = "") -> tuple[str, ...]:
 		maze_app.run()
 
 		return case.result') }}
-<p>The <code>case: OrcraftTestCase</code> parameter in the method signature is the handoff from the framework.
-	Each key used with <code>case.params</code> matches a dimension key in the matrix declaration above. Orcraft
+<p>The <code>case: OrcraftTestCase</code> parameter is the framework interface for each generated combination.
+	Every key used with <code>case.params</code> matches a dimension key in the matrix declaration above. Orcraft
 	calls <code>_run_case</code> once for each selected combination, using the configured order and cycle counts.</p>
