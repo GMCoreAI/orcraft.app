@@ -440,7 +440,15 @@ bash -c "for i in {1..3}; do ping -c 1 10.0.0.5; done"', 'bash') }}
     </tr>
     <tr>
       <th>Data</th>
-      <td>Stored under the user's own profile</td>
+      <td>Security material and downloaded wheels live under the user's own profile -
+        <code>%APPDATA%\Orcraft</code>, or <code>~/.orcraft</code> elsewhere</td>
+    </tr>
+    <tr>
+      <th>Working directory</th>
+      <td>The controller writes <code>Logs</code>, <code>Sessions</code> and <code>Reports</code>
+        where it was launched, and endpoints unpack received test packages the same way - so launch
+        both from a directory you can write to. Set <code>ORCRAFT_DATA_ROOT</code> to send the
+        controller's output somewhere else instead</td>
     </tr>
     <tr>
       <th>Listening port</th>
