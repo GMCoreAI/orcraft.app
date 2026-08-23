@@ -1,32 +1,32 @@
 ---
-title: Tutorial · Advanced Configuration Parameters group
+title: Tutorial · Lambda Configuration Parameters
 key: tutorial
 description: "Use Lambda Selector parameters to fetch one or more configuration choices at runtime."
 ---
 {% import "partials/copy-command.njk" as cmd %}
 {% import "partials/code-block.njk" as codeblock %}
 {% import "partials/zoomable-image.njk" as media %}
-<h1>Advanced Configuration Parameters group</h1>
-<p>The <strong>Advanced Configuration Parameters</strong> group demonstrates configuration that is generated or
-	evaluated at runtime. Its tests fetch choices from external sources, generate test cases from matrices of
-	values, exclude invalid combinations, randomize dimension values and case order, and populate matrix
-	dimensions through functions. These features go beyond choosing or entering the fixed values covered in the
+<h1>Lambda Configuration Parameters</h1>
+<p>The tutorial suite's <strong>Advanced Configuration Parameters</strong> group contains the Lambda Selector and
+	Lambda Multi-Selector tests covered in this chapter. Their <strong>Lambda Configuration Parameters</strong>
+	obtain selectable values from callbacks at run-configuration time. Unlike the fixed choices introduced in the
 	<a class="text-accent" href="/tutorial/basic-configuration-parameters-group/">Basic Configuration Parameters
-	group</a>.</p>
+	group</a>, these fields can retrieve current options from external or changing sources. This chapter covers
+	single-value and multi-value Lambda selectors.</p>
 
 <h2 id="lambda-selector-parameter">Lambda Selector Parameter</h2>
 <p>Earlier Maze tests require a manually downloaded application and the folder containing its executable. This
 	test replaces that setup with a version selector. Selecting a Maze app release from GitHub downloads the
 	matching binary in the background or reuses its cached copy.</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/advanced-configuration-parameters-group/lambda-selector-parameter-test.png", "Lambda Selector Parameter test selected under the Advanced Configuration Parameters group, showing an empty Maze App Version field with its selection button", "large") }}
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/lambda-configuration-parameters/lambda-selector-parameter-test.png", "Lambda Selector Parameter test selected in the tutorial suite, showing an empty Maze App Version field with its selection button", "large") }}
 
 <h3 id="selecting-a-version">Selecting a value</h3>
 <p>Select the button at the right of <strong>Maze App Version</strong> to open its dialog. Leave the filter empty
 	to request every available release, or enter part of a tag such as <code>v3</code>, then select
 	<strong>Fetch</strong>. The returned release tags populate the drop-down:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/advanced-configuration-parameters-group/selection-drop-box.png", "Maze App Version selection dialog after fetching releases, with Maze-v3.0.0, Maze-v2.0.0 and Maze-v1.0.0 shown in the open drop-down", "large") }}
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/lambda-configuration-parameters/selection-drop-box.png", "Maze App Version selection dialog after fetching releases, with Maze-v3.0.0, Maze-v2.0.0 and Maze-v1.0.0 shown in the open drop-down", "large") }}
 <p>Choose one version and select <strong>OK</strong> to assign its tag to the test configuration:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/advanced-configuration-parameters-group/selected-version.png", "Lambda Selector Parameter configuration after confirming the selection, with maze-v3.0.0 assigned to Maze App Version", "large") }}
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/lambda-configuration-parameters/selected-version.png", "Lambda Selector Parameter configuration after confirming the selection, with maze-v3.0.0 assigned to Maze App Version", "large") }}
 <p>Fetching again replaces the available choices with the callback's latest result while preserving the current
 	selection when that value is still available.</p>
 
@@ -105,9 +105,9 @@ def fetch_maze_app_release_versions(filter_text: str = "") -> tuple[str, ...]:
 <p>Open <strong>Maze App Versions</strong> and select <strong>Fetch</strong>, as in the single-value selector. The
 	same callback returns the available release tags, while this dialog displays a checkbox beside each option.
 	Select each version to include, then select <strong>OK</strong>:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/advanced-configuration-parameters-group/lambda-multi-selector-parameter.png", "Maze App Versions dialog for Lambda Multi-Selector Parameter, with Maze-v3.0.0 and Maze-v1.0.0 selected and Maze-v2.0.0 unselected", "large") }}
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/lambda-configuration-parameters/lambda-multi-selector-parameter.png", "Maze App Versions dialog for Lambda Multi-Selector Parameter, with Maze-v3.0.0 and Maze-v1.0.0 selected and Maze-v2.0.0 unselected", "large") }}
 <p>The selected tags are stored together in the <strong>Maze App Versions</strong> field:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/advanced-configuration-parameters-group/selected-versions.png", "Lambda Multi-Selector Parameter configuration with maze-v3.0.0 and maze-v1.0.0 assigned to Maze App Versions", "large") }}
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/lambda-configuration-parameters/selected-versions.png", "Lambda Multi-Selector Parameter configuration with maze-v3.0.0 and maze-v1.0.0 assigned to Maze App Versions", "large") }}
 <p>When the test runs, each selected release is downloaded in the background or loaded from the cache. This
 	workflow eliminates manual binary downloads and folder-list configuration.</p>
 
@@ -148,69 +148,6 @@ def fetch_maze_app_release_versions(filter_text: str = "") -> tuple[str, ...]:
 <p>The configuration value is a tuple of selected tags. <code>_run_case</code> loops over it, resolves each
   release through <code>MazeApp.from_release</code>, and runs the configured command once per version.</p>
 
-<h2 id="matrix-and-cases">Matrix and Cases</h2>
-<p><strong>Matrix and Cases</strong> generates one test case for every combination of values declared by the
-	test's matrix. Select the test to see the generated cases below its regular configuration fields:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/advanced-configuration-parameters-group/matrix-and-cases-config.png", "Matrix and Cases test selected under the Advanced Configuration Parameters group, showing 24 selected cases generated from algorithm, seed, height and width dimensions", "large") }}
-<p>The summary reports <strong>Total Cases: 24</strong>, and the table shows how each case was assembled. The
-	<strong>algorithm</strong>, <strong>seed</strong>, <strong>height</strong> and <strong>width</strong> columns come
-	directly from the matrix dimensions. <strong>Case</strong> is the generated case number, while
-	<strong>Order</strong> is the position in which that case will run. With <strong>Run Order</strong> set to
-	<strong>In Order</strong>, those values are the same.</p>
-<p>Each check mark in <strong>Select</strong> includes that case in the run. Clearing one omits only that
-	combination; it does not change the matrix definition. <strong>Case Cycles</strong> controls how many times
-	each selected case runs, independently of the test-level <strong>Cycles</strong> value.</p>
-
-<h3 id="defining-the-matrix">Defining the matrix</h3>
-<p>Source directory:</p>
-{{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_advanced_configuration_parameters/test_matrix_and_cases/") }}
-<p>Declare a <code>Matrix</code> field on the test config and add one <code>Dimension</code> for each case
-	parameter. The first argument is the key used in the generated case; the second is the set of values that
-	dimension can take:</p>
-{{ codeblock.block('matrix = OrcraftConfigField.Matrix(
-	OrcraftConfigField.Dimension("algorithm", ("BFS", "DFS", "ASTAR")),
-	OrcraftConfigField.Dimension("seed", (42, 100)),
-	OrcraftConfigField.Dimension("height", (5, 10)),
-	OrcraftConfigField.Dimension("width", (15, 20)),
-)') }}
-<p>Orcraft builds the Cartesian product of those values. This matrix therefore creates
-	<code>3 × 2 × 2 × 2 = 24</code> cases. In the default order, the last dimension changes fastest: width
-	alternates first, followed by height, seed and then algorithm, which is the sequence visible in the table.</p>
-
-<h3 id="using-matrix-values">Using matrix values</h3>
-<p>Orcraft creates an <code>OrcraftTestCase</code> for each row in the Cartesian product, stores that row's
-	dimension choices in the case's <code>params</code> mapping, and passes the case to the test's
-	<code>_run_case</code> method.</p>
-<p>For example, the first row in the screenshot produces a mapping equivalent to:</p>
-{{ codeblock.block('{
-	"algorithm": "BFS",
-	"seed": 42,
-	"height": 5,
-	"width": 15,
-}') }}
-<p>The complete test class receives that generated case and uses its values to configure the Maze application:</p>
-{{ codeblock.block('class TestMatrixAndCases(OrcraftTest):
-	def __init__(self, config: TestMatrixAndCasesConfig | None = None) -> None:
-		super().__init__(config or TestMatrixAndCasesConfig())
-
-	def _run_case(self, case: OrcraftTestCase):
-
-		maze_app = MazeApp(
-			self.config.maze_executable_folder,
-			"solve",
-			width=case.params["width"],
-			height=case.params["height"],
-			seed=case.params["seed"],
-			start_row=0,
-			start_col=0,
-			end_row=case.params["height"] - 1,
-			end_col=case.params["width"] - 1,
-			algorithm=case.params["algorithm"],
-		)
-
-		maze_app.run()
-
-		return case.result') }}
-<p>The <code>case: OrcraftTestCase</code> parameter is the framework interface for each generated combination.
-	Every key used with <code>case.params</code> matches a dimension key in the matrix declaration above. Orcraft
-	calls <code>_run_case</code> once for each selected combination, using the configured order and cycle counts.</p>
+<p>After defining callback-driven configuration choices, continue to
+	<a class="text-accent" href="/tutorial/matrix-and-cases/">Matrix and Cases</a> to generate test cases from
+	combinations of configuration values and access their dimension values at run time.</p>

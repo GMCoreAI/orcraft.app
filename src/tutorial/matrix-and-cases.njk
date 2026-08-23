@@ -1,0 +1,182 @@
+---
+title: Tutorial · Matrix and Cases
+key: tutorial
+description: "Generate Orcraft test cases from matrix dimensions and use their values at run time."
+---
+{% import "partials/copy-command.njk" as cmd %}
+{% import "partials/code-block.njk" as codeblock %}
+{% import "partials/zoomable-image.njk" as media %}
+<h1>Matrix and Cases</h1>
+<p><strong>Matrix and Cases</strong> generates one test case for every combination of values declared by the
+	test's matrix. It follows
+	<a class="text-accent" href="/tutorial/lambda-configuration-parameters/">Lambda Configuration
+	Parameters</a>, which introduces callback-driven configuration choices in the same tutorial suite. Select the
+	test to see the generated cases below its regular configuration fields:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/matrix-and-cases/matrix-and-cases-config.png", "Matrix and Cases test selected in the tutorial suite, showing 24 selected cases generated from algorithm, seed, height and width dimensions", "large") }}
+<p>The summary reports <strong>Total Cases: 24</strong>, and the table shows how each case was assembled. The
+	<strong>algorithm</strong>, <strong>seed</strong>, <strong>height</strong> and <strong>width</strong> columns come
+	directly from the matrix dimensions. <strong>Case</strong> is the generated case number, while
+	<strong>Order</strong> is the position in which that case will run. With <strong>Run Order</strong> set to
+	<strong>In Order</strong>, those values are the same.</p>
+<p>Each check mark in <strong>Select</strong> includes that case in the run. Clearing one omits only that
+	combination; it does not change the matrix definition. <strong>Case Cycles</strong> controls how many times
+	each selected case runs, independently of the test-level <strong>Cycles</strong> value.</p>
+
+<h2 id="defining-the-matrix">Defining the matrix</h2>
+<p>Source directory:</p>
+{{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_advanced_configuration_parameters/test_matrix_and_cases/") }}
+<p>Declare a <code>Matrix</code> field on the test config and add one <code>Dimension</code> for each case
+	parameter. The first argument is the key used in the generated case; the second is the set of values that
+	dimension can take:</p>
+{{ codeblock.block('matrix = OrcraftConfigField.Matrix(
+	OrcraftConfigField.Dimension("algorithm", ("BFS", "DFS", "ASTAR")),
+	OrcraftConfigField.Dimension("seed", (42, 100)),
+	OrcraftConfigField.Dimension("height", (5, 10)),
+	OrcraftConfigField.Dimension("width", (15, 20)),
+)') }}
+<p>Orcraft builds the Cartesian product of those values. This matrix therefore creates
+	<code>3 × 2 × 2 × 2 = 24</code> cases. In the default order, the last dimension changes fastest: width
+	alternates first, followed by height, seed and then algorithm, which is the sequence visible in the table.</p>
+
+<h2 id="using-matrix-values">Using matrix values</h2>
+<p>Orcraft creates an <code>OrcraftTestCase</code> for each row in the Cartesian product, stores that row's
+	dimension choices in the case's <code>params</code> mapping, and passes the case to the test's
+	<code>_run_case</code> method.</p>
+<p>For example, the first row in the screenshot produces a mapping equivalent to:</p>
+{{ codeblock.block('{
+	"algorithm": "BFS",
+	"seed": 42,
+	"height": 5,
+	"width": 15,
+}') }}
+<p>The complete test class receives that generated case and uses its values to configure the Maze application:</p>
+{{ codeblock.block('class TestMatrixAndCases(OrcraftTest):
+	def __init__(self, config: TestMatrixAndCasesConfig | None = None) -> None:
+		super().__init__(config or TestMatrixAndCasesConfig())
+
+	def _run_case(self, case: OrcraftTestCase):
+
+		maze_app = MazeApp(
+			self.config.maze_executable_folder,
+			"solve",
+			width=case.params["width"],
+			height=case.params["height"],
+			seed=case.params["seed"],
+			start_row=0,
+			start_col=0,
+			end_row=case.params["height"] - 1,
+			end_col=case.params["width"] - 1,
+			algorithm=case.params["algorithm"],
+		)
+
+		maze_app.run()
+
+		return case.result') }}
+<p>The <code>case: OrcraftTestCase</code> parameter is the framework interface for each generated combination.
+	Every key used with <code>case.params</code> matches a dimension key in the matrix declaration above. Orcraft
+	calls <code>_run_case</code> once for each selected combination, using the configured order and cycle counts.</p>
+
+<h2 id="running-generated-cases">Running the generated cases</h2>
+<p>With all 24 cases selected and <strong>Case Cycles</strong> set to <code>1</code>, click
+	<strong class="text-purple">Run</strong>, then click <strong>Yes</strong> to confirm. Orcraft executes each
+	matrix combination once. The test row reports 24 planned, completed, and passed items, while the log presents
+	one result row for every generated case:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/matrix-and-cases/running-matrix-and-cases-test.png", "Completed Matrix and Cases run with all 24 generated cases passing and the log listing each case result", "large") }}
+<p>The result table preserves the matrix context for every execution. Its <strong>algorithm</strong>,
+	<strong>seed</strong>, <strong>height</strong>, and <strong>width</strong> columns identify the exact combination
+	used by each case, so a failure can be traced to its inputs without reconstructing the matrix order.</p>
+
+<h3 id="inspecting-case-results">Inspecting case results</h3>
+<p>Click <strong>Details</strong> for the completed test run to inspect the full execution hierarchy. The left
+	panel compares default, planned, and run configuration, including the matrix dimensions and the cases included
+	in the plan. The results tree on the right contains one node for each case and one
+	<strong>Case Cycle 1</strong> child beneath it:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/matrix-and-cases/checking-cases-statuses-in-details.png", "Matrix and Cases Details view showing 24 passing case nodes, each with one case-cycle result", "large") }}
+<p>The summary distinguishes generated cases from the surrounding result nodes. In this run, all 24 planned
+	cases completed and passed. Expanding a case exposes its status, timing, and the cycle execution associated
+	with that matrix combination.</p>
+
+<h2 id="repeating-each-case">Repeating each case</h2>
+<p><strong>Case Cycles</strong> controls repetition within each generated case. Change it from <code>1</code> to
+	<code>2</code> while all 24 cases are selected. <strong>Total Cases</strong> immediately changes from
+	<code>24</code> to <code>48</code>, reflecting 24 selected cases multiplied by two case cycles:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/matrix-and-cases/changing-case-cycles.png", "Matrix and Cases configuration with Case Cycles changed to two and Total Cases increased from 24 to 48", "large") }}
+<p>This setting is independent of the test-level <strong>Cycles</strong> value. Test cycles repeat the complete
+	test, while case cycles repeat each selected case within a test cycle.</p>
+
+<h3 id="planning-and-running-case-cycles">Planning and running case cycles</h3>
+<p>Click <strong class="text-accent">Update Plan</strong> to commit the new case-cycle count. The
+	<strong>Case Cycles</strong> value and <strong>Total Cases: 48</strong> indicator turn blue. The previous run is
+	marked as a plan mismatch because it executed each case only once:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/matrix-and-cases/updating-plan-with-case-cycles.png", "Matrix and Cases plan updated to two case cycles and 48 total case executions", "large") }}
+<p>Click <strong class="text-purple">Run</strong> and confirm the run. The completed test reports 48 planned,
+	completed, and passed executions. The log records each repetition independently; the example below shows the
+	configuration, Maze output, and passing result for <strong>Case Cycle 2</strong>:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/matrix-and-cases/running-with-two-case-cycles.png", "Completed Matrix and Cases run with 48 passing executions and the log showing the configuration, output, and result for Case Cycle 2", "large") }}
+<p>Click <strong>Details</strong> for the completed test run. Every generated case contains two children,
+	<strong>Case Cycle 1</strong> and <strong>Case Cycle 2</strong>, with independent status and timing:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/matrix-and-cases/checking-each-case-has-two-cycles-in-details.png", "Matrix and Cases Details view showing two passing case-cycle results beneath each generated case and 48 completed executions", "large") }}
+<p>The hierarchy makes the multiplication visible: the matrix defines the cases, case selection determines which
+	combinations participate, and <strong>Case Cycles</strong> determines how many times each selected combination
+	runs.</p>
+
+<h3 id="removing-a-run">Removing a run</h3>
+<p>This removal is not required for the Matrix and Cases workflow; it is included to demonstrate how Orcraft
+	removes an individual run instance. The execution tree retains a separate row for every run. Before returning
+	the configuration to one case cycle, remove the last two-cycle run used in the preceding example. Right-click
+	that run and click <strong class="text-danger">Remove</strong>:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/matrix-and-cases/removing-last-run.png", "Remove action opened for the last Matrix and Cases run while another run instance remains in the execution tree", "large") }}
+<p>After removal, the earlier one-cycle run remains and is marked with
+	<strong class="text-warning">Plan Mismatch</strong> because the current configuration still plans two case
+	cycles and 48 executions. Orcraft excludes plan-mismatched runs from the current plan's aggregate statistics.
+	Because the removed two-cycle run was the only run that matched the plan, the test now shows
+	<strong>Done: 0</strong>, <strong>Pass: 0</strong>, <strong>Fail: 0</strong>, <strong>Progress: 0%</strong>, and
+	<strong>Pass %: 0%</strong>, even though the retained one-cycle run completed successfully. The Matrix and Cases
+	test and its 48-execution configuration are unchanged:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/matrix-and-cases/after-rmoving-run.png", "Matrix and Cases after removing the last two-cycle run, with the earlier one-cycle run retained as a plan mismatch and the 48-execution configuration unchanged", "large") }}
+<p><strong>Remove</strong> deletes only the selected run instance and its recorded results.</p>
+
+<h3 id="restoring-one-case-cycle">Restoring one case cycle</h3>
+<p>Set <strong>Case Cycles</strong> from <code>2</code> back to <code>1</code>. This reduces
+	<strong>Total Cases</strong> from <code>48</code> to <code>24</code> without changing the selected cases or the
+	<strong>Maze Executable Folder</strong>. Click <strong class="text-accent">Update Plan</strong> to commit the
+	one-cycle configuration:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/matrix-and-cases/reset-to-defaults-and-updating-plan-again.png", "Matrix and Cases configuration returned to one case cycle and 24 total executions while retaining the configured Maze Executable Folder", "large") }}
+
+<h2 id="selecting-cases">Selecting a subset of cases</h2>
+
+<h3 id="clearing-the-case-selection">Clearing the case selection</h3>
+<p>The matrix continues to define 24 possible combinations even when only a subset is required for a run. Click
+	the <strong>Select</strong> column header to clear the current selection. The table remains populated, but
+	<strong>Total Cases</strong> changes to <code>0</code> and the configuration is marked as different from the
+	current plan:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/matrix-and-cases/deselect-all-cases.png", "Matrix and Cases configuration with all 24 generated cases cleared and Total Cases reduced to zero", "large") }}
+
+<h3 id="choosing-individual-cases">Choosing individual cases</h3>
+<p>Select the individual rows to include in the next run. In this example, cases 3 and 6 are selected, reducing
+	the execution scope to two cases while preserving all 24 generated rows:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/matrix-and-cases/selecting-two-cases.png", "Matrix and Cases configuration with only cases 3 and 6 selected from the 24 generated combinations", "large") }}
+
+<h3 id="updating-the-case-plan">Updating the case plan</h3>
+<p>Click <strong class="text-accent">Update Plan</strong> to make the two-case selection the planned scope. The
+	selection and <strong>Total Cases: 2</strong> indicator turn blue. The earlier 24-case run receives a
+	<strong class="text-warning">Plan Mismatch</strong> badge because its executed case set no longer matches the
+	new plan. Because that retained run is excluded from the new plan's aggregate statistics, the test shows zero
+	completed and passing cases:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/matrix-and-cases/two-cases-after-update-plan.png", "Matrix and Cases after updating the plan to cases 3 and 6, with Total Cases and Plan set to two, the retained 24-case run marked as a plan mismatch, and aggregate statistics at zero", "large") }}
+
+<h3 id="running-the-selected-cases">Running the selected cases</h3>
+<p>Click <strong class="text-purple">Run</strong> and confirm the run. Orcraft executes only cases 3 and 6, and
+	the completed test reports <strong>Plan: 2</strong>, <strong>Done: 2</strong>, <strong>Pass: 2</strong>, and
+	<strong>Pass %: 100%</strong>. The log lists both selected matrix combinations, while the older 24-case run
+	remains marked with <strong class="text-warning">Plan Mismatch</strong>:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/matrix-and-cases/two-cases-run.png", "Completed Matrix and Cases run with planned cases 3 and 6 passing, aggregate Plan, Done, and Pass counts at two, and the older 24-case run retained as a plan mismatch", "large") }}
+
+<h3 id="inspecting-the-selected-cases">Inspecting the selected cases</h3>
+<p>Click <strong>Details</strong> for the completed run. In the case table, cases 3 and 6 are the only rows marked
+	as both <strong>Planned</strong> and <strong>Run</strong>. The results tree contains those same two cases, each
+	with one passing <strong>Case Cycle 1</strong>, and the summary reports two planned, completed, and passing
+	executions:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/matrix-and-cases/two-case-run-details.png", "Matrix and Cases Details view showing cases 3 and 6 as the only planned and executed cases, each with one passing case cycle, and two completed passing executions", "large") }}
+<p>Case selection changes the execution scope, not the matrix definition. Unselected combinations remain
+	available in the table and can be restored without changing the test source.</p>

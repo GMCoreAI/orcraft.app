@@ -12,6 +12,7 @@
     { "label": "Running Folder Parameter test", "slug": "running-folder-parameter-test/" },
     { "label": "Basic Configuration Parameters group", "slug": "basic-configuration-parameters-group/" },
     { "label": "Running a group", "slug": "running-a-group/" },
-    { "label": "Advanced Configuration Parameters group", "slug": "advanced-configuration-parameters-group/" }
+    { "label": "Lambda Configuration Parameters", "slug": "lambda-configuration-parameters/" },
+    { "label": "Matrix and Cases", "slug": "matrix-and-cases/" }
   ]
 }
