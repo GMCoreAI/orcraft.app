@@ -5,6 +5,7 @@ description: "Install and run an Orcraft endpoint, with or without security enab
 ---
 {% import "partials/copy-command.njk" as cmd %}
 {% import "partials/zoomable-image.njk" as media %}
+{% import "partials/code-block.njk" as codeblock %}
 
 <h1>Adding endpoints</h1>
 <p>Register an endpoint so the controller can distribute test packages and execute steps on it.</p>
@@ -59,6 +60,36 @@ description: "Install and run an Orcraft endpoint, with or without security enab
 <p>A <strong class="text-success">Ready</strong> status means the endpoint can now run test steps remotely.</p>
 <p>You can now proceed to the <a class="text-accent" href="/tutorial/">Tutorial</a>.</p>
 
+<h2 id="auto-start">Start the endpoint automatically</h2>
+<p>Optional, and a single command. Registering the endpoint for auto-start means it comes back by
+  itself at your next logon, so a lab machine returns to service after a reboot without anyone
+  having to remember to start it:</p>
+{{ cmd.copyCommand("orcraft-endpoint startup") }}
+<p>Any options you pass are baked into the registration, so the endpoint comes back exactly the way
+  you run it by hand:</p>
+{{ cmd.copyCommand("orcraft-endpoint startup -port 50052 -secure disabled") }}
+<p>To check or undo it:</p>
+{{ codeblock.block('orcraft-endpoint startup --status
+orcraft-endpoint startup --remove', 'bash') }}
+<p>Registration uses each platform's own user-level mechanism, so it never asks for administrator
+  or root rights, and the endpoint starts when <em>you</em> log in:</p>
+<ul>
+  <li><strong>Windows</strong> - a Task Scheduler task. Nothing to install; Task Scheduler and
+    PowerShell are part of Windows.</li>
+  <li><strong>macOS</strong> - a launch agent in your own <code>~/Library/LaunchAgents</code> that
+    opens the endpoint in Terminal.app. Nothing to install.</li>
+  <li><strong>Linux</strong> - a systemd user service that opens the endpoint in a terminal window
+    in your desktop session. A standard desktop install already has everything it needs.</li>
+</ul>
+<p>The one thing to know about Linux: because the endpoint is shown in a real terminal window,
+  auto-start needs a graphical session and a terminal emulator on <code>PATH</code> - any of
+  <code>gnome-terminal</code>, <code>xfce4-terminal</code>, <code>konsole</code>,
+  <code>kitty</code>, <code>alacritty</code> or <code>xterm</code>. On a desktop image one of these
+  is always present. On a minimal image, one package covers it:</p>
+{{ cmd.copyCommand("sudo apt install xterm") }}
+<p>On a headless Linux server with no desktop at all, skip auto-start and launch the endpoint the
+  usual way - running it directly has no such requirement.</p>
+
 <h2 id="troubleshooting">Troubleshooting</h2>
 
 <h3 id="endpoint-status-online">Endpoint status: Online</h3>
@@ -71,7 +102,8 @@ description: "Install and run an Orcraft endpoint, with or without security enab
   <li>A security mismatch: one side is running in secure mode and the other isn't.</li>
   <li>Both sides are in secure mode, but the security setup procedure in the controller's Security
     tab was not completed as required.</li>
-  <li>A firewall is blocking the selected port on one of the machines.</li>
+  <li>A firewall is blocking the selected port on one of the machines - see
+    <a class="text-accent" href="/setup/prerequisites/#tcp-port">Prerequisites/TCP port</a>.</li>
   <li>The port configured in the controller doesn't match the port the endpoint is listening on.</li>
   <li>The endpoint process was stopped or restarted after the ping succeeded.</li>
 </ul>

@@ -11,7 +11,10 @@
       {%- else %}
       <span class="docs-nav__toggle docs-nav__toggle--leaf" aria-hidden="true"></span>
       {%- endif %}
-      <a class="docs-nav__link" href="{{ pageUrl }}#{{ node.id }}">{{ node.text }}</a>
+      {#- Only actions are flagged here; the other markers would be noise at this size.
+          The nbsp keeps the dot on the same line as the word it follows. -#}
+      <a class="docs-nav__link" href="{{ pageUrl }}#{{ node.id }}">{{ node.text }}{% if node.req == "action" %}&#160;<span
+          class="docs-nav__req" title="Action"></span>{% endif %}</a>
     </div>
     {%- if node.children.length %}
     {{ headingNodes(node.children, pageUrl) }}

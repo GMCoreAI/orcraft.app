@@ -31,26 +31,7 @@
   max-height: calc(100vh - 56px - var(--space-16));
   overflow-y: auto;
   overscroll-behavior: contain;
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-border) transparent;
   font-size: var(--font-size-sm);
-}
-
-.docs__sidebar::-webkit-scrollbar {
-  width: 6px;
-}
-
-.docs__sidebar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.docs__sidebar::-webkit-scrollbar-thumb {
-  border-radius: var(--radius-sm);
-  background: var(--color-border);
-}
-
-.docs__sidebar::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-muted);
 }
 
 .docs__article p,

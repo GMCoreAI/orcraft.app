@@ -16,3 +16,47 @@
   color: var(--color-cyan);
   border: 1px solid rgba(34, 211, 238, 0.35);
 }
+
+/* Section markers for docs headings. The label is supplied by CSS because the
+   sidebar builds its heading text by stripping tags from the template source -
+   a marker written as markup would end up appended to the nav entry. */
+.req::after {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15em 0.6em;
+  margin-inline-start: var(--space-3);
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.req--action::after {
+  content: "Action";
+  background: rgba(251, 191, 36, 0.12);
+  color: var(--color-warning);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+}
+
+.req--if::after {
+  content: "If needed";
+  background: rgba(154, 164, 178, 0.1);
+  color: var(--color-text-muted);
+  border: 1px solid rgba(154, 164, 178, 0.3);
+}
+
+.req--none::after {
+  content: "Nothing to do";
+  background: rgba(52, 211, 153, 0.1);
+  color: var(--color-success);
+  border: 1px solid rgba(52, 211, 153, 0.35);
+}
+
+/* In the legend the pill stands alone, with no heading text before it. */
+.req--legend::after {
+  margin-inline-start: 0;
+}

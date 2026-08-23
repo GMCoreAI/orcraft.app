@@ -8,7 +8,10 @@ import path from "node:path";
 
 const INPUT_DIR = "src";
 const SKIPPED_DIRS = new Set(["_data", "_includes", "assets", "styles", "scripts"]);
-const HEADING = /<h([2-4])\b[^>]*\sid="([^"]+)"[^>]*>([\s\S]*?)<\/h\1>/g;
+const HEADING = /<h([2-4])\b([^>]*)>([\s\S]*?)<\/h\1>/g;
+const HEADING_ID = /\sid="([^"]+)"/;
+// Section marker modifier (see .req in badge.css), mirrored as a dot in the nav.
+const HEADING_REQ = /\breq--([a-z]+)\b/;
 
 function toUrl(filePath) {
   const relative = path.relative(INPUT_DIR, filePath).split(path.sep);
@@ -28,8 +31,8 @@ function toTree(headings) {
   const root = [];
   const open = [];
 
-  for (const { level, id, text } of headings) {
-    const node = { id, text, children: [] };
+  for (const { level, id, text, req } of headings) {
+    const node = { id, text, req, children: [] };
     while (open.length && open.at(-1).level >= level) open.pop();
     (open.length ? open.at(-1).node.children : root).push(node);
     open.push({ level, node });
@@ -49,12 +52,23 @@ function collect(dir, pages) {
 
     if (!entry.name.endsWith(".njk")) continue;
 
-    const matches = [...readFileSync(entryPath, "utf8").matchAll(HEADING)];
-    if (!matches.length) continue;
+    const headings = [...readFileSync(entryPath, "utf8").matchAll(HEADING)]
+      .map(([, level, attributes, inner]) => {
+        const id = attributes.match(HEADING_ID)?.[1];
+        return id
+          ? {
+              level: Number(level),
+              id,
+              text: toText(inner),
+              req: attributes.match(HEADING_REQ)?.[1] ?? null,
+            }
+          : null;
+      })
+      .filter(Boolean);
 
-    pages[toUrl(entryPath)] = toTree(
-      matches.map(([, level, id, inner]) => ({ level: Number(level), id, text: toText(inner) }))
-    );
+    if (!headings.length) continue;
+
+    pages[toUrl(entryPath)] = toTree(headings);
   }
 
   return pages;

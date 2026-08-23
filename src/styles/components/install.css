@@ -59,3 +59,29 @@
     padding: var(--space-4);
   }
 }
+
+/* Inline copy affordance for commands sitting in table cells. Dimmed until the
+   row is hovered, so a table of commands doesn't read as a column of buttons. */
+.copy-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.copy-cell__copy {
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
+  opacity: 0.4;
+  transition: opacity var(--transition-fast);
+}
+
+.copy-cell__copy .icon {
+  font-size: 15px;
+}
+
+tr:hover .copy-cell__copy,
+.copy-cell:hover .copy-cell__copy,
+.copy-cell__copy:focus-visible,
+.copy-cell__copy.is-copied {
+  opacity: 1;
+}

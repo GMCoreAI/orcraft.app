@@ -19,3 +19,10 @@
   </button>
 </div>
 {% endmacro %}
+
+{# Inline variant for table cells: the command reads as ordinary <code>, with a
+   small copy button beside it. Whitespace is squeezed out so the two sit flush. #}
+{% macro copyCell(command) %}<span class="copy-cell"><code>{{ command }}</code><button
+    class="button button--ghost install__copy copy-cell__copy" type="button" data-copy="{{ command }}"
+    aria-label="Copy command" title="Copy command"><span class="install__copy-idle">{% icon "copy" %}</span><span
+      class="install__copy-done">{% icon "check" %}</span></button></span>{% endmacro %}
