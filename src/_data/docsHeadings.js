@@ -10,8 +10,6 @@ const INPUT_DIR = "src";
 const SKIPPED_DIRS = new Set(["_data", "_includes", "assets", "styles", "scripts"]);
 const HEADING = /<h([2-4])\b([^>]*)>([\s\S]*?)<\/h\1>/g;
 const HEADING_ID = /\sid="([^"]+)"/;
-// Section marker modifier (see .req in badge.css), mirrored as a dot in the nav.
-const HEADING_REQ = /\breq--([a-z]+)\b/;
 
 function toUrl(filePath) {
   const relative = path.relative(INPUT_DIR, filePath).split(path.sep);
@@ -31,8 +29,8 @@ function toTree(headings) {
   const root = [];
   const open = [];
 
-  for (const { level, id, text, req } of headings) {
-    const node = { id, text, req, children: [] };
+  for (const { level, id, text } of headings) {
+    const node = { id, text, children: [] };
     while (open.length && open.at(-1).level >= level) open.pop();
     (open.length ? open.at(-1).node.children : root).push(node);
     open.push({ level, node });
@@ -60,7 +58,6 @@ function collect(dir, pages) {
               level: Number(level),
               id,
               text: toText(inner),
-              req: attributes.match(HEADING_REQ)?.[1] ?? null,
             }
           : null;
       })

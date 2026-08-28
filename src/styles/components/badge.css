@@ -35,13 +35,6 @@
   vertical-align: middle;
 }
 
-.req--action::after {
-  content: "Action";
-  background: rgba(251, 191, 36, 0.12);
-  color: var(--color-warning);
-  border: 1px solid rgba(251, 191, 36, 0.35);
-}
-
 .req--if::after {
   content: "Troubleshooting";
   background: rgba(154, 164, 178, 0.1);

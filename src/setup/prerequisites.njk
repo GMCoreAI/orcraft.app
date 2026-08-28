@@ -36,11 +36,13 @@ description: "The three things to prepare before installing Orcraft: Python, a v
       <td class="docs-table__number">3</td>
       <td>Allow endpoint traffic</td>
       <td>Remote endpoints only</td>
-      <td>TCP 50051 and ping</td>
+      <td>One TCP port and ping</td>
     </tr>
   </tbody>
 </table>
 <p>Running tests only on the controller? Skip the endpoint traffic setup.</p>
+<p>The controller needs a desktop session for its GUI. Endpoints have no GUI, so they can run
+  headless - on a server or over SSH.</p>
 
 <h2 id="python">Install Python</h2>
 <p>Install Python 3.14 or later on the controller and every endpoint. Download it from
@@ -101,9 +103,11 @@ description: "The three things to prepare before installing Orcraft: Python, a v
 
 <h2 id="remote-endpoints">Allow remote endpoint traffic</h2>
 <p>Skip this section for local-only tests. For each remote endpoint, allow the controller to reach
-  TCP port <strong>50051</strong> and allow ping between the two machines.</p>
+  the port the endpoint listens on and allow ping between the two machines.</p>
 
-<h3 id="tcp-port">TCP port 50051</h3>
+<h3 id="tcp-port">TCP port</h3>
+<p>Endpoints listen on TCP <strong>50051</strong> unless you choose another port, so the commands
+  below use that default:</p>
 <table>
   <thead>
     <tr>
@@ -126,12 +130,14 @@ description: "The three things to prepare before installing Orcraft: Python, a v
     </tr>
   </tbody>
 </table>
-<p>Using a different firewall? Add the equivalent inbound TCP rule. The controller needs no inbound
-  rule. A custom endpoint port can be selected with <code>-port</code>.</p>
+<p>Running the endpoint on a different port? Select it with <code>-port</code>, use that number in
+  the rule, and enter the same port when adding the endpoint in the controller. Using a different
+  firewall? Add the equivalent inbound TCP rule. The controller needs no inbound rule.</p>
 
 <h3 id="icmp-ping">ICMP (Ping)</h3>
-<p>Ping is usually already allowed on lab and office networks. If an endpoint appears Offline,
-  allow ICMP echo requests in both directions:</p>
+<p>The controller pings each endpoint to confirm it is reachable before connecting to it. Lab and
+  office networks usually allow this already; if an endpoint appears Offline, allow ICMP echo
+  requests in both directions:</p>
 <table>
   <thead>
     <tr>
