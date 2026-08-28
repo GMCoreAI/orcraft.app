@@ -1,0 +1,341 @@
+---
+title: Setup · System reference
+key: setup
+description: "Compatibility, runtime behavior and troubleshooting notes for managed or unusual Orcraft environments."
+---
+{% import "partials/copy-command.njk" as cmd %}
+{% import "partials/code-block.njk" as codeblock %}
+
+<h1>System reference</h1>
+<p>Most installations do not need anything on this page. Use it when preparing managed, offline,
+  minimal or hardware-connected machines, or when diagnosing an environment-specific issue.</p>
+
+<h2 id="python-libraries">Python libraries</h2>
+<p>These libraries are installed automatically by pip.</p>
+<table>
+  <thead>
+    <tr>
+      <th>Library</th>
+      <th>Used for</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>PySide6</td>
+      <td>The controller's GUI</td>
+    </tr>
+    <tr>
+      <td>grpcio, protobuf</td>
+      <td>RPC communication between the controller and its endpoints</td>
+    </tr>
+    <tr>
+      <td>cryptography</td>
+      <td>mTLS and token-based security</td>
+    </tr>
+    <tr>
+      <td>anthropic, openai, google-genai</td>
+      <td>AI test generation and analysis - dormant until you configure a
+        <a class="text-accent" href="#ai-providers">provider</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="operating-systems">Operating systems</h2>
+<p>Orcraft supports Windows, Linux and macOS. It has been validated in these environments:</p>
+<table>
+  <thead>
+    <tr>
+      <th>OS</th>
+      <th>Version</th>
+      <th>Kernel / build</th>
+      <th>Architecture</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Windows</td>
+      <td>10</td>
+      <td>build 19045</td>
+      <td>x86_64</td>
+    </tr>
+    <tr>
+      <td>Windows</td>
+      <td>11</td>
+      <td>build 26200</td>
+      <td>x86_64</td>
+    </tr>
+    <tr>
+      <td>Ubuntu</td>
+      <td>24.04</td>
+      <td>kernel 6.17 and 7.0</td>
+      <td>x86_64</td>
+    </tr>
+    <tr>
+      <td>macOS</td>
+      <td>26.2</td>
+      <td>Darwin 25.2.0</td>
+      <td>arm64</td>
+    </tr>
+  </tbody>
+</table>
+<p>Other versions and architectures - arm64 Linux, Windows on Arm, Intel Macs - are expected to
+  work wherever Python and PySide6 are available; they simply have not been through the validation
+  matrix above yet.</p>
+<p>Windows 10 left mainstream support in October 2025, but it stays in the matrix on purpose: lab
+  and instrument machines often cannot be upgraded, and endpoints run on it perfectly well.</p>
+<p>The controller GUI's best experience is on Windows.</p>
+
+<h3 id="linux-desktop-libraries" class="req req--if">Linux desktop libraries (controller only)</h3>
+<p>Desktop Linux installations already include the Qt libraries used by the controller. Use these
+  commands only on a minimal image where startup fails with
+  <code>Could not load the Qt platform plugin "xcb"</code>. Endpoints have no GUI and need none of
+  these packages.</p>
+<table>
+  <thead>
+    <tr>
+      <th>Distribution</th>
+      <th>Command</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Debian, Ubuntu</td>
+      <td>{{ cmd.copyCell("sudo apt install libgl1 libxkbcommon-x11-0 libxcb-cursor0") }}</td>
+    </tr>
+    <tr>
+      <td>Fedora, RHEL</td>
+      <td>{{ cmd.copyCell("sudo dnf install mesa-libGL libxkbcommon-x11 xcb-util-cursor") }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="network-reference">Network behavior</h2>
+<table>
+  <tbody>
+    <tr>
+      <th>Endpoint port</th>
+      <td>TCP 50051 by default; configurable with <code>-port</code></td>
+    </tr>
+    <tr>
+      <th>Address families</th>
+      <td>Dual-stack IPv4 and IPv6; restrict the interface with <code>-bind</code></td>
+    </tr>
+    <tr>
+      <th>Controller</th>
+      <td>Outbound connections only; no inbound controller rule</td>
+    </tr>
+    <tr>
+      <th>Discovery</th>
+      <td>No broadcast, multicast or discovery ports</td>
+    </tr>
+    <tr>
+      <th>Host names</th>
+      <td>Optional - endpoints can be added by IP address. A DNS record or local
+        <code>hosts</code> entry works when names are preferred</td>
+    </tr>
+  </tbody>
+</table>
+<p>For the firewall steps needed by remote endpoints, see
+  <a class="text-accent" href="/setup/prerequisites/#remote-endpoints">Prerequisites/Remote endpoints</a>.</p>
+
+<h2 id="command-shell">Command shell</h2>
+<p>Every supported OS already includes the shell Orcraft uses. CLI commands in test steps run in:</p>
+<table>
+  <thead>
+    <tr>
+      <th>Endpoint OS</th>
+      <th>Commands run in</th>
+      <th>Not</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Windows</td>
+      <td><code>cmd.exe</code></td>
+      <td>PowerShell</td>
+    </tr>
+    <tr>
+      <td>Linux, macOS</td>
+      <td><code>/bin/sh</code></td>
+      <td>bash or zsh, so their syntax is not available by default</td>
+    </tr>
+  </tbody>
+</table>
+<p>If a step needs a particular shell, request it in the command:</p>
+{{ codeblock.block('powershell -NoProfile -Command "Get-Process orcraft-endpoint"
+bash -c "for i in {1..3}; do ping -c 1 10.0.0.5; done"', 'bash') }}
+
+<h2 id="terminal-output">Terminal output</h2>
+<p>The endpoint and test framework use ANSI colors and Unicode box-drawing characters.</p>
+<table>
+  <thead>
+    <tr>
+      <th>Terminal</th>
+      <th>Colored output</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Windows Terminal, PowerShell 7</td>
+      <td>Works as-is</td>
+    </tr>
+    <tr>
+      <td>Windows legacy console (conhost)</td>
+      <td>May print raw codes such as <code>&#8592;[92m</code> - see below</td>
+    </tr>
+    <tr>
+      <td>macOS Terminal.app, iTerm2</td>
+      <td>Works as-is</td>
+    </tr>
+    <tr>
+      <td>Linux emulators - gnome-terminal, konsole, xfce4-terminal, kitty, alacritty, xterm</td>
+      <td>Works as-is</td>
+    </tr>
+  </tbody>
+</table>
+<p>If a Windows console shows raw escape sequences, use Windows Terminal or enable virtual-terminal
+  processing once for the current user:</p>
+{{ cmd.copyCommand("reg add HKCU\\Console /v VirtualTerminalLevel /t REG_DWORD /d 1") }}
+<p>If box-drawing characters appear as <code>?</code>, use Windows Terminal or run
+  <code>chcp 65001</code> in the classic console. The controller GUI renders output itself and is
+  unaffected.</p>
+
+<h3 id="log-files">Log files</h3>
+<p>Runs are saved as <code>.ansi</code> files with their colors embedded.</p>
+<table>
+  <thead>
+    <tr>
+      <th>Reading a saved log</th>
+      <th>How</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Controller</td>
+      <td>Renders logs directly in its GUI and opens saved <code>.ansi</code> files</td>
+    </tr>
+    <tr>
+      <td>Linux, macOS</td>
+      <td>{{ cmd.copyCell("cat") }} or {{ cmd.copyCell("less -R") }} to scroll with colors intact</td>
+    </tr>
+    <tr>
+      <td>Windows</td>
+      <td>{{ cmd.copyCell("Get-Content") }} in Windows Terminal</td>
+    </tr>
+    <tr>
+      <td>Text editors</td>
+      <td>Show the escape codes unless the editor understands ANSI</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="permissions">Permissions and storage</h2>
+<p>Orcraft itself does not require administrator or root access.</p>
+<table>
+  <tbody>
+    <tr>
+      <th>Controller and endpoint</th>
+      <td>Run as the logged-in user - no elevation or system service required</td>
+    </tr>
+    <tr>
+      <th>Profile data</th>
+      <td>Security material and downloaded wheels use <code>%APPDATA%\Orcraft</code>, or
+        <code>~/.orcraft</code> elsewhere</td>
+    </tr>
+    <tr>
+      <th>Working directory</th>
+      <td>The controller writes <code>Logs</code>, <code>Sessions</code> and <code>Reports</code>
+        where it was launched; endpoints unpack received packages there too. Launch from a writable
+        directory. <code>ORCRAFT_DATA_ROOT</code> redirects controller output</td>
+    </tr>
+    <tr>
+      <th>Listening port</th>
+      <td>50051 is non-privileged</td>
+    </tr>
+    <tr>
+      <th>Test steps</th>
+      <td>Inherit the endpoint user's rights. Hardware tests may need additional device permissions
+        or an elevated endpoint session</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="optional-integrations">Optional integrations</h2>
+
+<h3 id="internet-access">Internet access</h3>
+<p>Connected machines install with <code>pip install orcraft</code>; isolated machines install from
+  a copied wheel file. Test traffic stays on your own network. Two controller conveniences make
+  outbound calls and fail quietly when unavailable:</p>
+<table>
+  <thead>
+    <tr>
+      <th>Call</th>
+      <th>When</th>
+      <th>Reaches</th>
+      <th>If unavailable</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Update check</td>
+      <td>Controller startup</td>
+      <td><code>pypi.org</code></td>
+      <td>Reported as failed; nothing downloads or installs without user action</td>
+    </tr>
+    <tr>
+      <td>Suite repository status</td>
+      <td>A Git-backed suite is added</td>
+      <td>That repository's remote</td>
+      <td>Status shown as unavailable</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="git">Git</h3>
+<p>Only needed for suites kept in Git repositories. Archive-based suites skip this integration.</p>
+<table>
+  <tbody>
+    <tr>
+      <th>Needs</th>
+      <td><code>git</code> on the controller's <code>PATH</code> and access to the repository remote</td>
+    </tr>
+    <tr>
+      <th>Behavior</th>
+      <td>Checks remote status in the background and offers a fast-forward pull; never prompts for
+        credentials or blocks a run</td>
+    </tr>
+    <tr>
+      <th>If unavailable</th>
+      <td>Repository status is unavailable; the suite still works</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="ai-providers">AI providers</h3>
+<p>AI-assisted generation and analysis are optional. Endpoints never contact AI providers.</p>
+<table>
+  <thead>
+    <tr>
+      <th>Provider</th>
+      <th>What the controller needs</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>OpenAI</td>
+      <td>An API key and outbound HTTPS</td>
+    </tr>
+    <tr>
+      <td>Anthropic</td>
+      <td>An API key and outbound HTTPS</td>
+    </tr>
+    <tr>
+      <td>Google Gemini</td>
+      <td>An API key and outbound HTTPS</td>
+    </tr>
+    <tr>
+      <td>OpenAI-compatible gateway</td>
+      <td>A base URL, API key or OAuth client credentials, and outbound HTTPS</td>
+    </tr>
+  </tbody>
+</table>

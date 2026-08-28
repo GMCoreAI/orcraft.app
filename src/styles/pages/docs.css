@@ -18,6 +18,10 @@
   align-items: start;
 }
 
+.docs__article {
+  min-width: 0;
+}
+
 /* The article spans the full width so code blocks, tables and screenshots can
    use it, while running text is capped at a readable measure. */
 .docs__article :is(p, ul, ol, blockquote) {
@@ -72,6 +76,12 @@
 
 .docs__article td {
   color: var(--color-text-muted);
+}
+
+.docs__article .docs-table__number {
+  width: 1%;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .docs__article p.text-danger {
@@ -234,5 +244,11 @@
     position: static;
     max-height: none;
     overflow-y: visible;
+  }
+
+  .docs__article table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
   }
 }

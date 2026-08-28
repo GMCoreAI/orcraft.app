@@ -6,6 +6,7 @@
     { "label": "Orcraft setup overview", "slug": "" },
     { "label": "Prerequisites", "slug": "prerequisites/" },
     { "label": "Getting started", "slug": "getting-started/" },
-    { "label": "Adding endpoints", "slug": "endpoints/" }
+    { "label": "Adding endpoints", "slug": "endpoints/" },
+    { "label": "System reference", "slug": "system-reference/" }
   ]
 }

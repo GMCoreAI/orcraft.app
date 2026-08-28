@@ -1,112 +1,73 @@
 ---
 title: Setup · Prerequisites
 key: setup
-description: "What Orcraft needs before you install it: Python, supported operating systems, network access and permissions."
+description: "The three things to prepare before installing Orcraft: Python, a virtual environment and endpoint network access."
 ---
 {% import "partials/copy-command.njk" as cmd %}
-{% import "partials/code-block.njk" as codeblock %}
 
 <h1>Prerequisites</h1>
-<p>Orcraft is a single <code>pip install</code> on each machine. There is no installer to run as an
-  administrator, no system service to configure and no agent to provision - the controller and the
-  endpoints are ordinary Python applications that run as your own user.</p>
-<p>In practice, a machine that already has Python on it is ready to go. The rest of this page lists
-  what Orcraft assumes is in place, and how to satisfy each item in a line or two if it isn't.</p>
-<p>Only <strong>three</strong> sections below ask you to do anything. Every heading is marked so you
-  can tell at a glance which is which:</p>
-<table>
-  <tbody>
-    <tr>
-      <td><span class="req req--action req--legend"></span></td>
-      <td>Do this to get Orcraft running.</td>
-    </tr>
-    <tr>
-      <td><span class="req req--if req--legend"></span></td>
-      <td>Troubleshooting - only when something doesn't behave as expected.</td>
-    </tr>
-    <tr>
-      <td><span class="req req--none req--legend"></span></td>
-      <td>Already true on a typical machine. Listed so you know how Orcraft behaves.</td>
-    </tr>
-  </tbody>
-</table>
-
-<h2 id="at-a-glance">At a glance</h2>
+<p>Orcraft needs Python on each machine and one network port for remote endpoints. Everything else
+  is installed automatically by pip.</p>
+<p>Check <a class="text-accent" href="/setup/system-reference/#operating-systems">supported operating
+  systems</a> for platform coverage and validated environments.</p>
 <table>
   <thead>
     <tr>
-      <th>What</th>
-      <th>Controller</th>
-      <th>Endpoint</th>
-      <th>How it's satisfied</th>
+      <th class="docs-table__number" scope="col">#</th>
+      <th>Step</th>
+      <th>Where</th>
+      <th>What to do</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td>Python 3.14+</td>
-      <td>Required</td>
-      <td>Required</td>
+      <td class="docs-table__number">1</td>
+      <td>Install Python 3.14+</td>
+      <td>Controller and endpoints</td>
       <td>One installer from python.org</td>
     </tr>
     <tr>
-      <td>Python libraries</td>
-      <td>Required</td>
-      <td>Required</td>
-      <td>Installed automatically by pip</td>
+      <td class="docs-table__number">2</td>
+      <td>Create a virtual environment</td>
+      <td>Controller and endpoints</td>
+      <td>Three commands below</td>
     </tr>
     <tr>
-      <td>TCP port 50051</td>
-      <td>Outbound</td>
-      <td>Inbound</td>
-      <td>One firewall rule, once per endpoint</td>
+      <td class="docs-table__number">3</td>
+      <td>Allow endpoint traffic</td>
+      <td>Remote endpoints only</td>
+      <td>TCP 50051 and ping</td>
+    </tr>
+  </tbody>
+</table>
+<p>Running tests only on the controller? Skip the endpoint traffic setup.</p>
+
+<h2 id="python">Install Python</h2>
+<p>Install Python 3.14 or later on the controller and every endpoint. Download it from
+  <a class="text-accent" href="https://www.python.org/downloads/">python.org</a>; on Windows,
+  select <strong>Add python.exe to PATH</strong> in the installer.</p>
+<table>
+  <thead>
+    <tr>
+      <th>OS</th>
+      <th>Verify</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Windows</td>
+      <td>{{ cmd.copyCell("python --version") }}</td>
     </tr>
     <tr>
-      <td>ICMP (ping)</td>
-      <td>Both directions</td>
-      <td>Both directions</td>
-      <td>Usually already allowed on a lab network</td>
-    </tr>
-    <tr>
-      <td>Desktop session</td>
-      <td>Required (GUI)</td>
-      <td>Not required</td>
-      <td>Endpoints run headless, over SSH or on a server</td>
-    </tr>
-    <tr>
-      <td>Administrator / root</td>
-      <td>Not required</td>
-      <td>Not required</td>
-      <td>Nothing to do</td>
-    </tr>
-    <tr>
-      <td>Internet access</td>
-      <td>Optional</td>
-      <td>Optional</td>
-      <td>Offline installs use a wheel file</td>
-    </tr>
-    <tr>
-      <td>Git</td>
-      <td>Optional</td>
-      <td>Not required</td>
-      <td>Only for suites kept in a repository</td>
+      <td>Linux, macOS</td>
+      <td>{{ cmd.copyCell("python3 --version") }}</td>
     </tr>
   </tbody>
 </table>
 
-<h2 id="python" class="req req--action">Python</h2>
-<p>Orcraft requires Python 3.14 or later, installed on <strong>both</strong> the controller
-  machine and every endpoint machine.</p>
-<p>New to Python? Download the installer from
-  <a class="text-accent" href="https://www.python.org/downloads/">python.org</a>, run it, and make
-  sure the "Add python.exe to PATH" option is checked during installation. Once installed, verify
-  it from a terminal:</p>
-{{ cmd.copyCommand("python --version") }}
-<p>On Linux and macOS the command is usually <code>python3</code> rather than <code>python</code>.</p>
-
-<h3 id="virtual-environment" class="req req--action">Virtual environment (recommended)</h3>
-<p>A virtual environment keeps Orcraft isolated from the system Python, and avoids the
-  <code>externally-managed-environment</code> message that recent distributions such as Ubuntu
-  24.04 show for a plain <code>pip install</code>. Three commands:</p>
+<h2 id="virtual-environment">Create a virtual environment</h2>
+<p>This keeps Orcraft isolated from the system Python and avoids Linux's
+  <code>externally-managed-environment</code> error.</p>
 <table>
   <thead>
     <tr>
@@ -133,146 +94,21 @@ description: "What Orcraft needs before you install it: Python, supported operat
     </tr>
   </tbody>
 </table>
-<p>Activate the environment before running <code>orcraft-controller</code> or
-  <code>orcraft-endpoint</code>. If PowerShell refuses to run the activation script, allow it for
-  the current window only - no machine-wide change, no administrator rights:</p>
+<p>Activate the environment whenever you open a new terminal before running Orcraft.</p>
+<p>If PowerShell blocks the activation script, allow it for the current terminal only - no
+  administrator rights or machine-wide change:</p>
 {{ cmd.copyCommand("Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned") }}
 
-<h2 id="python-libraries" class="req req--none">Python libraries</h2>
-<p>Installed automatically by pip - nothing to do manually.</p>
+<h2 id="remote-endpoints">Allow remote endpoint traffic</h2>
+<p>Skip this section for local-only tests. For each remote endpoint, allow the controller to reach
+  TCP port <strong>50051</strong> and allow ping between the two machines.</p>
+
+<h3 id="tcp-port">TCP port 50051</h3>
 <table>
   <thead>
     <tr>
-      <th>Library</th>
-      <th>Used for</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>PySide6</td>
-      <td>The controller's GUI</td>
-    </tr>
-    <tr>
-      <td>grpcio, protobuf</td>
-      <td>RPC communication between the controller and its endpoints</td>
-    </tr>
-    <tr>
-      <td>cryptography</td>
-      <td>mTLS and token-based security</td>
-    </tr>
-    <tr>
-      <td>anthropic, openai, google-genai</td>
-      <td>AI test generation and analysis - dormant until you configure a
-        <a class="text-accent" href="#ai-providers">provider</a></td>
-    </tr>
-  </tbody>
-</table>
-
-<h2 id="operating-systems" class="req req--none">Operating systems</h2>
-<p>The controller and endpoints can be run on Windows, Linux and macOS.</p>
-<p>Validated on:</p>
-<table>
-  <thead>
-    <tr>
-      <th>OS</th>
-      <th>Version</th>
-      <th>Kernel / build</th>
-      <th>Architecture</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Windows</td>
-      <td>10</td>
-      <td>build 19045</td>
-      <td>x86_64</td>
-    </tr>
-    <tr>
-      <td>Windows</td>
-      <td>11</td>
-      <td>build 26200</td>
-      <td>x86_64</td>
-    </tr>
-    <tr>
-      <td>Ubuntu</td>
-      <td>24.04</td>
-      <td>kernel 6.17 and 7.0</td>
-      <td>x86_64</td>
-    </tr>
-    <tr>
-      <td>macOS</td>
-      <td>26.2</td>
-      <td>Darwin 25.2.0</td>
-      <td>arm64</td>
-    </tr>
-  </tbody>
-</table>
-<p>Other versions and architectures - arm64 Linux, Windows on Arm, Intel Macs - are expected to
-  work wherever Python and PySide6 are available; they simply haven't been through the validation
-  matrix above yet.</p>
-<p>Windows 10 left mainstream support in October 2025, but it stays in the matrix on purpose: lab
-  and instrument machines often can't be upgraded, and endpoints run on it perfectly well.</p>
-<p>The controller GUI's best experience is on Windows.</p>
-
-<h3 id="linux-desktop-libraries" class="req req--if">Linux desktop libraries (controller only)</h3>
-<p>The controller's GUI is built on Qt, which needs a few shared libraries that desktop Linux
-  installs already include. You only need these on a minimal image, where the controller fails to
-  start with <code>Could not load the Qt platform plugin "xcb"</code>. Endpoints have no GUI and
-  need none of it.</p>
-<table>
-  <thead>
-    <tr>
-      <th>Distribution</th>
-      <th>Command</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Debian, Ubuntu</td>
-      <td>{{ cmd.copyCell("sudo apt install libgl1 libxkbcommon-x11-0 libxcb-cursor0") }}</td>
-    </tr>
-    <tr>
-      <td>Fedora, RHEL</td>
-      <td>{{ cmd.copyCell("sudo dnf install mesa-libGL libxkbcommon-x11 xcb-util-cursor") }}</td>
-    </tr>
-  </tbody>
-</table>
-
-<h2 id="network">Network</h2>
-<p>Orcraft uses exactly two things on the network: one TCP port and ping. No additional ports, no
-  discovery broadcasts, no inbound connections to the controller.</p>
-
-<h3 id="tcp-port" class="req req--action">TCP port</h3>
-<p>Each endpoint listens on <strong>TCP port 50051</strong> and the controller connects out to it.
-  Allow that port inbound on the endpoint machine and the connection works.</p>
-<table>
-  <tbody>
-    <tr>
-      <th>Default port</th>
-      <td>50051, per endpoint</td>
-    </tr>
-    <tr>
-      <th>Changing it</th>
-      <td>Start the endpoint with <code>-port 50052</code>, and enter the same port when adding the
-        endpoint in the controller</td>
-    </tr>
-    <tr>
-      <th>Interfaces</th>
-      <td>Dual-stack - accepts IPv4 and IPv6. Use <code>-bind</code> to restrict it to one
-        interface</td>
-    </tr>
-    <tr>
-      <th>Controller</th>
-      <td>Outbound only - no inbound rule of its own</td>
-    </tr>
-  </tbody>
-</table>
-<p>To open the port on the endpoint machine:</p>
-<table>
-  <thead>
-    <tr>
-      <th>OS</th>
-      <th>How</th>
+      <th>Endpoint OS</th>
+      <th>What to do</th>
     </tr>
   </thead>
   <tbody>
@@ -281,22 +117,21 @@ description: "What Orcraft needs before you install it: Python, supported operat
       <td>{{ cmd.copyCell("New-NetFirewallRule -DisplayName 'Orcraft Endpoint' -Direction Inbound -Protocol TCP -LocalPort 50051 -Action Allow") }}</td>
     </tr>
     <tr>
-      <td>Linux</td>
-      <td>{{ cmd.copyCell("sudo ufw allow 50051/tcp") }} or the equivalent for
-        <code>firewalld</code>/<code>nftables</code></td>
+      <td>Linux with ufw</td>
+      <td>{{ cmd.copyCell("sudo ufw allow 50051/tcp") }}</td>
     </tr>
     <tr>
       <td>macOS</td>
-      <td>Doesn't filter by port - allow incoming connections at the prompt the first time you run
-        the endpoint</td>
+      <td>Allow incoming connections when macOS prompts the first time the endpoint runs</td>
     </tr>
   </tbody>
 </table>
+<p>Using a different firewall? Add the equivalent inbound TCP rule. The controller needs no inbound
+  rule. A custom endpoint port can be selected with <code>-port</code>.</p>
 
-<h3 id="icmp-ping" class="req req--if">ICMP (Ping)</h3>
-<p>The controller pings each endpoint to check whether it is reachable, before connecting to the
-  endpoint application. Most lab and office networks already allow this. If ping is blocked, allow
-  ICMP echo requests between the controller and every endpoint, in both directions:</p>
+<h3 id="icmp-ping">ICMP (Ping)</h3>
+<p>Ping is usually already allowed on lab and office networks. If an endpoint appears Offline,
+  allow ICMP echo requests in both directions:</p>
 <table>
   <thead>
     <tr>
@@ -307,253 +142,23 @@ description: "What Orcraft needs before you install it: Python, supported operat
   <tbody>
     <tr>
       <td>Windows</td>
-      <td>Inbound "File and Printer Sharing (Echo Request - ICMPv4/ICMPv6)" in Windows Defender
-        Firewall, or the equivalent third-party rule</td>
+      <td>Inbound "File and Printer Sharing (Echo Request - ICMPv4/ICMPv6)"</td>
     </tr>
     <tr>
       <td>Linux</td>
-      <td>Make sure <code>iptables</code>/<code>nftables</code> - or a front-end such as
-        <code>ufw</code> or <code>firewalld</code> - isn't dropping ICMP</td>
+      <td>ICMP in <code>ufw</code>, <code>firewalld</code>, <code>nftables</code> or
+        <code>iptables</code></td>
     </tr>
     <tr>
       <td>macOS</td>
-      <td>Allow incoming ping in System Settings' firewall, or turn off "Block all incoming
-        connections"</td>
-    </tr>
-  </tbody>
-</table>
-<p>Corporate networks, VPNs and cloud security groups often block ICMP by default even when other
-  ports are open - check with your network administrator if ping keeps failing.</p>
-
-<h3 id="host-names" class="req req--none">Host names</h3>
-<p>Endpoints can be added by IP address, so no DNS setup is required. To add them by host name, the
-  name only has to resolve from the controller - a DNS record or a local <code>hosts</code> entry
-  both work.</p>
-
-<h2 id="command-shell" class="req req--none">Command shell</h2>
-<p>Nothing to install - every supported OS already ships the shell Orcraft uses. Worth knowing which
-  one, though, since test steps that run a CLI command are executed by the endpoint's default
-  system shell:</p>
-<table>
-  <thead>
-    <tr>
-      <th>Endpoint OS</th>
-      <th>Commands run in</th>
-      <th>Not</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Windows</td>
-      <td><code>cmd.exe</code></td>
-      <td>PowerShell</td>
-    </tr>
-    <tr>
-      <td>Linux, macOS</td>
-      <td><code>/bin/sh</code></td>
-      <td>bash or zsh, so their syntax isn't available by default</td>
-    </tr>
-  </tbody>
-</table>
-<p>If a step needs a particular shell, ask for it in the command itself:</p>
-{{ codeblock.block('powershell -NoProfile -Command "Get-Process orcraft-endpoint"
-bash -c "for i in {1..3}; do ping -c 1 10.0.0.5; done"', 'bash') }}
-
-<h2 id="terminal-output" class="req req--none">Terminal output</h2>
-<p>The endpoint and the test framework print colored, formatted output - progress bars, result
-  tables, pass/fail rollups - using ANSI escape sequences and Unicode box-drawing characters. Every
-  terminal below handles both as they come; the only one that needs attention is Windows' legacy
-  console.</p>
-<table>
-  <thead>
-    <tr>
-      <th>Terminal</th>
-      <th>Colored output</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Windows Terminal, PowerShell 7</td>
-      <td>Works as-is</td>
-    </tr>
-    <tr>
-      <td>Windows legacy console (conhost)</td>
-      <td>May print raw codes such as <code>&#8592;[92m</code> - see below</td>
-    </tr>
-    <tr>
-      <td>macOS Terminal.app, iTerm2</td>
-      <td>Works as-is</td>
-    </tr>
-    <tr>
-      <td>Linux emulators - gnome-terminal, konsole, xfce4-terminal, kitty, alacritty, xterm</td>
-      <td>Works as-is</td>
-    </tr>
-  </tbody>
-</table>
-<p>If a Windows console shows raw escape sequences instead of colors, the simplest fix is to run
-  the endpoint from Windows Terminal. To enable it for the classic console instead, set it once per
-  user - no administrator rights needed:</p>
-{{ cmd.copyCommand("reg add HKCU\\Console /v VirtualTerminalLevel /t REG_DWORD /d 1") }}
-<p>If box-drawing characters come out as <code>?</code>, the console is using a legacy code page.
-  Windows Terminal uses UTF-8 by default; in the classic console, switch with
-  <code>chcp 65001</code>.</p>
-<p>None of this affects the controller - its GUI renders the same output itself, with no terminal
-  involved.</p>
-
-<h3 id="log-files" class="req req--none">Log files</h3>
-<p>Every run is also saved to a <code>.ansi</code> log file with the color codes embedded, so a
-  saved log looks exactly like the live output.</p>
-<table>
-  <thead>
-    <tr>
-      <th>Reading a saved log</th>
-      <th>How</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Controller</td>
-      <td>Renders logs directly in its GUI, and opens saved <code>.ansi</code> files</td>
-    </tr>
-    <tr>
-      <td>Linux, macOS</td>
-      <td>{{ cmd.copyCell("cat") }} or {{ cmd.copyCell("less -R") }} to scroll with colors intact</td>
-    </tr>
-    <tr>
-      <td>Windows</td>
-      <td>{{ cmd.copyCell("Get-Content") }} in Windows Terminal</td>
-    </tr>
-    <tr>
-      <td>Text editors</td>
-      <td>Show the escape codes as text unless the editor understands ANSI</td>
+      <td>Incoming ping in the firewall; "Block all incoming connections" must be off</td>
     </tr>
   </tbody>
 </table>
 
-<h2 id="permissions" class="req req--none">Permissions</h2>
-<p>Orcraft never needs administrator or root access.</p>
-<table>
-  <tbody>
-    <tr>
-      <th>Controller and endpoint</th>
-      <td>Run as the logged-in user - no elevation, no system service to install</td>
-    </tr>
-    <tr>
-      <th>Data</th>
-      <td>Security material and downloaded wheels live under the user's own profile -
-        <code>%APPDATA%\Orcraft</code>, or <code>~/.orcraft</code> elsewhere</td>
-    </tr>
-    <tr>
-      <th>Working directory</th>
-      <td>The controller writes <code>Logs</code>, <code>Sessions</code> and <code>Reports</code>
-        where it was launched, and endpoints unpack received test packages the same way - so launch
-        both from a directory you can write to. Set <code>ORCRAFT_DATA_ROOT</code> to send the
-        controller's output somewhere else instead</td>
-    </tr>
-    <tr>
-      <th>Listening port</th>
-      <td>50051 is non-privileged, so binding it needs no special rights</td>
-    </tr>
-    <tr>
-      <th>Test steps</th>
-      <td>Inherit the rights of the user running the endpoint - start the endpoint from an elevated
-        session if a test needs more</td>
-    </tr>
-    <tr>
-      <th><code>sudo</code> commands</th>
-      <td>Only the optional system-package and firewall ones on this page, handled by whoever
-        administers the machine</td>
-    </tr>
-  </tbody>
-</table>
-
-<h2 id="optional-extras">Optional extras</h2>
-
-<h3 id="internet-access">Internet access</h3>
-<p>Handy, but not required. Connected machines install with <code>pip install orcraft</code>;
-  isolated machines install from a wheel file copied across - see
-  <a class="text-accent" href="/setup/getting-started/#install-from-a-wheel-file">Getting started</a>.</p>
-<p>Once installed, all test traffic between the controller and its endpoints stays on your own
-  network. The controller itself makes two outbound calls, both conveniences that fail quietly and
-  never block a run:</p>
-<table>
-  <thead>
-    <tr>
-      <th>Call</th>
-      <th>When</th>
-      <th>Reaches</th>
-      <th>If unavailable</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Update check</td>
-      <td>Controller startup</td>
-      <td><code>pypi.org</code></td>
-      <td>Reported as a failed check; nothing is downloaded or installed without you asking</td>
-    </tr>
-    <tr>
-      <td>Suite repository status</td>
-      <td>A suite from a Git repository is added to the test explorer</td>
-      <td>That repository's own remote</td>
-      <td>Status shown as unavailable - see <a class="text-accent" href="#git">Git</a></td>
-    </tr>
-  </tbody>
-</table>
-
-<h3 id="git">Git</h3>
-<p>Only relevant if your test suites live in Git repositories - which the
-  <a class="text-accent" href="/tutorial/">Tutorial</a> suite does. Downloading a suite as an
-  archive works just as well, and suites outside a repository skip all of this.</p>
-<p>When such a suite is added to the test explorer, the controller runs the <code>git</code> command
-  line to show whether your copy is up to date with the repository's remote, and offers a
-  fast-forward pull.</p>
-<table>
-  <tbody>
-    <tr>
-      <th>Needs</th>
-      <td><code>git</code> on the controller's <code>PATH</code>, and whatever access that remote
-        requires - typically the credentials you already use for it</td>
-    </tr>
-    <tr>
-      <th>Behaviour</th>
-      <td>Informational only. Runs in the background, never prompts for credentials, never holds up
-        a test run</td>
-    </tr>
-    <tr>
-      <th>If unavailable</th>
-      <td>The suite's repository status is shown as unavailable; everything else works normally</td>
-    </tr>
-  </tbody>
-</table>
-
-<h3 id="ai-providers">AI providers</h3>
-<p>Orcraft's AI-assisted test generation and analysis are entirely optional - every other feature
-  works without them. Endpoints never talk to an AI provider; only the controller does.</p>
-<table>
-  <thead>
-    <tr>
-      <th>Provider</th>
-      <th>What you need</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>OpenAI</td>
-      <td>An API key</td>
-    </tr>
-    <tr>
-      <td>Anthropic</td>
-      <td>An API key</td>
-    </tr>
-    <tr>
-      <td>Google Gemini</td>
-      <td>An API key</td>
-    </tr>
-    <tr>
-      <td>OpenAI-compatible gateway</td>
-      <td>A base URL, plus an API key or OAuth client credentials</td>
-    </tr>
-  </tbody>
-</table>
-<p>Whichever you choose, the controller needs outbound HTTPS to it.</p>
+<h2 id="next-step">Ready</h2>
+<p>That is everything needed for a normal installation. Continue to
+  <a class="text-accent" href="/setup/getting-started/">Getting started</a>.</p>
+<p>Preparing an offline, minimal or managed machine? The
+  <a class="text-accent" href="/setup/system-reference/">System reference</a> covers supported
+  operating systems, permissions, terminal behavior and optional integrations.</p>
