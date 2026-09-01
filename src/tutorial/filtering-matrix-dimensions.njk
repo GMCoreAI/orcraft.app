@@ -36,6 +36,10 @@ description: "Narrow or widen the values a matrix dimension offers, and commit t
 	declared. The entry is read as an integer when it looks like one, otherwise as a floating-point number,
 	otherwise as text — so <code>7</code> arrives as a number and <code>GREEDY</code> as a string. Adding a value
 	that is already listed simply checks it.</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/filtering-matrix-dimensions/adding-a-value.png", "Dimension Filter dialog for the width dimension with a value of 30 added below the declared 15 and 20, marked with an asterisk and checked", "large") }}
+<p>Here <strong>30</strong> has been added to <strong>width</strong>, which the test declares as
+	<code>(15, 20)</code>. It sits in the list alongside them, checked, and the matrix now produces cases for all
+	three widths.</p>
 <p>A dimension can therefore be widened as well as narrowed from the panel, without editing the test source. The
 	field is present only while <strong>Random Configuration</strong> is set to <strong>Disabled</strong>; a
 	dimension that draws its values randomly is covered on its own page.</p>
@@ -73,9 +77,12 @@ description: "Narrow or widen the values a matrix dimension offers, and commit t
 	A run started now executes the eight surviving cases and counts against this plan.</p>
 
 <h2 id="filtering-several-dimensions">Filtering several dimensions</h2>
-<p>Each dimension has its own filter, and they combine the way the matrix does. Keeping one algorithm, one seed and
-	both heights leaves <code>1 × 1 × 2 × 2 = 4</code> cases: the surviving cases are the product of the values kept
-	on every dimension, not a list of rows chosen by hand.</p>
+<p>Each dimension has its own filter, and they combine the way the matrix does. Keep <strong>BFS</strong> on
+	<strong>algorithm</strong> and <strong>42</strong> on <strong>seed</strong>, leaving both heights and both
+	widths:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/filtering-matrix-dimensions/filtering-several-dimensions.png", "Matrix and Cases run panel with algorithm filtered to BFS and seed to 42, reporting Total Cases 4 and both filtered column headers marked as changed", "large") }}
+<p><code>1 × 1 × 2 × 2 = 4</code> cases survive, and both filtered column headers are marked. The surviving cases
+	are the product of the values kept on every dimension, not a list of rows chosen by hand.</p>
 <p>This is what makes filtering worth reaching for on a large matrix. Pinning three dimensions and leaving one open
 	isolates that dimension's effect, and the case count states plainly how much work the next run is.</p>
 
@@ -88,7 +95,8 @@ description: "Narrow or widen the values a matrix dimension offers, and commit t
 	declared matrix.</p>
 <p>Note what else the reset does: every field returns to its declared default, and a required field that has no
 	default is cleared. <strong>Maze Executable Folder</strong> is one of those, so it has to be set again before
-	the test can run. The confirmation dialog says so before the reset is applied.</p>
+	the test can run. The confirmation dialog says so before the reset is applied:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/filtering-matrix-dimensions/reset-to-defaults-confirmation.png", "Reset To Defaults confirmation dialog warning that unsaved changes will be lost and that required fields without a default will be cleared", "large") }}
 <p>To restore a single dimension without touching the rest of the configuration, use
 	<strong>Reset to Defaults</strong> inside that dimension's own filter dialog instead.</p>
 
