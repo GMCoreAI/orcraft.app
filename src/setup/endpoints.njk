@@ -14,12 +14,46 @@ description: "Install and run an Orcraft endpoint, with or without security enab
 
 <h3 id="install-from-pypi">Install from PyPI</h3>
 <p>If the endpoint machine is connected to the internet, install it the same way as the controller:</p>
-{{ cmd.copyCommand("pip install orcraft") }}
+<table>
+  <thead>
+    <tr>
+      <th>OS</th>
+      <th>Command</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Windows</td>
+      <td>{{ cmd.copyCell("pip install orcraft") }}</td>
+    </tr>
+    <tr>
+      <td>Linux, macOS</td>
+      <td>{{ cmd.copyCell("pip3 install orcraft") }}</td>
+    </tr>
+  </tbody>
+</table>
 
 <h3 id="install-from-a-wheel-file">Install from a wheel file</h3>
 <p>If the machine has no internet access, download the wheel on a connected machine, copy it over
   and install it directly:</p>
-{{ cmd.copyCommand("pip install orcraft-<version>-py3-none-any.whl") }}
+<table>
+  <thead>
+    <tr>
+      <th>OS</th>
+      <th>Command</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Windows</td>
+      <td>{{ cmd.copyCell("pip install orcraft-<version>-py3-none-any.whl") }}</td>
+    </tr>
+    <tr>
+      <td>Linux, macOS</td>
+      <td>{{ cmd.copyCell("pip3 install orcraft-<version>-py3-none-any.whl") }}</td>
+    </tr>
+  </tbody>
+</table>
 
 <h2 id="run-endpoint">Run the endpoint</h2>
 
