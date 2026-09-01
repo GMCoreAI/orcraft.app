@@ -6,48 +6,12 @@ description: "The three things to prepare before installing Orcraft: Python, a v
 {% import "partials/copy-command.njk" as cmd %}
 
 <h1>Prerequisites</h1>
-<p>Orcraft needs Python on each machine and one network port for remote endpoints. Everything else
-  is installed automatically by pip.</p>
-<p>Check <a class="text-accent" href="/setup/system-reference/#operating-systems">supported operating
-  systems</a> for platform coverage and validated environments.</p>
-<table>
-  <thead>
-    <tr>
-      <th class="docs-table__number" scope="col">#</th>
-      <th>Step</th>
-      <th>Where</th>
-      <th>What to do</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="docs-table__number">1</td>
-      <td>Install Python 3.14+</td>
-      <td>Controller and endpoints</td>
-      <td>One installer from python.org</td>
-    </tr>
-    <tr>
-      <td class="docs-table__number">2</td>
-      <td>Create a virtual environment</td>
-      <td>Controller and endpoints</td>
-      <td>Three commands below</td>
-    </tr>
-    <tr>
-      <td class="docs-table__number">3</td>
-      <td>Allow endpoint traffic</td>
-      <td>Remote endpoints only</td>
-      <td>One TCP port and ping</td>
-    </tr>
-  </tbody>
-</table>
-<p>Running tests only on the controller? Skip the endpoint traffic setup.</p>
-<p>The controller needs a desktop session for its GUI. Endpoints have no GUI, so they can run
-  headless - on a server or over SSH.</p>
+<p>Three steps, on the controller and on every endpoint. Step 3 is only for remote endpoints.</p>
 
 <h2 id="python">Install Python</h2>
-<p>Install Python 3.14 or later on the controller and every endpoint. Download it from
-  <a class="text-accent" href="https://www.python.org/downloads/">python.org</a>; on Windows,
-  select <strong>Add python.exe to PATH</strong> in the installer.</p>
+<p>Install Python 3.14 or later from
+  <a class="text-accent" href="https://www.python.org/downloads/">python.org</a>. On Windows,
+  select <strong>Add python.exe to PATH</strong> in the installer. Then verify:</p>
 <table>
   <thead>
     <tr>
@@ -68,8 +32,7 @@ description: "The three things to prepare before installing Orcraft: Python, a v
 </table>
 
 <h2 id="virtual-environment">Create a virtual environment</h2>
-<p>This keeps Orcraft isolated from the system Python and avoids Linux's
-  <code>externally-managed-environment</code> error.</p>
+<p>Run these in the folder you want to work from:</p>
 <table>
   <thead>
     <tr>
@@ -96,18 +59,15 @@ description: "The three things to prepare before installing Orcraft: Python, a v
     </tr>
   </tbody>
 </table>
-<p>Activate the environment whenever you open a new terminal before running Orcraft.</p>
-<p>If PowerShell blocks the activation script, allow it for the current terminal only - no
-  administrator rights or machine-wide change:</p>
+<p>Activate the environment in every new terminal before running Orcraft.</p>
+<p>If PowerShell blocks the activation script, allow it for the current terminal only:</p>
 {{ cmd.copyCommand("Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned") }}
 
-<h2 id="remote-endpoints">Allow remote endpoint traffic</h2>
-<p>Skip this section for local-only tests. For each remote endpoint, allow the controller to reach
-  the port the endpoint listens on and allow ping between the two machines.</p>
+<h2 id="remote-endpoints">Allow remote endpoint traffic (optional)</h2>
+<p>Needed only for remote endpoints. On each one, open the port it listens on and allow ping from
+  the controller.</p>
 
-<h3 id="tcp-port">TCP port</h3>
-<p>Endpoints listen on TCP <strong>50051</strong> unless you choose another port, so the commands
-  below use that default:</p>
+<h3 id="tcp-port">Open TCP 50051</h3>
 <table>
   <thead>
     <tr>
@@ -130,14 +90,12 @@ description: "The three things to prepare before installing Orcraft: Python, a v
     </tr>
   </tbody>
 </table>
-<p>Running the endpoint on a different port? Select it with <code>-port</code>, use that number in
-  the rule, and enter the same port when adding the endpoint in the controller. Using a different
-  firewall? Add the equivalent inbound TCP rule. The controller needs no inbound rule.</p>
+<p>Using a different port? Select it with <code>-port</code>, use that number in the rule, and
+  enter the same port when adding the endpoint in the controller.</p>
 
-<h3 id="icmp-ping">ICMP (Ping)</h3>
-<p>The controller pings each endpoint to confirm it is reachable before connecting to it. Lab and
-  office networks usually allow this already; if an endpoint appears Offline, allow ICMP echo
-  requests in both directions:</p>
+<h3 id="icmp-ping">Allow ping</h3>
+<p>The controller pings each endpoint before connecting to it. Most networks already allow this -
+  do this only if an endpoint shows Offline:</p>
 <table>
   <thead>
     <tr>
@@ -162,9 +120,6 @@ description: "The three things to prepare before installing Orcraft: Python, a v
   </tbody>
 </table>
 
-<h2 id="next-step">Ready</h2>
-<p>That is everything needed for a normal installation. Continue to
-  <a class="text-accent" href="/setup/getting-started/">Getting started</a>.</p>
-<p>Preparing an offline, minimal or managed machine? The
-  <a class="text-accent" href="/setup/system-reference/">System reference</a> covers supported
-  operating systems, permissions, terminal behavior and optional integrations.</p>
+<p>Next: <a class="text-accent" href="/setup/getting-started/">Getting started</a>. Preparing an
+  offline, minimal or managed machine? See the
+  <a class="text-accent" href="/setup/system-reference/">System reference</a>.</p>
