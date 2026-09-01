@@ -1,0 +1,105 @@
+---
+title: Tutorial · Filtering Matrix Dimensions
+key: tutorial
+description: "Narrow or widen the values a matrix dimension offers, and commit the smaller matrix as the plan."
+---
+{% import "partials/copy-command.njk" as cmd %}
+{% import "partials/code-block.njk" as codeblock %}
+{% import "partials/zoomable-image.njk" as media %}
+<h1>Filtering Matrix Dimensions</h1>
+<p>A <strong>dimension filter</strong> changes which values a dimension offers, so the matrix produces a different
+	set of cases. It follows
+	<a class="text-accent" href="/tutorial/matrix-and-cases/">Matrix and Cases</a>, which introduces the matrix and
+	the cases generated from it, and it works on the same test.</p>
+<p>This is not the same thing as clearing a check mark in the <strong>Select</strong> column. Case selection leaves
+	the matrix alone and unticks combinations that exist; a filter takes a value away, the matrix is rebuilt without
+	it, and the cases carrying that value are never generated at all. The two are told apart by what the panel
+	reports, and the difference is visible in a single number.</p>
+<p>Select the <strong>Matrix and Cases</strong> test. Its four dimensions produce
+	<code>3 × 2 × 2 × 2 = 24</code> cases, all of them selected:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/filtering-matrix-dimensions/cases-before-filtering.png", "Matrix and Cases run panel before filtering, reporting Total Cases 24 and a Test Cases group header reading 24 of 24", "large") }}
+<p>Two readings matter here. <strong>Total Cases: 24</strong> is what the run will execute, and the
+	<strong>Test Cases (24/24)</strong> group header is selected cases over generated cases. The second number is
+	the size of the matrix itself, and it is the one a filter moves.</p>
+
+<h2 id="opening-the-filter">Opening the filter</h2>
+<p>Click a dimension's column header in the case table — <strong>algorithm</strong>, <strong>seed</strong>,
+	<strong>height</strong> or <strong>width</strong>. Each header opens the filter for that dimension only:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/filtering-matrix-dimensions/dimension-filter-dialog.png", "Dimension Filter dialog for the algorithm dimension with ASTAR, BFS and DFS all checked", "large") }}
+<p>The dialog is titled <strong>Dimension Filter: algorithm</strong> and lists every value the dimension offers,
+	each one checked. A checked value stays in the matrix; an unchecked value is removed from it.
+	<strong>Select All</strong> and <strong>Clear All</strong> apply to the whole list.</p>
+
+<h3 id="adding-a-value">Adding a value the matrix never declared</h3>
+<p>The <strong>Add value</strong> field works in the other direction. Type a value, click <strong>Add</strong>, and
+	it joins the list already checked, marked with <code>✶</code> to distinguish it from the values the test
+	declared. The entry is read as an integer when it looks like one, otherwise as a floating-point number,
+	otherwise as text — so <code>7</code> arrives as a number and <code>GREEDY</code> as a string. Adding a value
+	that is already listed simply checks it.</p>
+<p>A dimension can therefore be widened as well as narrowed from the panel, without editing the test source. The
+	field is present only while <strong>Random Configuration</strong> is set to <strong>Disabled</strong>; a
+	dimension that draws its values randomly is covered on its own page.</p>
+
+<h2 id="keeping-one-value">Keeping a single value</h2>
+<p>Clear <strong>ASTAR</strong> and <strong>DFS</strong>, leaving <strong>BFS</strong> checked, then click
+	<strong class="text-accent">Apply</strong>:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/filtering-matrix-dimensions/keeping-a-single-value.png", "Dimension Filter dialog for the algorithm dimension with only BFS checked and ASTAR and DFS cleared", "large") }}
+<p><strong>Apply</strong> commits the dialog's state to the panel and leaves the dialog open, so several
+	adjustments can be judged one after another. <strong>OK</strong> applies and closes,
+	<strong>Cancel</strong> discards anything not yet applied, and <strong>Reset to Defaults</strong> restores this
+	one dimension to the values the test declared.</p>
+<p>Close the dialog. The panel has been rebuilt around the surviving value:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/filtering-matrix-dimensions/cases-after-filtering.png", "Matrix and Cases run panel after filtering algorithm to BFS, reporting Total Cases 8, a Test Cases group header reading 8 of 8, and the algorithm column header marked as changed", "large") }}
+<p>The table now holds eight rows, all of them BFS, renumbered <strong>Case</strong> 1 to 8. The
+	<strong>algorithm</strong> column header is marked as changed, and the <code>🔸</code> badge reports that the
+	panel no longer matches the committed plan.</p>
+<p>The group header is the telling one: it reads <strong>Test Cases (8/8)</strong>, not <code>8/24</code>. Eight
+	cases are selected out of eight that exist. Had the same eight been reached by clearing check marks in the
+	<strong>Select</strong> column, the header would have read <code>8/24</code> — the sixteen ASTAR and DFS cases
+	would still be there, merely unticked. They are gone because the values that produced them are gone.</p>
+
+<h2 id="the-plan-holds">The plan holds until it is committed</h2>
+<p>The panel is a proposal. Look at the test's row in the execution tree while the filter sits on the panel
+	uncommitted:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/filtering-matrix-dimensions/plan-before-committing-the-filter.png", "Execution tree with the Matrix and Cases row still reporting Plan 24 while the panel shows eight cases", "large") }}
+<p><strong>Plan</strong> still counts <strong>24</strong>. The tree reports what was committed, not what is
+	currently on the panel, so a filter can be tried, judged and abandoned without disturbing the recorded plan or
+	the runs measured against it.</p>
+<p>Click <strong class="text-accent">Update Plan</strong> and confirm with <strong>Yes</strong>:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/filtering-matrix-dimensions/plan-after-committing-the-filter.png", "Execution tree after committing the filter, with the Matrix and Cases row reporting Plan 8 and the group and suite totals reduced by sixteen", "large") }}
+<p>The test's plan drops to <strong>8</strong>, and the totals above it follow: the
+	<strong>Advanced Configuration Parameters</strong> group falls from <code>153</code> to <code>137</code> and the
+	<strong>Tutorial</strong> suite from <code>282</code> to <code>266</code> — sixteen fewer planned cases in each.
+	A run started now executes the eight surviving cases and counts against this plan.</p>
+
+<h2 id="filtering-several-dimensions">Filtering several dimensions</h2>
+<p>Each dimension has its own filter, and they combine the way the matrix does. Keeping one algorithm, one seed and
+	both heights leaves <code>1 × 1 × 2 × 2 = 4</code> cases: the surviving cases are the product of the values kept
+	on every dimension, not a list of rows chosen by hand.</p>
+<p>This is what makes filtering worth reaching for on a large matrix. Pinning three dimensions and leaving one open
+	isolates that dimension's effect, and the case count states plainly how much work the next run is.</p>
+
+<h2 id="undoing-a-filter">Undoing a filter</h2>
+<p>A filter that could not be lifted would narrow the matrix for good. Click <strong>Reset To Defaults</strong> and
+	confirm with <strong>Yes</strong>:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/filtering-matrix-dimensions/cases-after-reset-to-defaults.png", "Matrix and Cases run panel after Reset To Defaults, with all 24 cases restored and the Test Cases group header reading 24 of 24", "large") }}
+<p>All three algorithms are back and the matrix produces its full <strong>24</strong> cases again. Values added
+	with <strong>Add value</strong> are dropped by the same reset, since they were never part of the test's
+	declared matrix.</p>
+<p>Note what else the reset does: every field returns to its declared default, and a required field that has no
+	default is cleared. <strong>Maze Executable Folder</strong> is one of those, so it has to be set again before
+	the test can run. The confirmation dialog says so before the reset is applied.</p>
+<p>To restore a single dimension without touching the rest of the configuration, use
+	<strong>Reset to Defaults</strong> inside that dimension's own filter dialog instead.</p>
+
+<h2 id="filtering-and-selection">Filtering, selection and the plan</h2>
+<p>Three mechanisms narrow a run, and they sit at different levels:</p>
+<p><strong>The matrix</strong>, declared in the test source, defines which dimensions exist and which values they
+	can take. <strong>Dimension filters</strong> change the values a dimension offers for this configuration, so
+	they change which cases are generated. <strong>Case selection</strong> leaves the generated cases in place and
+	chooses which of them run. Only <strong class="text-accent">Update Plan</strong> commits any of it, and until
+	then the execution tree keeps reporting the plan that is already there.</p>
+<p>A dimension can also be told to draw its values at random instead of listing them, which replaces the value list
+	rather than filtering it — while a random mode is active the list, <strong>Select All</strong> and
+	<strong>Clear All</strong> are disabled, and <strong>Add value</strong> is hidden. That is the subject of
+	<strong>Matrix Dimensions Randomization</strong>.</p>
