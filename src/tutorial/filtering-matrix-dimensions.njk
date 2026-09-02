@@ -28,21 +28,9 @@ description: "Narrow or widen the values a matrix dimension offers, and commit t
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/filtering-matrix-dimensions/dimension-filter-dialog.png", "Dimension Filter dialog for the algorithm dimension with ASTAR, BFS and DFS all checked", "large") }}
 <p>The dialog is titled <strong>Dimension Filter: algorithm</strong> and lists every value the dimension offers,
 	each one checked. A checked value stays in the matrix; an unchecked value is removed from it.
-	<strong>Select All</strong> and <strong>Clear All</strong> apply to the whole list.</p>
-
-<h3 id="adding-a-value">Adding a value the matrix never declared</h3>
-<p>The <strong>Add value</strong> field works in the other direction. Type a value, click <strong>Add</strong>, and
-	it joins the list already checked, marked with <code>✶</code> to distinguish it from the values the test
-	declared. The entry is read as an integer when it looks like one, otherwise as a floating-point number,
-	otherwise as text — so <code>7</code> arrives as a number and <code>GREEDY</code> as a string. Adding a value
-	that is already listed simply checks it.</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/filtering-matrix-dimensions/adding-a-value.png", "Dimension Filter dialog for the width dimension with a value of 30 added below the declared 15 and 20, marked with an asterisk and checked", "large") }}
-<p>Here <strong>30</strong> has been added to <strong>width</strong>, which the test declares as
-	<code>(15, 20)</code>. It sits in the list alongside them, checked, and the matrix now produces cases for all
-	three widths.</p>
-<p>A dimension can therefore be widened as well as narrowed from the panel, without editing the test source. The
-	field is present only while <strong>Random Configuration</strong> is set to <strong>Disabled</strong>; a
-	dimension that draws its values randomly is covered on its own page.</p>
+	<strong>Select All</strong> and <strong>Clear All</strong> apply to the whole list. The <strong>Add value</strong>
+	field below them widens a dimension rather than narrowing it, and is covered
+	<a class="text-accent" href="#adding-a-value">further down</a>.</p>
 
 <h2 id="keeping-one-value">Keeping a single value</h2>
 <p>Clear <strong>ASTAR</strong> and <strong>DFS</strong>, leaving <strong>BFS</strong> checked, then click
@@ -87,18 +75,37 @@ description: "Narrow or widen the values a matrix dimension offers, and commit t
 	isolates that dimension's effect, and the case count states plainly how much work the next run is.</p>
 
 <h2 id="undoing-a-filter">Undoing a filter</h2>
-<p>A filter that could not be lifted would narrow the matrix for good. Click <strong>Reset To Defaults</strong> and
-	confirm with <strong>Yes</strong>:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/filtering-matrix-dimensions/cases-after-reset-to-defaults.png", "Matrix and Cases run panel after Reset To Defaults, with all 24 cases restored and the Test Cases group header reading 24 of 24", "large") }}
-<p>All three algorithms are back and the matrix produces its full <strong>24</strong> cases again. Values added
-	with <strong>Add value</strong> are dropped by the same reset, since they were never part of the test's
-	declared matrix.</p>
-<p>Note what else the reset does: every field returns to its declared default, and a required field that has no
-	default is cleared. <strong>Maze Executable Folder</strong> is one of those, so it has to be set again before
-	the test can run. The confirmation dialog says so before the reset is applied:</p>
+<p>A filter that could not be lifted would narrow the matrix for good. Click <strong>Reset To Defaults</strong>.
+	Nothing changes yet — a confirmation appears first:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/filtering-matrix-dimensions/reset-to-defaults-confirmation.png", "Reset To Defaults confirmation dialog warning that unsaved changes will be lost and that required fields without a default will be cleared", "large") }}
+<p>It is worth reading before answering, because the reset is not limited to the filter: every field returns to its
+	declared default, and a required field that has no default is cleared.</p>
+<p>Confirm with <strong>Yes</strong>:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/filtering-matrix-dimensions/cases-after-reset-to-defaults.png", "Matrix and Cases run panel immediately after Reset To Defaults, with all 24 cases restored and Maze Executable Folder emptied and flagged as a missing required field", "large") }}
+<p>All three algorithms are back and the matrix produces its full <strong>24</strong> cases again. Note the
+	<strong>Maze Executable Folder</strong> row: it has been emptied and flagged, exactly as the dialog warned. It
+	has no default to fall back on, so it must be set again before the test can run.</p>
 <p>To restore a single dimension without touching the rest of the configuration, use
 	<strong>Reset to Defaults</strong> inside that dimension's own filter dialog instead.</p>
+
+<h2 id="adding-a-value">Adding a value the matrix never declared</h2>
+<p>Everything so far has narrowed the matrix. The <strong>Add value</strong> field at the bottom of the dialog works
+	in the other direction, and this section uses a different dimension to show it: <strong>width</strong>, which the
+	test declares as <code>(15, 20)</code>.</p>
+<p>Open the filter from the <strong>width</strong> column header, type <code>30</code> into <strong>Add value</strong>
+	and click <strong>Add</strong>:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/filtering-matrix-dimensions/adding-a-value.png", "Dimension Filter dialog for the width dimension with a value of 30 added below the declared 15 and 20, marked with an asterisk and checked", "large") }}
+<p>The value joins the list already checked, marked with <code>✶</code> to distinguish it from the values the test
+	declared. The entry is read as an integer when it looks like one, otherwise as a floating-point number,
+	otherwise as text — so <code>30</code> arrives as a number and <code>GREEDY</code> would arrive as a string.
+	Adding a value that is already listed simply checks it.</p>
+<p>Click <strong>OK</strong>. The matrix is rebuilt around three widths instead of two:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/filtering-matrix-dimensions/matrix-with-added-value.png", "Matrix and Cases run panel after adding a width of 30, reporting Total Cases 36 with the width column cycling through 15, 20 and 30", "large") }}
+<p><code>3 × 2 × 2 × 3 = 36</code> cases, and the <strong>width</strong> column now cycles through
+	<code>15</code>, <code>20</code> and <code>30</code>. A dimension can therefore be widened as well as narrowed
+	from the panel, without editing the test source.</p>
+<p>The field is present only while <strong>Random Configuration</strong> is set to <strong>Disabled</strong>; a
+	dimension that draws its values randomly is covered on its own page.</p>
 
 <h2 id="filtering-and-selection">Filtering, selection and the plan</h2>
 <p>Three mechanisms narrow a run, and they sit at different levels:</p>
