@@ -22,7 +22,7 @@ from orcraft import (
 class MyFlowConfig(OrcraftTestFlowConfig):
 	name = OrcraftConfigField.Text(default="My Flow")
 	app_folder = OrcraftConfigField.PackageFolder(default="", label="App Folder")
-	iterations = OrcraftConfigField.Numeric(default=3, label="Iterations")
+	payload_size = OrcraftConfigField.Numeric(default=64, label="Payload Size")
 
 
 class MyFlowResult(OrcraftTestFlowResult):
@@ -48,7 +48,7 @@ class MyFlow(OrcraftTestFlow):
 		second_result = self.run_step(
 			MySecondStep,
 			input_file=first_result.output_file,
-			iterations=self.config.iterations,
+			payload_size=self.config.payload_size,
 		)
 
 		if self.handle_errors(second_result, self.result):
@@ -128,7 +128,7 @@ class MyFlow(OrcraftTestFlow):
 
 <h2 id="flow-config-fields">Flow config fields</h2>
 <p>A flow config adds nothing of its own to the base set - its inputs are whatever fields you declare,
-  such as <code>app_folder</code> and <code>iterations</code> on <code>MyFlowConfig</code> above. What it
+  such as <code>app_folder</code> and <code>payload_size</code> on <code>MyFlowConfig</code> above. What it
   starts with:</p>
 
 <table>
@@ -309,7 +309,7 @@ if self.handle_errors(step_result, self.result):
 	flow = MyFlow(
 		MyFlowConfig(
 			app_folder=self.config.app_folder,
-			iterations=case.params["iterations"],
+			payload_size=case.params["payload_size"],
 		)
 	)
 	flow_result = flow.run()

@@ -149,7 +149,7 @@ description: "OrcraftResultField, OrcraftStatus, checkpoints and how a failure t
 def _run_case(self, case: OrcraftTestCase) -> OrcraftTestResult:
 	case.result = MyTestResult()
 
-	response = self.query_system(self.config.iterations)
+	response = self.query_system(self.config.payload_size)
 
 	# ERROR: the case cannot produce a finding at all, so say why and stop.
 	if response is None:

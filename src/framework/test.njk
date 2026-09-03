@@ -26,7 +26,7 @@ from orcraft import (
 class MyTestConfig(OrcraftTestConfig):
 	name = OrcraftConfigField.Text(default="My Test")
 	description = OrcraftConfigField.Text(default="Verifies that the system under test responds correctly.")
-	iterations = OrcraftConfigField.Numeric(default=3, label="Iterations")
+	payload_size = OrcraftConfigField.Numeric(default=64, label="Payload Size")
 	threshold = OrcraftConfigField.Numeric(default=100, label="Threshold")
 
 
@@ -41,7 +41,7 @@ class MyTest(OrcraftTest):
 	def _run_case(self, case: OrcraftTestCase) -> OrcraftTestResult:
 		case.result = MyTestResult()
 
-		measured = measure(iterations=self.config.iterations)
+		measured = measure(payload_size=self.config.payload_size)
 		case.result.measured_value = measured
 
 		self.checkpoint(
@@ -65,7 +65,7 @@ if __name__ == "__main__":
   class attribute built from the
   <a class="text-accent" href="/framework/configuration-fields/"><code>OrcraftConfigField</code></a>
   namespace, and inside the test it reads as an ordinary attribute -
-  <code>self.config.iterations</code> - holding either the configured value or the declared default.</p>
+  <code>self.config.payload_size</code> - holding either the configured value or the declared default.</p>
 
 <p>Subclassing <code>OrcraftTestConfig</code> means the config starts out with fields it did not declare.
   Overriding one, as <code>name</code> and <code>description</code> are overridden above, replaces its

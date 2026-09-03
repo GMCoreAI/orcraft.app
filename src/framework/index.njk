@@ -6,28 +6,10 @@ description: "The Orcraft test framework: suites, groups, tests, cases, flows an
 {% import "partials/code-block.njk" as codeblock %}
 {% import "partials/zoomable-image.njk" as media %}
 <h1>Orcraft framework overview</h1>
-{{ media.zoomableImage("/assets/images/Diagrams/Orcraft-Framework.png", "Orcraft component model diagram: the structural hierarchy of suite, group, test and case on the left, the procedural hierarchy of case body, flow and step on the right, and the config, component and result pattern every level shares along the bottom", "large") }}
-
-<p>The Orcraft test framework is the plain-Python library your tests are written against. It ships with
-  the controller and is imported from a single package:</p>
-{{ codeblock.block('from orcraft import (
-	OrcraftTest,
-	OrcraftTestConfig,
-	OrcraftTestCase,
-	OrcraftConfigField,
-)') }}
-
-<p>There is no domain-specific language, no runner conventions and no decorators to memorize. A test is a
-  Python class that inherits from a framework base class, declares its configuration as class attributes,
-  and implements one method. Everything else - discovery, configuration, distribution to endpoints,
-  execution, logging and result collection - is what the controller does with that class.</p>
-
-<p>Because a suite is ordinary Python, the same files run three ways without modification: standalone
-  from the command line, from the controller GUI, and from the controller CLI in a CI pipeline. The
-  <a class="text-accent" href="/tutorial/">Tutorial</a> walks through building one step by step; this
-  section is the reference for what the framework itself offers.</p>
 
 <h2 id="component-model">The component model</h2>
+{{ media.zoomableImage("/assets/images/Diagrams/Orcraft-Framework.png", "Orcraft component model diagram: the structural hierarchy of suite, group, test and case on the left, the procedural hierarchy of case body, flow and step on the right, and the config, component and result pattern every level shares along the bottom", "large") }}
+
 <p>Orcraft models a test system as a hierarchy of <em>components</em>. Each level owns the level below it
   and contributes its own configuration and its own result.</p>
 
@@ -91,12 +73,33 @@ description: "The Orcraft test framework: suites, groups, tests, cases, flows an
   a suite is actually built up: start with a <a class="text-accent" href="/framework/test/">test</a>, and
   add the surrounding structure only where it earns its place.</p>
 
+<h2 id="package">The Orcraft package</h2>
+<p>The Orcraft test framework is the plain-Python library your tests are written against. It ships with
+  the controller and is imported from a single package:</p>
+{{ codeblock.block('from orcraft import (
+	OrcraftTest,
+	OrcraftTestConfig,
+	OrcraftTestCase,
+	OrcraftConfigField,
+)') }}
+
+<p>There is no domain-specific language, no runner conventions and no decorators to memorize. A test is a
+  Python class that inherits from a framework base class, declares its configuration as class attributes,
+  and implements one method. Everything else - discovery, configuration, distribution to endpoints,
+  execution, logging and result collection - is what the controller does with that class.</p>
+
+<p>Because a suite is ordinary Python, the same files run three ways without modification: standalone
+  from the command line, from the controller GUI, and from the controller CLI in a CI pipeline. The
+  <a class="text-accent" href="/tutorial/">Tutorial</a> walks through building one step by step; this
+  section is the reference for what the framework itself offers.</p>
+
+<h2 id="three-classes">Config, component, result</h2>
 <p>Whatever the level, a component is always three classes - a config that declares its inputs, the
   component that holds its behavior, and a result that declares its outputs:</p>
 
 {{ codeblock.block('class MyTestConfig(OrcraftTestConfig):
 	name = OrcraftConfigField.Text(default="My Test")
-	iterations = OrcraftConfigField.Numeric(default=3, label="Iterations")
+	payload_size = OrcraftConfigField.Numeric(default=64, label="Payload Size")
 
 
 class MyTestResult(OrcraftTestResult):
@@ -109,7 +112,7 @@ class MyTest(OrcraftTest):
 
 	def _run_case(self, case: OrcraftTestCase):
 		case.result = MyTestResult()
-		case.result.measured_value = measure(self.config.iterations)
+		case.result.measured_value = measure(self.config.payload_size)
 		return case.result') }}
 
 <p>Those declarations are not just Python defaults. The controller reads them to build the run
