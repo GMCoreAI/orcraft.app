@@ -1,0 +1,340 @@
+---
+title: Framework · Orcraft Results and Statuses
+key: framework
+description: "OrcraftResultField, OrcraftStatus, checkpoints and how a failure travels up the hierarchy."
+---
+{% import "partials/code-block.njk" as codeblock %}
+<h1>Orcraft Results and Statuses</h1>
+<p>A component reports through its result: a status saying how it went, descriptions saying why, and
+  whatever measurements the component chose to declare. This page covers all three, and the two
+  mechanisms that set them - <code>checkpoint</code> and <code>handle_errors</code>.</p>
+
+<h2 id="result-fields">Result fields</h2>
+<p>Result fields come from the <code>OrcraftResultField</code> namespace and are declared on a result
+  class, exactly the way config fields are declared on a config class:</p>
+
+{{ codeblock.block('class MyTestResult(OrcraftTestResult):
+	measured_value = OrcraftResultField.Numeric(default=0, label="Measured Value")
+	within_limits = OrcraftResultField.Boolean(default=False, label="Within Limits")
+	output_file = OrcraftResultField.Text(default="", label="Output File")
+	log_orientation = OrcraftResultField.Format(
+		default=OrcraftResultField.LogTableOrientation.VERTICAL
+	)') }}
+
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Text</code></td>
+      <td><code>str</code></td>
+    </tr>
+    <tr>
+      <td><code>Numeric</code></td>
+      <td><code>int</code> or <code>float</code></td>
+    </tr>
+    <tr>
+      <td><code>Boolean</code></td>
+      <td><code>bool</code></td>
+    </tr>
+    <tr>
+      <td><code>Format</code></td>
+      <td>Presentation-only, used for <code>log_orientation</code>.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Each accepts <code>default</code>, <code>default_factory</code>, <code>label</code> and
+  <code>formatter</code>, with the same meanings they have for
+  <a class="text-accent" href="/framework/configuration-fields/#options">config fields</a>. A field with
+  a <code>label</code> appears in the logged result table and in the controller; one without stays
+  internal.</p>
+
+<p>A <code>formatter</code> changes how a value is displayed without changing what is stored, which is
+  how a raw number becomes a percentage or a status becomes a colored word in the log.</p>
+
+<h2 id="inherited-fields">Fields every result has</h2>
+<p>Result classes inherit a set of fields the framework maintains itself. You read them, and in a few
+  cases write them, but you never declare them.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>status</code></td>
+      <td>The component's outcome - one of the four values listed under <a class="text-accent" href="#statuses">The four statuses</a>.</td>
+    </tr>
+    <tr>
+      <td><code>failure_description</code></td>
+      <td>Why the system under test was judged incorrect. Setting it moves a passing result to <code>FAIL</code> on its own.</td>
+    </tr>
+    <tr>
+      <td><code>error_description</code></td>
+      <td>Why the component could not complete.</td>
+    </tr>
+    <tr>
+      <td><code>warning_description</code></td>
+      <td>Something worth flagging that did not change the status.</td>
+    </tr>
+    <tr>
+      <td><code>finish_time</code></td>
+      <td>When the component finished.</td>
+    </tr>
+    <tr>
+      <td><code>elapsed_time</code></td>
+      <td>How long it took.</td>
+    </tr>
+    <tr>
+      <td><code>log_orientation</code></td>
+      <td>Whether the result table is logged horizontally or vertically.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="statuses">The four statuses</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Status</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>PASS</code></td>
+      <td>The component completed and every assertion it made held.</td>
+    </tr>
+    <tr>
+      <td><code>FAIL</code></td>
+      <td>The component completed, but the system under test behaved incorrectly.</td>
+    </tr>
+    <tr>
+      <td><code>ERROR</code></td>
+      <td>The component could not complete - the test itself, or its environment, broke.</td>
+    </tr>
+    <tr>
+      <td><code>ABORT</code></td>
+      <td>The run was stopped before the component finished.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The distinction between <code>FAIL</code> and <code>ERROR</code> is the one that matters in practice.
+  A failure is a finding about the system under test and is worth reporting; an error means the finding
+  is not trustworthy, because the test did not get far enough to make it. A suite where half the results
+  are errors has an infrastructure problem, not a quality problem, and Orcraft keeps the two countable
+  separately so that difference is visible at a glance.</p>
+
+<p>A result starts at <code>PASS</code> and is moved from there - by a failing checkpoint, by an
+  assignment to one of the descriptions, or by an uncaught exception, which is what produces
+  <code>ERROR</code>.</p>
+
+<h3 id="setting-a-status">Setting a status</h3>
+<p>A test rarely assigns <code>status</code> directly. Most of the time it states a finding and lets the
+  framework derive the status from it:</p>
+
+{{ codeblock.block('from orcraft import OrcraftStatus
+
+...
+
+def _run_case(self, case: OrcraftTestCase) -> OrcraftTestResult:
+	case.result = MyTestResult()
+
+	response = self.query_system(self.config.iterations)
+
+	# ERROR: the case cannot produce a finding at all, so say why and stop.
+	if response is None:
+		case.result.status = OrcraftStatus.ERROR
+		case.result.error_description = "The system under test returned no response."
+		return case.result
+
+	case.result.measured_value = response.value
+
+	# FAIL: a failing checkpoint records the finding and carries on.
+	self.checkpoint(
+		response.value <= self.config.threshold,
+		f"Measured {response.value}, within the threshold.",
+		f"Measured {response.value}, above the threshold of {self.config.threshold}.",
+	)
+
+	# FAIL: assigning a failure description has the same effect as a failed checkpoint.
+	if response.code != 0:
+		case.result.failure_description = f"The system reported code {response.code}."
+
+	# Still PASS, but worth flagging.
+	if response.retries:
+		case.result.warning_description = f"Succeeded after {response.retries} retries."
+
+	return case.result') }}
+
+<p>Each status has its own route:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Status</th>
+      <th>How a test produces it</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>PASS</code></td>
+      <td>The value a result starts at. Nothing to set.</td>
+    </tr>
+    <tr>
+      <td><code>FAIL</code></td>
+      <td>A failing <a class="text-accent" href="#checkpoints"><code>checkpoint</code></a>, or assigning <code>failure_description</code>.</td>
+    </tr>
+    <tr>
+      <td><code>ERROR</code></td>
+      <td>An uncaught exception, a checkpoint with <code>is_error=True</code>, or assigning <code>status</code> together with <code>error_description</code>.</td>
+    </tr>
+    <tr>
+      <td><code>ABORT</code></td>
+      <td>Produced when a run is stopped before the component finished. Test code does not assign it.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Note what the example does <em>not</em> do: it never sets <code>OrcraftStatus.FAIL</code> by hand. Going
+  through a checkpoint or a description means the reason travels with the status, so the log and the
+  controller show why the case failed and not merely that it did. Assigning
+  <code>failure_description</code> on a passing result moves it to <code>FAIL</code> on its own, which is
+  why the two are never set together.</p>
+
+<p>Only <code>ERROR</code> is worth assigning explicitly, and only when the case has to stop early - it is
+  the one status that says the finding is missing rather than negative.</p>
+
+<h3 id="reading-a-status">Reading a status</h3>
+<p>Statuses compare as an enum, which is occasionally useful when a caller wants to branch on the outcome
+  of a nested component rather than just propagate it:</p>
+
+{{ codeblock.block('flow_result = flow.run()
+
+if flow_result.status is OrcraftStatus.ERROR:
+	Logger.log("Skipping verification - the flow could not complete.", color=Logger.Color.YELLOW)
+	return case.result') }}
+
+<p>For the usual case - copy the outcome upward and stop if it failed - reach for
+  <a class="text-accent" href="#handle-errors"><code>handle_errors</code></a> instead of comparing
+  statuses by hand.</p>
+
+<h2 id="checkpoints">Checkpoints</h2>
+<p><code>checkpoint</code> is the framework's assertion, available on every component. It takes a
+  condition and the message to log for each outcome:</p>
+
+{{ codeblock.block('self.checkpoint(
+	measured <= threshold,
+	f"Measured {measured}, within the threshold of {threshold}.",
+	f"Measured {measured}, above the threshold of {threshold}.",
+	details="Measured over the full run, not a single sample.",
+)') }}
+
+<table>
+  <thead>
+    <tr>
+      <th>Argument</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>result</code></td>
+      <td>The condition being asserted.</td>
+    </tr>
+    <tr>
+      <td><code>pass_msg</code></td>
+      <td>Logged when the condition holds.</td>
+    </tr>
+    <tr>
+      <td><code>fail_msg</code></td>
+      <td>Logged when it does not, and used as the failure description.</td>
+    </tr>
+    <tr>
+      <td><code>details</code></td>
+      <td>Optional extra context, logged alongside the outcome.</td>
+    </tr>
+    <tr>
+      <td><code>is_error</code></td>
+      <td>Treat a failed check as <code>ERROR</code> rather than <code>FAIL</code>, abandoning the surrounding scope.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Both outcomes are logged, so the log records what was checked and not only what broke. This is what
+  makes a passing Orcraft run readable as evidence rather than as silence.</p>
+
+<p>A failing checkpoint sets the component to <code>FAIL</code> with the failure message as its
+  description, and then <em>continues</em>. That is deliberate: one case can report every problem it
+  found instead of only the first. Pass <code>is_error=True</code> when a failed check means the rest of
+  the work would be meaningless - a missing file, an application that did not start - and the component
+  is marked <code>ERROR</code> and the scope abandoned instead.</p>
+
+<p>Inside a <a class="text-accent" href="/framework/lifecycle-hooks/">setup or teardown hook</a> a failing
+  checkpoint is always treated as an error, whether or not <code>is_error</code> was passed. A lifecycle
+  assertion that does not hold means the work it was guarding should not proceed.</p>
+
+<h2 id="warnings">Warnings</h2>
+<p>A warning records something worth surfacing that does not make the result wrong - a retry that
+  succeeded, output that was unusual but valid, a slower run than expected:</p>
+
+{{ codeblock.block('case.result.warning_description = f"Retried {retries} times before succeeding."') }}
+
+<p>The status is unaffected, but the case is counted as a case with warnings, and that count aggregates
+  up through the group and suite results. A run can therefore be entirely green and still tell you where
+  to look.</p>
+
+<h2 id="handle-errors">Propagating results</h2>
+<p>Components do not raise their way up the hierarchy - they return results, and the caller decides.
+  <code>handle_errors</code> copies status and descriptions from one result to another and returns
+  <code>True</code> when the caller should stop:</p>
+
+{{ codeblock.block('flow_result = flow.run()
+
+if self.handle_errors(flow_result, case.result):
+	return case.result') }}
+
+<p>This is the idiom to use after every flow call in a case and after every step call in a
+  <a class="text-accent" href="/framework/flows/">flow</a>. It keeps the failure attached to the component
+  that produced it while still surfacing it at every level above, so the controller can show which step
+  of which flow of which case of which test failed - rather than a single stack trace at the top.</p>
+
+<h2 id="aggregation">Aggregated counters</h2>
+<p>Each level above a case counts what happened beneath it, so a summary is available without any code
+  keeping score:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Result</th>
+      <th>Counters</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>OrcraftTestResult</code></td>
+      <td><code>total_cases</code>, <code>passed_cases</code>, <code>failed_cases</code>, <code>error_cases</code>, <code>warning_cases</code></td>
+    </tr>
+    <tr>
+      <td><code>OrcraftTestGroupResult</code></td>
+      <td>The same case counters, plus <code>total_tests</code>, <code>passed_tests</code>, <code>failed_tests</code>, <code>error_tests</code>, <code>warning_tests</code></td>
+    </tr>
+    <tr>
+      <td><code>OrcraftTestSuiteResult</code></td>
+      <td>The case and test counters, plus <code>total_groups</code>, <code>passed_groups</code>, <code>failed_groups</code>, <code>error_groups</code>, <code>warning_groups</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Because case counts carry all the way to the top, a suite result answers both questions at once: how
+  many of its groups came back clean, and how many individual cases were actually executed to get
+  there.</p>

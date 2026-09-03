@@ -1,0 +1,295 @@
+---
+title: Framework · Orcraft Endpoints
+key: framework
+description: "Declaring endpoints, dispatching steps to them, uploading packages and transferring files."
+---
+{% import "partials/code-block.njk" as codeblock %}
+<h1>Orcraft Endpoints</h1>
+<p>An endpoint is a machine that executes steps on the controller's behalf. Registering them is a setup
+  task - see <a class="text-accent" href="/setup/endpoints/">Adding endpoints</a> - and this page is
+  about the other half: how a test says which endpoints it needs, what gets sent to them, and how a step
+  ends up running there.</p>
+
+<p>Endpoints are configuration, not code. A suite developed entirely against <code>localhost</code>
+  becomes a distributed suite by changing values in the run panel, with no edit to the test body.</p>
+
+<h2 id="declaring">Declaring endpoint fields</h2>
+<p>Every test config already declares <code>test_endpoint</code>, defaulting to <code>localhost</code>. A
+  test that needs more than one, or a different kind of selection, declares its own:</p>
+
+{{ codeblock.block('class MyTestConfig(OrcraftTestConfig):
+	test_endpoint = OrcraftConfigField.Endpoint(default="localhost", label="Test Endpoint")
+	aux_endpoints = OrcraftConfigField.MultiSelectEndpoints(default=("localhost",), label="Aux Endpoints")') }}
+
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Value</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Endpoint</code></td>
+      <td><code>str</code></td>
+      <td>One endpoint. Declare several fields when a test needs distinct roles - a producer and a consumer, a host and a device.</td>
+    </tr>
+    <tr>
+      <td><code>MultiSelectEndpoints</code></td>
+      <td><code>tuple[str, ...]</code></td>
+      <td>A set of endpoints used together within one run, iterated by the test itself.</td>
+    </tr>
+    <tr>
+      <td><code>EndpointFanout</code></td>
+      <td><code>tuple[str, ...]</code></td>
+      <td>A set of endpoints that each get their own run. Selecting three endpoints spawns three test runs.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The difference between the last two is what happens when several endpoints are selected.
+  <code>MultiSelectEndpoints</code> gives one run with several endpoints available to it - the test loops
+  over them and decides what each one does. <code>EndpointFanout</code> gives several independent runs of
+  the same test, one per endpoint, executing in parallel. Use fanout to run the same verification
+  everywhere; use multi-select when the endpoints play different parts in one scenario.</p>
+
+<p>Redeclaring <code>test_endpoint</code> is how a test changes its own dispatch model, because the base
+  config already declares it as a plain <code>Endpoint</code>:</p>
+
+{{ codeblock.block('test_endpoint = OrcraftConfigField.EndpointFanout(
+	default=("localhost",),
+	label="Test Endpoint",
+	shared=True,
+)') }}
+
+<h3 id="endpoint-options">Endpoint field options</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Option</th>
+      <th>Default</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>port</code></td>
+      <td><code>50051</code></td>
+      <td>Port used when the configured value carries no port of its own.</td>
+    </tr>
+    <tr>
+      <td><code>secure_enabled</code></td>
+      <td><code>None</code></td>
+      <td>Forces mutual TLS on or off for this field. <code>None</code> follows the endpoint's own registration.</td>
+    </tr>
+    <tr>
+      <td><code>shared</code></td>
+      <td><code>False</code></td>
+      <td>Lets concurrent runs target the same endpoint at once instead of queueing for it.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>By default an endpoint is held for the duration of a run, and another run wanting the same endpoint
+  waits its turn - which is what you want when a test owns a device. <code>shared=True</code> lifts that,
+  treating each run as an independent client, which is what you want when several fanout-expanded runs
+  legitimately share one host.</p>
+
+<h2 id="dispatch">Dispatching steps</h2>
+<p>Steps are the unit of remote execution. A <a class="text-accent" href="/framework/flows/">flow</a>
+  chooses where each one runs:</p>
+
+{{ codeblock.block('produce_result = self.run_step(
+	MyProduceStep,
+	endpoint=self.config.endpoint_1,
+	payload_size=self.config.payload_size,
+)
+
+consume_result = self.run_step(
+	MyConsumeStep,
+	endpoint=self.config.endpoint_2,
+	input_file=transferred_path,
+)') }}
+
+<p>With no <code>endpoint</code> argument, a step runs on the endpoint the test is configured for. The
+  framework establishes the connection, sends the step and its config, executes it there, and returns the
+  result - so from the flow's point of view a remote step and a local one are the same call.</p>
+
+<p>Because the step may run on another machine, everything it needs must arrive through its config, and
+  everything it produces must leave through its result. A step cannot reach back into the test.</p>
+
+<h2 id="packages">Uploading the test package</h2>
+<p>Before a step runs remotely, the endpoint needs the code. The controller packages the suite and
+  uploads it, governed by <code>upload_test_package</code>:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Value</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>always</code></td>
+      <td>Upload on every run. The safe choice while the suite is changing.</td>
+    </tr>
+    <tr>
+      <td><code>if_missing</code></td>
+      <td>Upload only when the endpoint does not already have the package. The default.</td>
+    </tr>
+    <tr>
+      <td><code>never</code></td>
+      <td>Never upload - the endpoint is expected to have the package already.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Data files are a separate matter from code. A file a test needs on an endpoint is declared as a
+  package field, and the <code>endpoints</code> option binds it to the endpoint fields that actually need
+  it:</p>
+
+{{ codeblock.block('input_file = OrcraftConfigField.PackageFile(
+	default="",
+	label="Input File",
+	required=True,
+	endpoints=[endpoint_1],
+)
+
+input_folders = OrcraftConfigField.PackageFolderList(
+	default=(),
+	label="Input Folders",
+	required=True,
+	endpoints=[test_endpoint, aux_endpoints],
+)') }}
+
+<p>Inside the step, the value resolves to the path on the machine the code is executing on. Without
+  <code>endpoints</code>, a package field is uploaded to every endpoint the test uses - fine for a small
+  binary, wasteful for a large data set that only one endpoint reads. The field types are listed in
+  <a class="text-accent" href="/framework/configuration-fields/#package-types">Configuration fields</a>.</p>
+
+<h3 id="endpoint-app">Updating the endpoint application</h3>
+<p><code>update_endpoint_app</code> decides whether the endpoint application itself is brought up to date
+  before the run:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Value</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>always</code></td>
+      <td>Update the endpoint application before every run.</td>
+    </tr>
+    <tr>
+      <td><code>on_mismatch</code></td>
+      <td>Update only when the endpoint application does not match the controller. The default for a test.</td>
+    </tr>
+    <tr>
+      <td><code>never</code></td>
+      <td>Leave the endpoint application as it is.</td>
+    </tr>
+    <tr>
+      <td><code>defer</code></td>
+      <td>Express no opinion and leave the decision to the level below. The default for a suite or group.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="transfer">Transferring files between endpoints</h2>
+<p>Package upload sends files from the controller. Moving files <em>between</em> endpoints during a run -
+  produce on one machine, verify on another - is what a flow's <code>transfer</code> is for:</p>
+
+{{ codeblock.block('transfer_result = self.transfer(
+	produce_result.output_file,
+	src_endpoint=self.config.endpoint_1,
+	dst_endpoint=self.config.endpoint_2,
+)
+
+if transfer_result:
+	return
+
+consume_result = self.run_step(
+	MyConsumeStep,
+	endpoint=self.config.endpoint_2,
+	input_file=transfer_result.dst_paths[0],
+)') }}
+
+<p><code>paths</code> takes a single file or folder path, or a list of file paths, and they travel as one
+  zip archive rather than as a call per file. The returned object is truthy when the transfer failed,
+  matching the <code>handle_errors</code> convention, and <code>dst_paths</code> holds one absolute path
+  per element of <code>paths</code>, pointing at where each landed on the destination.</p>
+
+<h2 id="state">Endpoint state</h2>
+<p>Tests that deliberately disrupt an endpoint - a reboot, a service restart, a network drop - need to
+  wait for it to come back. <code>OrcraftEndpointState</code> names the three states:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>State</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>OFFLINE</code></td>
+      <td>The endpoint is not reachable.</td>
+    </tr>
+    <tr>
+      <td><code>ONLINE</code></td>
+      <td>The endpoint answers, but is not yet able to accept work.</td>
+    </tr>
+    <tr>
+      <td><code>READY</code></td>
+      <td>The endpoint is reachable and ready to execute steps.</td>
+    </tr>
+  </tbody>
+</table>
+
+{{ codeblock.block('from orcraft import OrcraftEndpointState
+
+...
+
+self.run_step(
+	MyRebootStep,
+	endpoint=endpoint,
+	expect_endpoint_disconnect=True,
+)
+
+if self.wait_for_endpoint_state(
+	OrcraftEndpointState.OFFLINE,
+	endpoint=endpoint,
+	timeout_sec=self.config.disconnect_timeout_sec,
+):
+	return
+
+if self.wait_for_endpoint_state(
+	OrcraftEndpointState.READY,
+	endpoint=endpoint,
+	timeout_sec=self.config.connect_timeout_sec,
+	poll_interval_sec=5,
+):
+	return') }}
+
+<p><code>wait_for_endpoint_state</code> returns truthy on failure, like the other flow helpers, so
+  <code>if ...: return</code> reads as the error path throughout. <code>restart_endpoint</code> wraps the
+  whole sequence - restart, wait for the disconnect, wait for readiness - for the common case.</p>
+
+<p>The step that causes the disconnection must be marked <code>expect_endpoint_disconnect=True</code>.
+  Without it, the connection dropping mid-step is exactly what an infrastructure failure looks like, and
+  the framework reports it as an error.</p>
+
+<h2 id="security">Security</h2>
+<p>Communication with an endpoint is secured with mutual TLS and token-based authentication, negotiated
+  from how the endpoint was registered with the controller. Tests do not handle credentials: the security
+  context follows the endpoint field, and flows and steps - including those called from
+  <a class="text-accent" href="/framework/lifecycle-hooks/">lifecycle hooks</a> - inherit it
+  automatically.</p>
+
+<p><code>secure_enabled</code> on an endpoint field overrides the negotiated setting for that field, which
+  is mainly useful for tests that exist to verify the secured and unsecured paths themselves.</p>

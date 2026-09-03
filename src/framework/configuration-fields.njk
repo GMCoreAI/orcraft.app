@@ -1,0 +1,532 @@
+---
+title: Framework · Orcraft Configuration Fields
+key: framework
+description: "Reference for OrcraftConfigField: every config field type and the options they share."
+---
+{% import "partials/code-block.njk" as codeblock %}
+<h1>Orcraft Configuration Fields</h1>
+<p>Config fields are how a component declares what can be configured about it. They are plain class
+  attributes, and they are read by the controller to build its run configuration panel, to validate a run
+  before it starts, and to render the config table in the log.</p>
+
+<h2 id="declaring">Declaring a field</h2>
+<p>Config fields come from the <code>OrcraftConfigField</code> namespace and are declared on a config
+  class:</p>
+
+{{ codeblock.block('class MyTestConfig(OrcraftTestConfig):
+	name = OrcraftConfigField.Text(default="My Test")
+
+	app_folder = OrcraftConfigField.PackageFolder(
+		default="",
+		label="App Folder",
+		required=True,
+		layout=OrcraftConfigField.Layout.NewRow,
+	)
+
+	attempts = OrcraftConfigField.Numeric(default=3, label="Attempts")') }}
+
+<p>Inside the component the field reads as an ordinary attribute -
+  <code>self.config.app_folder</code> - holding either the configured value or the declared
+  default. There is no lookup by string key and no dictionary to keep in sync.</p>
+
+<p>Output fields work the same way, from the <code>OrcraftResultField</code> namespace - see
+  <a class="text-accent" href="/framework/results-and-statuses/">Orcraft Results and Statuses</a>.</p>
+
+<h2 id="options">Options every field accepts</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Option</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>default</code></td>
+      <td>The value used when nothing else is configured.</td>
+    </tr>
+    <tr>
+      <td><code>default_factory</code></td>
+      <td>A callable producing the default. Use this - never <code>default</code> - for lists and for anything that constructs objects, so instances are not shared. Only one of the two may be given.</td>
+    </tr>
+    <tr>
+      <td><code>label</code></td>
+      <td>The name shown in the GUI and in log tables. Without it the field is not user-facing.</td>
+    </tr>
+    <tr>
+      <td><code>required</code></td>
+      <td>Blocks a run that leaves the field empty, reporting it as a missing argument. Numeric fields are required by default; pass <code>required=False</code> for one that may legitimately be blank.</td>
+    </tr>
+    <tr>
+      <td><code>layout</code></td>
+      <td>Where the field is placed in the GUI panel - see <a class="text-accent" href="#layout">Layout and presentation</a>.</td>
+    </tr>
+    <tr>
+      <td><code>width</code></td>
+      <td>Width hint, in grid units, for the input in the GUI.</td>
+    </tr>
+    <tr>
+      <td><code>formatter</code></td>
+      <td>A callable that renders the value for display, leaving the stored value untouched.</td>
+    </tr>
+    <tr>
+      <td><code>input_placeholder</code></td>
+      <td>Placeholder text shown in an empty input.</td>
+    </tr>
+    <tr>
+      <td><code>button_text</code></td>
+      <td>Caption for the field's action button, where it has one.</td>
+    </tr>
+    <tr>
+      <td><code>options</code></td>
+      <td>The fixed set of values a selection field offers.</td>
+    </tr>
+    <tr>
+      <td><code>options_lambda</code></td>
+      <td>A callable evaluated when the panel opens, for a selection whose values are not known in advance.</td>
+    </tr>
+    <tr>
+      <td><code>endpoints</code></td>
+      <td>For package fields: which endpoint fields this file or folder should be uploaded to.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="basic-types">Basic types</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Value</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Text</code></td>
+      <td><code>str</code></td>
+      <td>Free text. Non-string values are coerced with <code>str()</code>; <code>None</code> becomes an empty string.</td>
+    </tr>
+    <tr>
+      <td><code>Numeric</code></td>
+      <td><code>int</code> or <code>float</code></td>
+      <td>Required by default, because a cleared numeric input has nothing to fall back on.</td>
+    </tr>
+    <tr>
+      <td><code>Boolean</code></td>
+      <td><code>bool</code></td>
+      <td>Rendered as a checkbox.</td>
+    </tr>
+  </tbody>
+</table>
+
+{{ codeblock.block('name = OrcraftConfigField.Text(default="Boolean Parameter")
+verbose = OrcraftConfigField.Boolean(default=False, label="Verbose")
+attempts = OrcraftConfigField.Numeric(default=3, label="Attempts")
+timeout = OrcraftConfigField.Numeric(default=None, label="Timeout", required=False)') }}
+
+<h2 id="selection-types">Selection types</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Value</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Select</code></td>
+      <td><code>str</code></td>
+      <td>One value from a fixed <code>options</code> tuple.</td>
+    </tr>
+    <tr>
+      <td><code>MultiSelect</code></td>
+      <td><code>tuple[str, ...]</code></td>
+      <td>Any number of values from a fixed <code>options</code> tuple.</td>
+    </tr>
+    <tr>
+      <td><code>SelectLambda</code></td>
+      <td><code>str</code></td>
+      <td>One value from a list produced by <code>options_lambda</code> at configuration time.</td>
+    </tr>
+    <tr>
+      <td><code>MultiSelectLambda</code></td>
+      <td><code>tuple[str, ...]</code></td>
+      <td>Any number of values from a list produced by <code>options_lambda</code>.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Use the lambda variants when the choices are not knowable when the test is written - a list of
+  firmware versions on a server, branches in a repository, devices currently attached. The callable runs
+  when the run configuration is opened, so the list is current rather than committed to source.</p>
+
+{{ codeblock.block('mode = OrcraftConfigField.Select(
+	default="fast",
+	label="Mode",
+	options=("fast", "thorough"),
+)
+
+version = OrcraftConfigField.SelectLambda(
+	default="",
+	label="Version",
+	options_lambda=list_available_versions,
+)') }}
+
+<h2 id="filesystem-types">Filesystem types</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Value</th>
+      <th>Selects</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>File</code></td>
+      <td><code>str</code></td>
+      <td>A single file path.</td>
+    </tr>
+    <tr>
+      <td><code>Folder</code></td>
+      <td><code>str</code></td>
+      <td>A single folder path.</td>
+    </tr>
+    <tr>
+      <td><code>FileList</code></td>
+      <td><code>tuple[str, ...]</code></td>
+      <td>Any number of file paths.</td>
+    </tr>
+    <tr>
+      <td><code>FolderList</code></td>
+      <td><code>tuple[str, ...]</code></td>
+      <td>Any number of folder paths.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>These give the GUI a browse button and store the chosen path. The path is used as-is: the file stays
+  where it is, and the test reads it from there.</p>
+
+<h2 id="package-types">Package upload types</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Value</th>
+      <th>Selects</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>PackageFile</code></td>
+      <td><code>str</code></td>
+      <td>A single file, uploaded with the test package.</td>
+    </tr>
+    <tr>
+      <td><code>PackageFolder</code></td>
+      <td><code>str</code></td>
+      <td>A single folder, uploaded with the test package.</td>
+    </tr>
+    <tr>
+      <td><code>PackageFileList</code></td>
+      <td><code>tuple[str, ...]</code></td>
+      <td>Any number of files, uploaded with the test package.</td>
+    </tr>
+    <tr>
+      <td><code>PackageFolderList</code></td>
+      <td><code>tuple[str, ...]</code></td>
+      <td>Any number of folders, uploaded with the test package.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>A package field is a filesystem field that travels. The controller uploads what it points at to the
+  endpoints that need it before the run, and inside the test the value resolves to the path on the
+  machine the code is executing on. That is the difference that matters: a <code>Folder</code> is a path
+  on the controller, a <code>PackageFolder</code> is a path that exists wherever the step runs.</p>
+
+<p>The <code>endpoints</code> option binds a package field to specific endpoint fields, so files upload
+  only where they are actually needed:</p>
+
+{{ codeblock.block('test_endpoint = OrcraftConfigField.Endpoint(default="localhost", label="Test Endpoint")
+aux_endpoints = OrcraftConfigField.MultiSelectEndpoints(default=("localhost",), label="Aux Endpoints")
+
+input_file = OrcraftConfigField.PackageFile(
+	default="",
+	label="Input File",
+	required=True,
+	endpoints=[test_endpoint],
+)
+
+input_folders = OrcraftConfigField.PackageFolderList(
+	default=(),
+	label="Input Folders",
+	required=True,
+	endpoints=[test_endpoint, aux_endpoints],
+)') }}
+
+<p>Without <code>endpoints</code>, a package field is uploaded to every endpoint the test uses.</p>
+
+<h2 id="endpoint-types">Endpoint types</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Value</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Endpoint</code></td>
+      <td><code>str</code></td>
+      <td>One endpoint the test uses. A test may declare several - a producer and a consumer, for instance.</td>
+    </tr>
+    <tr>
+      <td><code>MultiSelectEndpoints</code></td>
+      <td><code>tuple[str, ...]</code></td>
+      <td>A set of endpoints used together <em>within one run</em>, iterated by the test itself.</td>
+    </tr>
+    <tr>
+      <td><code>EndpointFanout</code></td>
+      <td><code>tuple[str, ...]</code></td>
+      <td>A set of endpoints that each get <em>their own run</em>. Selecting three endpoints spawns three test runs.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>All three accept <code>port</code>, <code>secure_enabled</code> and <code>shared</code> in addition to
+  the shared options. <a class="text-accent" href="/framework/endpoints/">Orcraft Endpoints</a> covers what they
+  do and when to reach for each field type.</p>
+
+<h2 id="composition-types">Composition types</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Declared on</th>
+      <th>Holds</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Groups</code></td>
+      <td><a class="text-accent" href="/framework/suites/">Orcraft Test Suite</a> config</td>
+      <td>The group instances the suite runs.</td>
+    </tr>
+    <tr>
+      <td><code>Tests</code></td>
+      <td><a class="text-accent" href="/framework/groups/">Orcraft Test Group</a> config</td>
+      <td>The test instances the group runs.</td>
+    </tr>
+    <tr>
+      <td><code>Matrix</code></td>
+      <td><a class="text-accent" href="/framework/test/">Orcraft Test</a> config</td>
+      <td>The dimensions that expand into cases.</td>
+    </tr>
+    <tr>
+      <td><code>Dimension</code></td>
+      <td>Inside a matrix</td>
+      <td>One named axis and its values.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><code>Groups</code> and <code>Tests</code> always use <code>default_factory</code>, because they
+  construct component instances:</p>
+
+{{ codeblock.block('tests = OrcraftConfigField.Tests(
+	default_factory=lambda: [
+		MyFirstTest(),
+		MySecondTest(),
+	]
+)') }}
+
+<p><code>Matrix</code> and <code>Dimension</code> have options of their own - generated values, exclusion
+  rules, randomization and seeding. They are covered in
+  <a class="text-accent" href="/framework/matrix/">Orcraft Matrix</a>, alongside what they
+  produce.</p>
+
+<h2 id="layout">Layout and presentation</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Member</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Layout.NewRow</code></td>
+      <td>Start the field on a new row of the configuration panel.</td>
+    </tr>
+    <tr>
+      <td><code>Layout.UnderPrevious</code></td>
+      <td>Place the field directly beneath the previous one.</td>
+    </tr>
+    <tr>
+      <td><code>Format</code></td>
+      <td>A presentation-only field, used for settings such as log orientation.</td>
+    </tr>
+    <tr>
+      <td><code>LogTableOrientation.HORIZONTAL</code></td>
+      <td>Log the config table as a row of columns - compact for a handful of fields.</td>
+    </tr>
+    <tr>
+      <td><code>LogTableOrientation.VERTICAL</code></td>
+      <td>Log one field per line - readable for many fields or long values.</td>
+    </tr>
+  </tbody>
+</table>
+
+{{ codeblock.block('log_orientation = OrcraftConfigField.Format(
+	default=OrcraftConfigField.LogTableOrientation.VERTICAL
+)') }}
+
+<h2 id="built-in-fields">Fields you inherit</h2>
+<p>Every config class starts with fields it did not declare. Overriding one in your own config replaces
+  its default without changing what it does.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Declared on</th>
+      <th>Purpose</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>name</code></td>
+      <td>Every component</td>
+      <td>Display name in the GUI, CLI and logs.</td>
+    </tr>
+    <tr>
+      <td><code>description</code></td>
+      <td>Every component</td>
+      <td>Free text describing what the component does.</td>
+    </tr>
+    <tr>
+      <td><code>log_orientation</code></td>
+      <td>Every component</td>
+      <td>Orientation of the logged config and result tables.</td>
+    </tr>
+    <tr>
+      <td><code>version</code></td>
+      <td>Suite, group, test</td>
+      <td>Version recorded with the results.</td>
+    </tr>
+    <tr>
+      <td><code>parallel</code></td>
+      <td>Suite, group</td>
+      <td>Whether children may run concurrently.</td>
+    </tr>
+    <tr>
+      <td><code>groups</code> / <code>tests</code></td>
+      <td>Suite / group</td>
+      <td>The children the component runs.</td>
+    </tr>
+    <tr>
+      <td><code>test_endpoint</code></td>
+      <td>Test</td>
+      <td>The endpoint the test executes against.</td>
+    </tr>
+    <tr>
+      <td><code>matrix</code></td>
+      <td>Test</td>
+      <td>The dimensions that expand into cases.</td>
+    </tr>
+    <tr>
+      <td><code>number_of_cycles</code></td>
+      <td>Test</td>
+      <td>How many times the whole test repeats.</td>
+    </tr>
+    <tr>
+      <td><code>case_number_of_cycles</code></td>
+      <td>Test</td>
+      <td>How many times each case repeats.</td>
+    </tr>
+    <tr>
+      <td><code>upload_test_package</code></td>
+      <td>Suite, group, test</td>
+      <td>Whether the test package is uploaded to the endpoint before the run.</td>
+    </tr>
+    <tr>
+      <td><code>update_endpoint_app</code></td>
+      <td>Suite, group, test</td>
+      <td>Whether the endpoint application is updated before the run.</td>
+    </tr>
+    <tr>
+      <td><code>target_endpoint</code></td>
+      <td>Step</td>
+      <td>The endpoint the step is dispatched to, set by the flow that runs it.</td>
+    </tr>
+    <tr>
+      <td><code>expect_endpoint_disconnect</code></td>
+      <td>Step</td>
+      <td>Marks a step that is meant to take its endpoint offline.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Not every inherited field is user-facing. <code>name</code> and <code>description</code>, for
+  instance, are configured in code but not editable from the GUI, and fields whose value is at its
+  default - a single cycle, an empty matrix - are hidden from the run panel rather than shown as
+  clutter.</p>
+
+<p>The two policy fields take a fixed set of values. <code>upload_test_package</code>:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Value</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>always</code></td>
+      <td>Upload on every run. The safe choice while the suite is changing.</td>
+    </tr>
+    <tr>
+      <td><code>if_missing</code></td>
+      <td>Upload only when the endpoint does not already have the package. The default.</td>
+    </tr>
+    <tr>
+      <td><code>never</code></td>
+      <td>Never upload - the endpoint is expected to have the package already.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><code>update_endpoint_app</code>, where <code>defer</code> is available to suites and groups only:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Value</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>always</code></td>
+      <td>Update the endpoint application before every run.</td>
+    </tr>
+    <tr>
+      <td><code>on_mismatch</code></td>
+      <td>Update only when the endpoint application does not match the controller. The default for a test.</td>
+    </tr>
+    <tr>
+      <td><code>never</code></td>
+      <td>Leave the endpoint application as it is.</td>
+    </tr>
+    <tr>
+      <td><code>defer</code></td>
+      <td>Express no opinion and leave the decision to the level below. The default for a suite or group.</td>
+    </tr>
+  </tbody>
+</table>

@@ -1,0 +1,215 @@
+---
+title: Framework · Orcraft Test Group
+key: framework
+description: "OrcraftTestGroup: collecting related tests so they can be configured and run as one."
+---
+{% import "partials/code-block.njk" as codeblock %}
+<h1>Orcraft Test Group</h1>
+<p>A group collects related tests. Unlike a test, a group has no body: it is declared, not coded. Its
+  config names the tests it holds, and the framework does the rest.</p>
+
+{{ codeblock.block('from __future__ import annotations
+
+from orcraft import (
+	OrcraftTestGroup,
+	OrcraftTestGroupConfig,
+	OrcraftTestGroupResult,
+	OrcraftConfigField,
+)
+
+from my_group.my_first_test.my_first_test import MyFirstTest
+from my_group.my_second_test.my_second_test import MySecondTest
+
+
+class MyGroupConfig(OrcraftTestGroupConfig):
+	name = OrcraftConfigField.Text(default="My Group")
+	description = OrcraftConfigField.Text(
+		default="Groups the tests that cover one area of the system under test."
+	)
+	tests = OrcraftConfigField.Tests(
+		default_factory=lambda: [
+			MyFirstTest(),
+			MySecondTest(),
+		]
+	)
+
+
+class MyGroupResult(OrcraftTestGroupResult):
+	pass
+
+
+class MyGroup(OrcraftTestGroup):
+	def __init__(self) -> None:
+		super().__init__(config=MyGroupConfig())
+		self.result = MyGroupResult()
+
+
+def main() -> None:
+	MyGroup().run()
+
+
+if __name__ == "__main__":
+	main()') }}
+
+<h2 id="tests-field">The tests field</h2>
+<p><code>tests</code> uses <code>default_factory</code> rather than <code>default</code> because it
+  constructs objects. A factory is called once per config instance, so two group instances never end up
+  sharing the same test objects - a mistake that a plain <code>default</code> list would make easy and
+  hard to spot.</p>
+
+<p>The result class is usually empty. Subclassing <code>OrcraftTestGroupResult</code> without adding
+  anything is still worth doing: it gives the group a result type of its own to extend later, and keeps
+  the three-class shape consistent across the suite.</p>
+
+<h2 id="why-group">What a group buys you</h2>
+<p>A group is the unit the controller lets you act on as a whole:</p>
+
+<ul>
+  <li><strong>Configure once, apply to many.</strong> Setting a parameter at group level applies it to
+    every test in the group, so a shared executable folder or endpoint is entered once rather than per
+    test.</li>
+  <li><strong>Run a slice.</strong> A group can be run without the rest of the suite, which is how a
+    focused rerun stays focused.</li>
+  <li><strong>Aggregate reporting.</strong> Group results carry both test counters and case counters, so
+    a group answers how many of its tests came back clean and how many cases that took.</li>
+</ul>
+
+<p>The tutorial works through the first two in
+  <a class="text-accent" href="/tutorial/running-a-group/">Running a group</a>.</p>
+
+<h2 id="config-fields">Group config fields</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Default</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>name</code></td>
+      <td><code>"Test Group"</code></td>
+      <td>Display name in the GUI, CLI and logs.</td>
+    </tr>
+    <tr>
+      <td><code>description</code></td>
+      <td><code>""</code></td>
+      <td>Free text describing what the group covers.</td>
+    </tr>
+    <tr>
+      <td><code>version</code></td>
+      <td><code>""</code></td>
+      <td>Group version, recorded with the results.</td>
+    </tr>
+    <tr>
+      <td><code>tests</code></td>
+      <td><code>[]</code></td>
+      <td>The tests this group runs.</td>
+    </tr>
+    <tr>
+      <td><code>parallel</code></td>
+      <td><code>True</code></td>
+      <td>Whether the group's tests may run concurrently.</td>
+    </tr>
+    <tr>
+      <td><code>upload_test_package</code></td>
+      <td><code>"if_missing"</code></td>
+      <td>Whether the test package is uploaded to the endpoint before the run.</td>
+    </tr>
+    <tr>
+      <td><code>update_endpoint_app</code></td>
+      <td><code>"defer"</code></td>
+      <td>Whether the endpoint application is updated before the run.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="parallel">Parallel execution</h2>
+<p>With <code>parallel</code> left at its default, tests in a group may run concurrently, which is what
+  makes a suite spread across several endpoints finish in a useful amount of time. Set it to
+  <code>False</code> for a group whose tests contend for something the framework cannot see - a shared
+  device, a fixed port, a single working directory.</p>
+
+<p>Note that endpoint contention is already handled: an endpoint is held for the duration of a run, and
+  another run wanting it waits, unless the endpoint field is declared
+  <a class="text-accent" href="/framework/endpoints/#endpoint-options"><code>shared</code></a>. Turning
+  off parallelism is for the contention Orcraft does not know about.</p>
+
+<h2 id="defer">Policies that flow downward</h2>
+<p><code>update_endpoint_app</code> is the one field where a group deliberately does not decide by
+  default. <code>defer</code> means the group expresses no opinion and each test keeps its own choice;
+  any other value overrides every test beneath it.</p>
+
+<p>That distinction matters when a suite mixes tests that must run against a pinned endpoint version with
+  tests that always want the latest. Leaving the group at <code>defer</code> preserves both intents;
+  setting a concrete value is an explicit decision to override them.</p>
+
+<p><code>update_endpoint_app</code> takes one of four values at group level:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Value</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>always</code></td>
+      <td>Update the endpoint application before every run.</td>
+    </tr>
+    <tr>
+      <td><code>on_mismatch</code></td>
+      <td>Update only when the endpoint application does not match the controller. The default for a test.</td>
+    </tr>
+    <tr>
+      <td><code>never</code></td>
+      <td>Leave the endpoint application as it is.</td>
+    </tr>
+    <tr>
+      <td><code>defer</code></td>
+      <td>Express no opinion and leave the decision to the level below. The default for a group.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><code>upload_test_package</code> has no <code>defer</code>: a group always states a policy, and it
+  applies to every test beneath it.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Value</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>always</code></td>
+      <td>Upload on every run. The safe choice while the suite is changing.</td>
+    </tr>
+    <tr>
+      <td><code>if_missing</code></td>
+      <td>Upload only when the endpoint does not already have the package. The default.</td>
+    </tr>
+    <tr>
+      <td><code>never</code></td>
+      <td>Never upload - the endpoint is expected to have the package already.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="standalone">Running a group</h2>
+<p>Like a test, a group runs on its own:</p>
+
+{{ codeblock.block('def main() -> None:
+	MyGroup().run()
+
+
+if __name__ == "__main__":
+	main()') }}
+
+<p>This runs every test in the group, in order or in parallel according to <code>parallel</code>, and
+  logs a group summary after the individual test results. Once a group is doing what you want, add it to
+  a <a class="text-accent" href="/framework/suites/">suite</a>.</p>

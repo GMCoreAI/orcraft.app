@@ -1,0 +1,243 @@
+---
+title: Framework · Orcraft Test Flow
+key: framework
+description: "OrcraftTestFlow: sequencing steps, carrying their results and stopping when one fails."
+---
+{% import "partials/code-block.njk" as codeblock %}
+<h1>Orcraft Test Flow</h1>
+<p>A flow is an ordered sequence of steps with a shared result. It exists so a multi-step procedure can be
+  named, reused across tests, and reported as a unit rather than as a run of unrelated actions.</p>
+
+{{ codeblock.block('from __future__ import annotations
+
+from orcraft import (
+	OrcraftTestFlow,
+	OrcraftTestFlowConfig,
+	OrcraftTestFlowResult,
+	OrcraftConfigField,
+	OrcraftResultField,
+)
+
+
+class MyFlowConfig(OrcraftTestFlowConfig):
+	name = OrcraftConfigField.Text(default="My Flow")
+	app_folder = OrcraftConfigField.PackageFolder(default="", label="App Folder")
+	iterations = OrcraftConfigField.Numeric(default=3, label="Iterations")
+
+
+class MyFlowResult(OrcraftTestFlowResult):
+	output_file = OrcraftResultField.Text(default="", label="Output File")
+	measured_value = OrcraftResultField.Numeric(default=0, label="Measured Value")
+
+
+class MyFlow(OrcraftTestFlow):
+	result_type = MyFlowResult
+
+	def __init__(self, config: MyFlowConfig) -> None:
+		super().__init__(config)
+
+	def _run_flow(self) -> None:
+		first_result = self.run_step(
+			MyFirstStep,
+			app_folder=self.config.app_folder,
+		)
+
+		if self.handle_errors(first_result, self.result):
+			return
+
+		second_result = self.run_step(
+			MySecondStep,
+			input_file=first_result.output_file,
+			iterations=self.config.iterations,
+		)
+
+		if self.handle_errors(second_result, self.result):
+			return
+
+		self.result.output_file = first_result.output_file
+		self.result.measured_value = second_result.measured_value
+
+		self.checkpoint(
+			second_result.measured_value > 0,
+			f"Measured {second_result.measured_value}.",
+			"The system under test reported no measurement.",
+		)') }}
+
+<h2 id="result-type">Declaring the result class</h2>
+<p>A test or a step builds its result inside the body. A flow names its result class up front instead,
+  through the <code>result_type</code> class attribute, as <code>MyFlow</code> does above. The framework
+  instantiates that class when the flow starts, so <code>self.result</code> exists and is ready to be
+  filled in from the first line of <code>_run_flow</code> - which is also why <code>_run_flow</code>
+  returns nothing: it populates <code>self.result</code> as it goes, and the caller reads that object
+  back from <code>flow.run()</code>.</p>
+
+<p>The attribute is optional. Omit it and the flow reports a plain <code>OrcraftTestFlowResult</code> -
+  status, descriptions and timing, with no fields of its own - which is all a flow needs when it only
+  sequences steps and has nothing of its own to measure.</p>
+
+<h3 id="result-type-errors">Why the framework builds it: error reporting</h3>
+<p>When a flow body raises, it is the framework that finishes the result. It sets the status to
+  <code>ERROR</code>, records the error description, stamps the finish and elapsed times, and emits the
+  result the controller renders. All of that lands on whatever <code>self.result</code> is <em>at that
+  moment</em>. Building the declared class before the body runs guarantees that an early failure still
+  reports through the flow's own result class: the log table and the controller show the flow's declared
+  fields alongside the error, and its result columns do not vanish from the run.</p>
+
+<p>The alternative is to do what a step does and assign the result inside the body:</p>
+
+{{ codeblock.block('def _run_flow(self) -> None:
+	self.result = MyFlowResult()
+	...') }}
+
+<p>On the happy path the two are identical - same class, same values, same result columns. They differ
+  only when the body raises <em>before</em> that assignment line runs. The framework then finishes the
+  base <code>OrcraftTestFlowResult</code> it created on its own: status and error text are still
+  correct, but the flow's declared fields are absent and its result columns are lost for that run.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Situation</th>
+      <th><code>result_type</code></th>
+      <th>Assigned in the body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Body completes</td>
+      <td>Declared fields reported</td>
+      <td>Declared fields reported</td>
+    </tr>
+    <tr>
+      <td>Body raises after the assignment</td>
+      <td>Declared fields reported</td>
+      <td>Declared fields reported</td>
+    </tr>
+    <tr>
+      <td>Body raises before the assignment</td>
+      <td>Declared fields reported, empty</td>
+      <td>Base result only - columns lost</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Put plainly, <code>result_type</code> turns "the result always carries the flow's declared shape"
+  into a framework guarantee. Assigning in the body turns it into an authoring rule - make the assignment
+  the first statement - that costs nothing when followed and quietly degrades error output when it is
+  not.</p>
+
+<h2 id="run-step">Running steps</h2>
+<p><code>run_step</code> takes a step class, keyword values for that step's config fields, and optionally
+  the endpoint to run it on:</p>
+
+{{ codeblock.block('result = self.run_step(
+	MySecondStep,
+	endpoint=self.config.endpoint_2,
+	input_file=first_result.output_file,
+)') }}
+
+<table>
+  <thead>
+    <tr>
+      <th>Argument</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>step_method</code></td>
+      <td>The step class, or an already-constructed step instance.</td>
+    </tr>
+    <tr>
+      <td><code>endpoint</code></td>
+      <td>Where to run it. Defaults to the endpoint the test is configured for.</td>
+    </tr>
+    <tr>
+      <td><code>expect_endpoint_disconnect</code></td>
+      <td>Set for a step that is meant to take its endpoint offline.</td>
+    </tr>
+    <tr>
+      <td><code>**kwargs</code></td>
+      <td>Values applied to the step config's fields.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Passing a keyword the step config does not declare raises immediately, naming the config and the
+  field. A renamed field is caught at the call site rather than silently ignored, which is the failure
+  mode a dictionary of parameters would have given you instead.</p>
+
+<h2 id="short-circuit">Stopping on failure</h2>
+<p>Steps in a flow are ordered because each one depends on the last. Two mechanisms keep a flow from
+  running past a broken precondition.</p>
+
+<p>The first is explicit:
+  <a class="text-accent" href="/framework/results-and-statuses/#handle-errors"><code>handle_errors</code></a>
+  after each step, copying the step result into the flow result and returning <code>True</code> when the
+  flow should stop.</p>
+
+{{ codeblock.block('step_result = self.run_step(MyFirstStep, app_folder=self.config.app_folder)
+
+if self.handle_errors(step_result, self.result):
+	return') }}
+
+<p>The second is automatic: once the flow result is in <code>ERROR</code>, further <code>run_step</code>
+  calls short-circuit instead of executing. A flow that loses its first step does not go on to run the
+  rest against a state that never got set up.</p>
+
+<p>Note that this applies to <code>ERROR</code>, not to <code>FAIL</code>. A failing checkpoint is a
+  finding, and a flow keeps going so it can report the rest of them; an error means the flow cannot
+  meaningfully continue.</p>
+
+<h2 id="composing">Calling flows from a case</h2>
+<p>A case body builds a flow, runs it, and reads its result:</p>
+
+{{ codeblock.block('def _run_case(self, case: OrcraftTestCase) -> OrcraftTestResult:
+	case.result = MyTestResult()
+
+	flow = MyFlow(
+		MyFlowConfig(
+			app_folder=self.config.app_folder,
+			iterations=case.params["iterations"],
+		)
+	)
+	flow_result = flow.run()
+
+	if self.handle_errors(flow_result, case.result):
+		return case.result
+
+	case.result.measured_value = flow_result.measured_value
+	return case.result') }}
+
+<p>Values move down through the flow config and back up through the flow result. A case that runs three
+  flows reads as three named phases, and the log nests accordingly - test, case, flow, step - so a
+  failure is located rather than searched for.</p>
+
+<h2 id="endpoint-helpers">Endpoint helpers</h2>
+<p>Flows also carry the helpers for driving endpoints, since the flow is the level that knows which
+  endpoint each step is going to:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Method</th>
+      <th>Purpose</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>wait_for_endpoint_state(state, endpoint=, timeout_sec=)</code></td>
+      <td>Block until an endpoint reaches a given <a class="text-accent" href="/framework/endpoints/#state">state</a>.</td>
+    </tr>
+    <tr>
+      <td><code>restart_endpoint(endpoint=, ...)</code></td>
+      <td>Restart an endpoint and wait for it to come back.</td>
+    </tr>
+    <tr>
+      <td><code>transfer(paths, src_endpoint=, dst_endpoint=)</code></td>
+      <td>Move files or a folder tree from one endpoint to another.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>All three are covered in <a class="text-accent" href="/framework/endpoints/">Orcraft Endpoints</a>.</p>

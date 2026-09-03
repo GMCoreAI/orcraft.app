@@ -84,8 +84,62 @@
   white-space: nowrap;
 }
 
+/* Color reference swatch. Bordered so the near-black and near-white steps of a
+   ramp stay visible against either page background. */
+.docs__article .color-swatch {
+  display: inline-block;
+  width: var(--space-8);
+  height: var(--space-3);
+  vertical-align: middle;
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+}
+
 .docs__article p.text-danger {
   color: var(--color-danger);
+}
+
+/* Framed disclaimer under a table. A labelled box keeps the caution visible
+   without painting the whole paragraph in the danger color. */
+.docs__article .docs-callout {
+  display: grid;
+  gap: var(--space-2);
+  max-width: var(--docs-prose-width);
+  margin: 0 0 var(--space-6);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-left-width: 3px;
+  border-radius: 4px;
+  background: var(--color-surface);
+  font-size: var(--font-size-sm);
+}
+
+.docs__article .docs-callout p {
+  margin: 0;
+}
+
+.docs__article .docs-callout__label {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  padding: 0.15em 0.6em;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.docs__article .docs-callout--caution {
+  border-left-color: var(--color-danger);
+  background: color-mix(in srgb, var(--color-danger) 6%, var(--color-surface));
+}
+
+.docs__article .docs-callout--caution .docs-callout__label {
+  color: var(--color-danger);
+  background: color-mix(in srgb, var(--color-danger) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-danger) 35%, transparent);
 }
 
 .docs__article h2 {

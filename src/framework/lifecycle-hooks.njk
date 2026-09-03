@@ -1,0 +1,161 @@
+---
+title: Framework · Orcraft Lifecycle Hooks
+key: framework
+description: "The six optional setup and teardown hooks around a test, its cycles and its cases."
+---
+{% import "partials/code-block.njk" as codeblock %}
+<h1>Orcraft Lifecycle Hooks</h1>
+<p>Work that has to happen around the cases rather than inside them - launching an application, opening a
+  connection, generating shared inputs - belongs in a lifecycle hook. A test can hook three scopes, each
+  with a setup and a teardown, and every one of them is optional.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Hook</th>
+      <th>Runs</th>
+      <th>Typical use</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>_setup()</code></td>
+      <td>Once, before the first case</td>
+      <td>Launch an application, open a connection, generate shared inputs.</td>
+    </tr>
+    <tr>
+      <td><code>_teardown()</code></td>
+      <td>Once, after the last case</td>
+      <td>Release whatever <code>_setup</code> acquired.</td>
+    </tr>
+    <tr>
+      <td><code>_test_cycle_setup(index)</code></td>
+      <td>At the start of every test cycle</td>
+      <td>Rebuild per-cycle state so one cycle never inherits residue from the last.</td>
+    </tr>
+    <tr>
+      <td><code>_test_cycle_teardown(index)</code></td>
+      <td>At the end of every test cycle</td>
+      <td>Release per-cycle state.</td>
+    </tr>
+    <tr>
+      <td><code>_case_setup(case, index)</code></td>
+      <td>Before each case's cycles</td>
+      <td>Prepare per-case state, tailored using <code>case.params</code>.</td>
+    </tr>
+    <tr>
+      <td><code>_case_teardown(case, index)</code></td>
+      <td>After each case's cycles</td>
+      <td>Release per-case state.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="choosing-a-scope">Choosing a scope</h2>
+<p>The scope is a statement about how long the state is valid for. Something expensive that every case can
+  share - an application process, a device connection - belongs in <code>_setup</code>. Something that
+  must be pristine at the start of each pass through the matrix belongs in
+  <code>_test_cycle_setup</code>. Something derived from the case parameters belongs in
+  <code>_case_setup</code>, which is the only hook that receives the case.</p>
+
+<p>The framework knows which hooks a test overrides and shows them in the run plan, so the extra
+  lifecycle work is visible before the run rather than a surprise in the log.</p>
+
+<h2 id="test-scope">Test setup and teardown</h2>
+{{ codeblock.block('def _setup(self) -> None:
+	workspace_folder = self._workspace_folder()
+
+	Logger.log(
+		f"Setup: preparing {self.config.input_count} input files in {workspace_folder}",
+		color=Logger.Color.CYAN,
+	)
+
+	flow = MyPrepareInputsFlow(
+		MyPrepareInputsFlowConfig(
+			app_folder=self.config.app_folder,
+			workspace_folder=workspace_folder,
+			count=int(self.config.input_count),
+		)
+	)
+
+	# Raising from _setup aborts the test: no cases run and _teardown is skipped.
+	if self.handle_errors(flow.run(), self.result):
+		raise RuntimeError(
+			self.result.error_description or "Setup failed to prepare the input files."
+		)
+
+def _teardown(self) -> None:
+	MyCleanupFlow(
+		MyCleanupFlowConfig(workspace_folder=self._workspace_folder())
+	).run()') }}
+
+<p>Flows and steps called from a hook inherit the same endpoint and RPC security context as a case body,
+  so setup work can reuse the very flows the cases use. That is worth leaning on: preparing inputs with
+  the same flow that a case exercises keeps one implementation instead of two.</p>
+
+<h2 id="case-scope">Case setup and teardown</h2>
+<p><code>_case_setup</code> and <code>_case_teardown</code> receive the case, so they can tailor their
+  work to that case's parameters:</p>
+
+{{ codeblock.block('def _case_setup(self, case: OrcraftTestCase, test_cycle_index: int) -> None:
+	source = self._input_file_for(case.params["input_index"])
+	shutil.copyfile(source, self._working_copy_path(case))
+
+def _case_teardown(self, case: OrcraftTestCase, test_cycle_index: int) -> None:
+	os.remove(self._working_copy_path(case))') }}
+
+<p>Both run inside the case, nested beneath its banner in the log, and both wrap the case's cycle loop -
+  so a case that repeats three times gets one setup, three executions and one teardown, not three of
+  each.</p>
+
+<h2 id="failures">When a hook fails</h2>
+<p>Raising from a setup hook is how you say the work it was guarding must not proceed. The blast radius
+  follows the scope of the hook:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Raising from</th>
+      <th>Effect</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>_setup</code></td>
+      <td>The whole test is aborted: no cases run, <code>_teardown</code> is skipped, and the test is marked <code>ERROR</code>.</td>
+    </tr>
+    <tr>
+      <td><code>_test_cycle_setup</code></td>
+      <td>That cycle fails: its cases do not run and its teardown is skipped. The next test cycle still runs.</td>
+    </tr>
+    <tr>
+      <td><code>_case_setup</code></td>
+      <td>That case fails: its cycles do not run and its teardown is skipped. The next case still runs.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>In every instance the matching teardown is skipped, because there is nothing to unwind - a setup that
+  did not complete did not acquire what its teardown would release.</p>
+
+<p>The mirror-image guarantee holds for the success path: once a setup completes, its teardown runs even
+  if the work between them raised. Resources acquired in a hook are released whether the cases passed,
+  failed or errored.</p>
+
+<h2 id="checkpoints-in-hooks">Checkpoints in hooks</h2>
+<p>Inside a hook, a failing
+  <a class="text-accent" href="/framework/results-and-statuses/#checkpoints"><code>checkpoint</code></a>
+  is always treated as an <code>ERROR</code>, whether or not <code>is_error</code> was passed:</p>
+
+{{ codeblock.block('def _setup(self) -> None:
+	self.checkpoint(
+		os.path.isdir(self.config.app_folder),
+		"App folder found.",
+		f"App folder not found: {self.config.app_folder}",
+	)') }}
+
+<p>In a case body the same call would record a failure and carry on, because a case is expected to report
+  every problem it finds. In a hook it aborts the scope instead - a precondition that does not hold is
+  not a finding about the system under test, it is a reason not to test it yet. The failure is rendered
+  as a clean error message rather than a traceback, since a lifecycle assertion failing is an expected
+  outcome, not a crash.</p>

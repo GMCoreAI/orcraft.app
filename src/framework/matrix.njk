@@ -1,0 +1,188 @@
+---
+title: Framework · Orcraft Matrix
+key: framework
+description: "The test matrix: dimensions, exclusion rules and the cases they generate."
+---
+{% import "partials/code-block.njk" as codeblock %}
+<h1>Orcraft Matrix</h1>
+<p>A test does not run once. It runs once per <em>case</em>, and cases come from the matrix - a set of
+  named dimensions whose values are combined. The matrix is configuration rather than code: the same test
+  body serves one combination or four hundred, and which combinations run is decided before the run
+  starts rather than inside the case.</p>
+
+<h2 id="matrix">The matrix</h2>
+<p>Cases come from the test matrix: a set of named dimensions whose values are combined.</p>
+
+{{ codeblock.block('matrix = OrcraftConfigField.Matrix(
+	OrcraftConfigField.Dimension("payload_size", (64, 256)),
+	OrcraftConfigField.Dimension("retries", (1, 3)),
+)') }}
+
+<p>Two dimensions of two values produce four cases - every combination - each reaching
+  <code>_run_case</code> with its own <code>case.params</code>. Add a third dimension of three values and
+  the same test body now covers twelve cases without a line changing.</p>
+
+<p>The controller shows the resulting case list before a run and lets you select, deselect and filter it,
+  so the plan is explicit rather than discovered mid-execution. The tutorial follows that through in
+  <a class="text-accent" href="/tutorial/matrix-and-cases/">Matrix and cases</a> and
+  <a class="text-accent" href="/tutorial/filtering-matrix-dimensions/">Filtering matrix dimensions</a>.</p>
+
+<h2 id="dimensions">Dimensions</h2>
+<p>Dimension values do not have to be listed by hand. Five constructors cover the common cases:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Constructor</th>
+      <th>Produces</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Dimension(label, values)</code></td>
+      <td>The values given, in order.</td>
+    </tr>
+    <tr>
+      <td><code>Dimension.random(label=, min_value=, max_value=, size=)</code></td>
+      <td><code>size</code> numbers sampled from the inclusive range.</td>
+    </tr>
+    <tr>
+      <td><code>Dimension.random_choice(label=, values=, size=)</code></td>
+      <td><code>size</code> values sampled from <code>values</code> without replacement.</td>
+    </tr>
+    <tr>
+      <td><code>Dimension.random_string(label=, size=, length=)</code></td>
+      <td><code>size</code> random strings of a fixed <code>length</code>, or within <code>min_length</code> and <code>max_length</code>, optionally from a given <code>charset</code>.</td>
+    </tr>
+    <tr>
+      <td><code>Dimension.lambda_choice(label=, factory=)</code></td>
+      <td>Values produced by calling <code>factory()</code> when the run is configured.</td>
+    </tr>
+  </tbody>
+</table>
+
+{{ codeblock.block('matrix = OrcraftConfigField.Matrix(
+	OrcraftConfigField.Dimension(label="mode", values=("fast", "thorough")),
+	OrcraftConfigField.Dimension.random_choice(label="seed", values=(1, 7, 42, 100, 2024), size=2),
+	OrcraftConfigField.Dimension.random(label="payload_size", min_value=64, max_value=1024, size=2),
+	OrcraftConfigField.Dimension.random_string(label="label", min_length=1, max_length=2, size=2, charset="AB "),
+	OrcraftConfigField.Dimension.lambda_choice(label="version", factory=fetch_release_versions),
+)') }}
+
+<p>The generated variants keep the case <em>count</em> fixed while the values vary, which is what makes a
+  randomized matrix usable in a plan: the controller can still show how many cases will run, and a soak
+  run covers new ground on every cycle without a new test.</p>
+
+<p><code>lambda_choice</code> is for values that only exist at configuration time - the releases currently
+  published, the devices currently attached. The factory runs when the run is configured, not when the
+  test file is imported.</p>
+
+<h2 id="exclusion">Excluding combinations</h2>
+<p>A full cross product usually contains combinations that make no sense. <code>exclude</code> removes
+  them before they ever become cases, as either a dict of values to match or a predicate over the
+  case:</p>
+
+{{ codeblock.block('matrix = OrcraftConfigField.Matrix(
+	OrcraftConfigField.Dimension("operation", ("create", "read", "update", "delete")),
+	OrcraftConfigField.Dimension("strategy", (None, "sequential", "parallel")),
+	OrcraftConfigField.Dimension("use_cache", (False, True)),
+
+	exclude=[
+		{"operation": "create", "use_cache": True},
+		{"operation": "read", "use_cache": False},
+		lambda case: case.params["operation"] == "delete" and case.params["strategy"] is not None,
+	],
+)') }}
+
+<p>A dict rule excludes every case matching all of its keys; a lambda excludes every case it returns
+  <code>True</code> for. Excluded combinations are not skipped at run time - they are never planned, so
+  the case count the controller shows is the case count that runs.</p>
+
+<h2 id="matrix-options">Matrix options</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Option</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>exclude</code></td>
+      <td>Combinations that must not become cases.</td>
+    </tr>
+    <tr>
+      <td><code>random_order</code></td>
+      <td>Shuffles the case order rather than running the combinations in sequence.</td>
+    </tr>
+    <tr>
+      <td><code>random_seed</code></td>
+      <td>Fixes the seed so a randomized matrix is reproducible.</td>
+    </tr>
+    <tr>
+      <td><code>random_seed_per_cycle</code></td>
+      <td>Draws a fresh seed for each test cycle instead of reusing one.</td>
+    </tr>
+    <tr>
+      <td><code>name_prefix</code></td>
+      <td>Prefix for generated case names.</td>
+    </tr>
+    <tr>
+      <td><code>result_fields</code></td>
+      <td>Which result fields are shown per case in the case table.</td>
+    </tr>
+    <tr>
+      <td><code>selected_cases</code></td>
+      <td>The subset of cases selected to run by default.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><code>random_seed</code> and <code>random_seed_per_cycle</code> are the pair that decides whether a
+  randomized run is an experiment or a regression. A fixed seed reproduces the exact same values every
+  time, which is what you want once a random run has found something; a per-cycle seed covers new values
+  on every cycle, which is what you want while looking.</p>
+
+<h2 id="cases">Orcraft Test Case</h2>
+<p>Each combination the matrix produces arrives at <code>_run_case</code> as an
+  <code>OrcraftTestCase</code>, carrying that case's parameter values and the result it will report:</p>
+
+{{ codeblock.block('def _run_case(self, case: OrcraftTestCase) -> OrcraftTestResult:
+	case.result = MyTestResult()
+
+	measured = measure(
+		payload_size=case.params["payload_size"],
+		retries=case.params["retries"],
+	)
+	...
+	return case.result') }}
+
+<table>
+  <thead>
+    <tr>
+      <th>Member</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>case.params</code></td>
+      <td>Mapping of dimension name to this case's value. <code>case["width"]</code> is shorthand for <code>case.params["width"]</code>.</td>
+    </tr>
+    <tr>
+      <td><code>case.result</code></td>
+      <td>The result this case reports. Assign your own <code>OrcraftTestResult</code> subclass to it.</td>
+    </tr>
+    <tr>
+      <td><code>case.config</code></td>
+      <td>The case's own config, carrying <code>number_of_cycles</code> for this case - see <a class="text-accent" href="/framework/test/#cycles">Cycles</a>.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Cases are generated, never written. A test with no matrix still runs exactly one case, with
+  <code>case.params</code> simply empty - which is what keeps the simplest possible test and a large
+  parameterized one on the same code path.</p>
+
+<p>How many times each case runs is a separate question from how many cases there are; both counters live
+  on the test config and are covered in <a class="text-accent" href="/framework/test/#cycles">Cycles</a>.</p>

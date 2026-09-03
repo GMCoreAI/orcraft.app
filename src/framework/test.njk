@@ -1,0 +1,355 @@
+---
+title: Framework · Orcraft Test
+key: framework
+description: "OrcraftTest, OrcraftTestConfig and OrcraftTestResult: the smallest component you can build and run on its own."
+---
+{% import "partials/code-block.njk" as codeblock %}
+<h1>Orcraft Test</h1>
+<p>A test is the smallest thing in Orcraft worth building on its own. It needs no group, no suite and no
+  endpoint: a single Python file with a test class in it can be run from the command line, and the same
+  file, unchanged, is what the controller loads later.</p>
+
+<p>Every test is three classes - a config, a result and the test itself:</p>
+
+{{ codeblock.block('from __future__ import annotations
+
+from orcraft import (
+	OrcraftTest,
+	OrcraftTestCase,
+	OrcraftTestConfig,
+	OrcraftTestResult,
+	OrcraftConfigField,
+	OrcraftResultField,
+)
+
+
+class MyTestConfig(OrcraftTestConfig):
+	name = OrcraftConfigField.Text(default="My Test")
+	description = OrcraftConfigField.Text(default="Verifies that the system under test responds correctly.")
+	iterations = OrcraftConfigField.Numeric(default=3, label="Iterations")
+	threshold = OrcraftConfigField.Numeric(default=100, label="Threshold")
+
+
+class MyTestResult(OrcraftTestResult):
+	measured_value = OrcraftResultField.Numeric(default=0, label="Measured Value")
+
+
+class MyTest(OrcraftTest):
+	def __init__(self, config: MyTestConfig | None = None) -> None:
+		super().__init__(config or MyTestConfig())
+
+	def _run_case(self, case: OrcraftTestCase) -> OrcraftTestResult:
+		case.result = MyTestResult()
+
+		measured = measure(iterations=self.config.iterations)
+		case.result.measured_value = measured
+
+		self.checkpoint(
+			measured <= self.config.threshold,
+			f"Measured {measured}, within the threshold of {self.config.threshold}.",
+			f"Measured {measured}, above the threshold of {self.config.threshold}.",
+		)
+
+		return case.result
+
+
+def main() -> None:
+	MyTest().run()
+
+
+if __name__ == "__main__":
+	main()') }}
+
+<h2 id="config-class">The config class</h2>
+<p>The config declares everything about the test that can be configured from outside it. Each field is a
+  class attribute built from the
+  <a class="text-accent" href="/framework/configuration-fields/"><code>OrcraftConfigField</code></a>
+  namespace, and inside the test it reads as an ordinary attribute -
+  <code>self.config.iterations</code> - holding either the configured value or the declared default.</p>
+
+<p>Subclassing <code>OrcraftTestConfig</code> means the config starts out with fields it did not declare.
+  Overriding one, as <code>name</code> and <code>description</code> are overridden above, replaces its
+  default without changing what it is for.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Inherited field</th>
+      <th>Default</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>name</code></td>
+      <td><code>"Test"</code></td>
+      <td>Display name in the GUI, CLI and logs. Not editable from the GUI.</td>
+    </tr>
+    <tr>
+      <td><code>description</code></td>
+      <td><code>""</code></td>
+      <td>Free text describing what the test does. Not editable from the GUI.</td>
+    </tr>
+    <tr>
+      <td><code>version</code></td>
+      <td><code>""</code></td>
+      <td>Test version, recorded with the results.</td>
+    </tr>
+    <tr>
+      <td><code>test_endpoint</code></td>
+      <td><code>"localhost"</code></td>
+      <td>The endpoint this test executes against - see <a class="text-accent" href="/framework/endpoints/">Orcraft Endpoints</a>.</td>
+    </tr>
+    <tr>
+      <td><code>matrix</code></td>
+      <td><code>None</code></td>
+      <td>The dimensions that expand into cases - see <a class="text-accent" href="/framework/matrix/">Orcraft Matrix</a>.</td>
+    </tr>
+    <tr>
+      <td><code>number_of_cycles</code></td>
+      <td><code>1</code></td>
+      <td>How many times the whole test repeats - see <a class="text-accent" href="#cycles">Cycles</a>.</td>
+    </tr>
+    <tr>
+      <td><code>case_number_of_cycles</code></td>
+      <td><code>1</code></td>
+      <td>How many times each case repeats - see <a class="text-accent" href="#cycles">Cycles</a>.</td>
+    </tr>
+    <tr>
+      <td><code>upload_test_package</code></td>
+      <td><code>"if_missing"</code></td>
+      <td>Whether the test package is uploaded to the endpoint before the run.</td>
+    </tr>
+    <tr>
+      <td><code>update_endpoint_app</code></td>
+      <td><code>"on_mismatch"</code></td>
+      <td>Whether the endpoint application is updated before the run.</td>
+    </tr>
+    <tr>
+      <td><code>log_orientation</code></td>
+      <td><code>HORIZONTAL</code></td>
+      <td>Orientation of the logged config and result tables.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Fields sitting at their default - a single cycle, an empty matrix - are hidden from the run panel
+  rather than shown as clutter, and the endpoint policy fields only appear for a test that actually uses
+  endpoints.</p>
+
+<p><code>upload_test_package</code> takes one of three values:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Value</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>always</code></td>
+      <td>Upload on every run. The safe choice while the suite is changing.</td>
+    </tr>
+    <tr>
+      <td><code>if_missing</code></td>
+      <td>Upload only when the endpoint does not already have the package. The default.</td>
+    </tr>
+    <tr>
+      <td><code>never</code></td>
+      <td>Never upload - the endpoint is expected to have the package already.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><code>update_endpoint_app</code> takes one of three values:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Value</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>always</code></td>
+      <td>Update the endpoint application before every run.</td>
+    </tr>
+    <tr>
+      <td><code>on_mismatch</code></td>
+      <td>Update only when the endpoint application does not match the controller. The default for a test.</td>
+    </tr>
+    <tr>
+      <td><code>never</code></td>
+      <td>Leave the endpoint application as it is.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="result-class">The result class</h2>
+<p>The result declares what the test reports. Its fields come from the
+  <a class="text-accent" href="/framework/results-and-statuses/"><code>OrcraftResultField</code></a>
+  namespace, and like the config it starts out with fields it did not declare. Unlike the config, most of
+  these are written by the framework, not by you:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Inherited field</th>
+      <th>Written by</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>status</code></td>
+      <td>Framework, via checkpoints and descriptions</td>
+      <td><code>PASS</code>, <code>FAIL</code>, <code>ERROR</code> or <code>ABORT</code>. Assign it directly only for <code>ERROR</code> - see <a class="text-accent" href="/framework/results-and-statuses/#setting-a-status">Setting a status</a>.</td>
+    </tr>
+    <tr>
+      <td><code>failure_description</code></td>
+      <td>You, or a failing checkpoint</td>
+      <td>Why the system under test was judged incorrect. Setting it moves a passing result to <code>FAIL</code>.</td>
+    </tr>
+    <tr>
+      <td><code>error_description</code></td>
+      <td>You, or the framework on an uncaught exception</td>
+      <td>Why the test could not complete.</td>
+    </tr>
+    <tr>
+      <td><code>warning_description</code></td>
+      <td>You</td>
+      <td>Something worth flagging that does not change the status.</td>
+    </tr>
+    <tr>
+      <td><code>finish_time</code></td>
+      <td>Framework</td>
+      <td>When the component finished.</td>
+    </tr>
+    <tr>
+      <td><code>elapsed_time</code></td>
+      <td>Framework</td>
+      <td>How long it took.</td>
+    </tr>
+    <tr>
+      <td><code>total_cases</code>, <code>passed_cases</code>, <code>failed_cases</code>, <code>error_cases</code>, <code>warning_cases</code></td>
+      <td>Framework</td>
+      <td>Per-case counters, summed from the cases that ran and carried up into the group and suite results.</td>
+    </tr>
+    <tr>
+      <td><code>log_orientation</code></td>
+      <td>You, by overriding the default</td>
+      <td>Whether the result table is logged horizontally or vertically. Test results default to vertical because the counters make a horizontal row too wide.</td>
+    </tr>
+    <tr>
+      <td><code>log_title_color</code>, <code>log_title_bg_color</code></td>
+      <td>Framework</td>
+      <td>Palette plumbing for the log banners. Not user-facing.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="docs-callout docs-callout--caution">
+  <span class="docs-callout__label">Do not redeclare</span>
+  <p>A field of your own under any of these names replaces the framework's. The framework keeps writing
+    to the name, but through your definition - and status comparisons, the counters the group and suite
+    roll up, and the controller's result columns silently break. Only <code>log_orientation</code> is
+    meant to be overridden, and only to change its default.</p>
+</div>
+
+<p>Declaring a result class is optional. A test that has nothing of its own to report can leave
+  <code>case.result</code> alone and still produce a complete pass or fail. Declaring one is what makes
+  measured values appear in the log tables, in the controller and in exported results.</p>
+
+<h2 id="run-case">The test body</h2>
+<p><code>_run_case</code> is the only method a test must implement. The framework calls it once per case
+  per cycle, hands it the <a class="text-accent" href="/framework/matrix/#cases">case</a>, and
+  expects the case result back:</p>
+
+{{ codeblock.block('def _run_case(self, case: OrcraftTestCase) -> OrcraftTestResult:
+	case.result = MyTestResult()
+	...
+	return case.result') }}
+
+<p>Assigning <code>case.result</code> to your own result subclass is what puts the extra result fields in
+  play - without it the case reports only the inherited ones. Everything else about the body is ordinary
+  Python: call into the system under test however you like, record what you measured on
+  <code>case.result</code>, and assert with
+  <a class="text-accent" href="/framework/results-and-statuses/#checkpoints"><code>checkpoint</code></a>.</p>
+
+<p>A case body does not have to be small. When it grows past what reads well in one method, split it into
+  <a class="text-accent" href="/framework/steps/">steps</a> and
+  <a class="text-accent" href="/framework/flows/">flows</a> - but that is a decision to make when the
+  test needs it, not up front.</p>
+
+<h2 id="cycles">Cycles</h2>
+<p>Repetition is configuration, not code. Two independent counters on the test config control it, and
+  both are editable from the controller before a run:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>number_of_cycles</code></td>
+      <td>How many times the whole test - all of its cases - repeats.</td>
+    </tr>
+    <tr>
+      <td><code>case_number_of_cycles</code></td>
+      <td>How many times each individual case repeats before moving to the next one.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The difference is the order of execution. Test cycles repeat the sequence: every case once, then every
+  case again. Case cycles repeat in place: the first case three times, then the second case three times.
+  For a flaky interaction, case cycles hammer the same conditions; for wear over time, test cycles walk
+  the whole matrix repeatedly.</p>
+
+<p>A test with four cases, two test cycles and three case cycles executes the case body twenty-four
+  times. Both counters are hidden from the run panel while they sit at one, so a test that does not
+  repeat does not advertise the fields.</p>
+
+<p>Cycles are a test-level idea. Suites, groups, flows and steps have no cycle counter of their own: a
+  suite repeats because the tests inside it do, and a flow repeats because the case that calls it does.
+  <a class="text-accent" href="/framework/lifecycle-hooks/">Lifecycle hooks</a> gives each cycle scope its
+  own setup and teardown when per-cycle state has to be rebuilt.</p>
+
+<h2 id="lifecycle">Setup and teardown</h2>
+<p>Work that must happen around the cases rather than inside them - launching an application, opening a
+  connection, generating shared inputs - belongs in a lifecycle hook rather than at the top of
+  <code>_run_case</code>:</p>
+
+{{ codeblock.block('def _setup(self) -> None:
+	self.app = MyApplication(self.config.app_folder)
+	self.app.start()
+
+def _teardown(self) -> None:
+	self.app.stop()') }}
+
+<p>Every hook is optional. <a class="text-accent" href="/framework/lifecycle-hooks/">Orcraft Lifecycle Hooks</a>
+  covers all six of them and what happens when one fails.</p>
+
+<h2 id="standalone">Running standalone</h2>
+<p>Giving the file a <code>main()</code> makes it directly executable, which is how a test is developed
+  before it is added to a group:</p>
+
+{{ codeblock.block('def main() -> None:
+	MyTest().run()
+
+
+if __name__ == "__main__":
+	main()') }}
+
+<p><code>run()</code> executes the full lifecycle - setup, every case of every cycle, teardown - and logs
+  the config table, the per-case results and the test summary exactly as the controller would. There is
+  no separate packaging step and no alternate entry point: the file that runs from a terminal is the file
+  the controller loads.</p>
+
+<p>Once the test does what you want, add it to a <a class="text-accent" href="/framework/groups/">group</a>
+  to run it alongside its neighbors.</p>

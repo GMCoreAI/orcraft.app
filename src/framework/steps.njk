@@ -1,0 +1,134 @@
+---
+title: Framework · Orcraft Test Step
+key: framework
+description: "OrcraftTestStep: the smallest unit of work, and the only component that runs on a remote endpoint."
+---
+{% import "partials/code-block.njk" as codeblock %}
+<h1>Orcraft Test Step</h1>
+<p>A step is the smallest unit of work in Orcraft: one action, its inputs, its outputs. Steps exist for
+  two reasons. They make a long case body readable by naming its parts, and they are the only component
+  that can be dispatched to a remote endpoint - which is what turns a local test into a distributed
+  one.</p>
+
+<p>Like every component, a step is three classes:</p>
+
+{{ codeblock.block('from __future__ import annotations
+
+import os
+
+from orcraft import (
+	OrcraftTestStep,
+	OrcraftTestStepConfig,
+	OrcraftTestStepResult,
+	OrcraftConfigField,
+	OrcraftResultField,
+)
+
+
+class MyStepConfig(OrcraftTestStepConfig):
+	name = OrcraftConfigField.Text(default="My Step")
+	output_folder = OrcraftConfigField.Text(default="", label="Output Folder")
+	run_id = OrcraftConfigField.Text(default="", label="Run Id")
+
+
+class MyStepResult(OrcraftTestStepResult):
+	output_file = OrcraftResultField.Text(default="", label="Output File")
+
+
+class MyStep(OrcraftTestStep):
+	def __init__(self, config: MyStepConfig | None = None) -> None:
+		super().__init__(config or MyStepConfig())
+
+	def _run_step(self) -> OrcraftTestStepResult:
+		self.result = MyStepResult()
+
+		output_file = os.path.join(self.config.output_folder, f"{self.config.run_id}.dat")
+		self.result.output_file = output_file
+
+		was_removed = os.path.exists(output_file)
+		if was_removed:
+			os.remove(output_file)
+
+		self.checkpoint(
+			True,
+			f"Stale output removed: {output_file}" if was_removed else "No stale output to remove.",
+			"",
+		)
+
+		return self.result') }}
+
+<h2 id="run-step">The step body</h2>
+<p><code>_run_step</code> is the only method a step must implement. It creates its result, does the work,
+  and returns the result - and the returned object must be an <code>OrcraftTestStepResult</code>, which
+  the framework checks rather than letting a mistyped return surface later as a missing attribute.</p>
+
+<p>A step is not handed a case. That is the point: it receives everything through its config and reports
+  everything through its result, with no access to the test around it. Keeping to that discipline is what
+  lets the same step run locally during development and on a remote endpoint in a distributed run,
+  unchanged.</p>
+
+<h2 id="config-fields">Step config fields</h2>
+<p>Beyond <code>name</code>, <code>description</code> and <code>log_orientation</code>, a step config
+  inherits two fields of its own:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Default</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>target_endpoint</code></td>
+      <td><code>""</code></td>
+      <td>The endpoint the step is dispatched to. Set by the flow that runs it, not usually by hand.</td>
+    </tr>
+    <tr>
+      <td><code>expect_endpoint_disconnect</code></td>
+      <td><code>False</code></td>
+      <td>Marks a step that is <em>supposed</em> to take its endpoint offline - a reboot, a service restart - so the disconnection is not reported as an error.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="granularity">How small is a step</h2>
+<p>A useful step is one action that can succeed or fail on its own terms: delete a file, launch a process,
+  read a register, transfer a build. If a step needs two checkpoints about unrelated things, it is
+  probably two steps. If it exists only to pass a value from one step to the next, it is probably not a
+  step at all.</p>
+
+<p>Splitting at that grain pays off twice. The log gains a banner and a result table per action, so a
+  failure points at the action that produced it, and each of those actions becomes independently
+  reusable - the same step appears in several
+  <a class="text-accent" href="/framework/flows/">flows</a> across different tests.</p>
+
+<h2 id="remote">Steps on a remote endpoint</h2>
+<p>When a flow runs a step against a remote endpoint, the framework transfers the test package to that
+  endpoint, executes <code>_run_step</code> there, and returns the result to the controller. The step
+  code does not know the difference, which means two things in practice:</p>
+
+<ul>
+  <li>Paths inside a step are paths on the machine the step is executing on. Anything a step needs must
+    arrive as a package field or through the flow's
+    <a class="text-accent" href="/framework/endpoints/#transfer">transfer</a> helper.</li>
+  <li>Anything a step wants to hand to the next step must go through its result, since the two may not be
+    running on the same machine.</li>
+</ul>
+
+<p><a class="text-accent" href="/framework/endpoints/">Orcraft Endpoints</a> covers dispatch, package upload and
+  the endpoint field types in full.</p>
+
+<h2 id="standalone">Running a step directly</h2>
+<p>Steps are normally run by a flow through
+  <a class="text-accent" href="/framework/flows/#run-step"><code>run_step</code></a>, which builds the
+  step, applies the config values and dispatches it. A step can also be constructed and run directly,
+  which is occasionally useful while developing one:</p>
+
+{{ codeblock.block('step = MyStep(
+	MyStepConfig(output_folder="/tmp/run", run_id="0001")
+)
+result = step.run()') }}
+
+<p>A step run this way always runs locally - remote dispatch is something the flow arranges.</p>

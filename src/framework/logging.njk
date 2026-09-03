@@ -1,0 +1,417 @@
+---
+title: Framework · Orcraft Logger
+key: framework
+description: "OrcraftLogger: colored console output, tables and progress that the controller renders as it runs."
+---
+{% import "partials/code-block.njk" as codeblock %}
+<h1>Orcraft Logger</h1>
+<p>Most of an Orcraft log writes itself. Every component logs its config table when it starts and its
+  result table when it finishes, nested by level, and every
+  <a class="text-accent" href="/framework/results-and-statuses/#checkpoints">checkpoint</a> logs its
+  outcome either way. <code>OrcraftLogger</code> is for everything a test wants to add on top of that.</p>
+
+{{ codeblock.block('from orcraft import OrcraftLogger as Logger
+
+Logger.log("Starting the run", color=Logger.Color.BLUE)') }}
+
+<p>Importing it as <code>Logger</code> is the convention throughout Orcraft suites, and it is what keeps
+  call sites short. Everything on it is a class method - there is no logger instance to create, pass
+  around or configure.</p>
+
+<h2 id="log">Logging a message</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Argument</th>
+      <th>Default</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>*args</code></td>
+      <td>-</td>
+      <td>Values to log, joined with spaces, like <code>print</code>.</td>
+    </tr>
+    <tr>
+      <td><code>color</code></td>
+      <td><code>DEFAULT</code></td>
+      <td>Foreground color from <code>Logger.Color</code>.</td>
+    </tr>
+    <tr>
+      <td><code>bg_color</code></td>
+      <td><code>DEFAULT</code></td>
+      <td>Background color from <code>Logger.Background</code>.</td>
+    </tr>
+    <tr>
+      <td><code>timestamp</code></td>
+      <td><code>False</code></td>
+      <td>Append the time the line was logged.</td>
+    </tr>
+    <tr>
+      <td><code>module_tag</code></td>
+      <td><code>True</code></td>
+      <td>Prefix the line with the calling module. Pass <code>False</code> for output that should read as the program's own, such as captured stdout.</td>
+    </tr>
+    <tr>
+      <td><code>tab</code></td>
+      <td><code>None</code></td>
+      <td>Indent level, so a message nests with the component that emitted it.</td>
+    </tr>
+  </tbody>
+</table>
+
+{{ codeblock.block('Logger.log(f"Setup: preparing {input_count} input files", color=Logger.Color.CYAN)
+Logger.log(completed.stdout, module_tag=False)
+Logger.log(completed.stderr, color=Logger.Color.RED, module_tag=False)') }}
+
+<p><code>module_tag=False</code> is the one worth knowing about. Output captured from the system under
+  test should appear as that program printed it; tagging it with the module that happened to relay it
+  makes the log harder to read, not easier.</p>
+
+<p><code>Logger.log_error</code> takes the same arguments, forces red and writes to stderr. It is for
+  reporting a problem, not for causing one - the result status is set by
+  <a class="text-accent" href="/framework/results-and-statuses/#checkpoints">checkpoints</a> and by the
+  result descriptions, never by a log call.</p>
+
+<h2 id="colors">Colors</h2>
+<p><code>Logger.Color</code> covers the usual named colors and their light and dark variants, plus an
+  eleven-step gray ramp and a nine-step brown ramp. Every member is listed with a swatch in
+  <a class="text-accent" href="#appendix-colors">Appendix: color reference</a>.</p>
+
+<p>To color part of a line rather than all of it, build the string with <code>colorize</code>:</p>
+
+{{ codeblock.block('parts.append(Logger.colorize(segment, Logger.Color.GREEN))
+
+status_text = Logger.colorize_if(
+	label,
+	passed,
+	Logger.Color.GREEN,
+	Logger.Color.RED,
+)') }}
+
+<p><code>colorize</code> returns the text wrapped in ANSI codes, so it composes into a larger message,
+  into an f-string, or into a table cell. <code>colorize_if</code> is the two-way version that most
+  status rendering ends up wanting.</p>
+
+<p>The same mechanism drives result field
+  <a class="text-accent" href="/framework/results-and-statuses/#result-fields">formatters</a>: a
+  formatter that returns a colorized string is how a value arrives in the result table already
+  colored.</p>
+
+<h2 id="tables">Tables</h2>
+<p>The framework logs config and result tables on its own. When a test has tabular data of its own to
+  report - a comparison, a per-item breakdown - it can log a table directly:</p>
+
+{{ codeblock.block('Logger.log_table(
+	headers=("Case", "Requested", "Measured", "Delta"),
+	rows=rows,
+	title="My Test Summary",
+)') }}
+
+<p>Columns are sized uniformly, the title is centered over them, and <code>column_align</code> and
+  <code>column_widths</code> are there when the defaults do not suit. <code>tab</code> works as it does
+  for <code>log</code>, so a table nests with the component that emitted it.</p>
+
+<p>Whether the framework's own tables read horizontally or vertically is set per component with
+  <code>log_orientation</code>. Horizontal is compact for a handful of fields; vertical stays readable
+  when there are many, or when values are long:</p>
+
+{{ codeblock.block('log_orientation = OrcraftConfigField.Format(
+	default=OrcraftConfigField.LogTableOrientation.VERTICAL
+)') }}
+
+<h2 id="progress">Progress and inline output</h2>
+<p>For work that takes long enough to need a sign of life, <code>log_inline</code> rewrites a single
+  console line instead of scrolling:</p>
+
+{{ codeblock.block('for index, item in enumerate(items, start=1):
+	Logger.log_inline_progress("Processing", index, len(items))
+	process(item)
+
+Logger.log_inline_progress("Processing", len(items), len(items), finalize=True)') }}
+
+<p>Call with <code>finalize=True</code> once at the end to terminate the line before other logs resume -
+  without it the next message lands on top of the progress bar. <code>build_progress_bar</code> returns
+  the bar and its fraction if you would rather compose the line yourself.</p>
+
+<p>Inline output is a console convenience; the log file keeps the full record.</p>
+
+<h2 id="log-files">Log files</h2>
+<p>Console output is mirrored to a log file, with the ANSI decoration preserved - which is why a log
+  opened later, or rendered by the controller, looks the way the run looked. The framework initializes
+  the logger on first use, so a test never has to; <code>Logger.get_log_file_path()</code> returns the
+  file currently being written when a test needs to reference or attach it.</p>
+
+<h2 id="appendix-colors">Appendix: color reference</h2>
+<p>Every member of <code>Logger.Color</code> is listed below. <code>Logger.Background</code> declares
+  exactly the same set of names, so anything valid as a foreground color is valid as a background
+  one:</p>
+
+{{ codeblock.block('Logger.log(
+	"Run finished",
+	color=Logger.Color.WHITE,
+	bg_color=Logger.Background.DARK_GREEN,
+)') }}
+
+<p>The swatches show how each color renders against a standard terminal palette. The 16-color members are
+  resolved by whatever palette the terminal is configured with, so their exact appearance varies; the
+  gray, brown and navy members are 256-color indices and are stable across terminals.</p>
+
+<h3 id="named-colors">Named colors</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Member</th>
+      <th>Swatch</th>
+      <th>ANSI code</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>DEFAULT</code></td>
+      <td>-</td>
+      <td><code>-</code></td>
+    </tr>
+    <tr>
+      <td><code>BLACK</code></td>
+      <td><span class="color-swatch" style="background: #000000;" aria-hidden="true"></span></td>
+      <td><code>30</code></td>
+    </tr>
+    <tr>
+      <td><code>WHITE</code></td>
+      <td><span class="color-swatch" style="background: #ffffff;" aria-hidden="true"></span></td>
+      <td><code>97</code></td>
+    </tr>
+    <tr>
+      <td><code>PURPLE</code></td>
+      <td><span class="color-swatch" style="background: #cd00cd;" aria-hidden="true"></span></td>
+      <td><code>35</code></td>
+    </tr>
+    <tr>
+      <td><code>GREEN</code></td>
+      <td><span class="color-swatch" style="background: #00ff00;" aria-hidden="true"></span></td>
+      <td><code>92</code></td>
+    </tr>
+    <tr>
+      <td><code>DARK_GREEN</code></td>
+      <td><span class="color-swatch" style="background: #00cd00;" aria-hidden="true"></span></td>
+      <td><code>32</code></td>
+    </tr>
+    <tr>
+      <td><code>LIGHT_GREEN</code></td>
+      <td><span class="color-swatch" style="background: #00ff00;" aria-hidden="true"></span></td>
+      <td><code>92</code></td>
+    </tr>
+    <tr>
+      <td><code>YELLOW</code></td>
+      <td><span class="color-swatch" style="background: #ffff00;" aria-hidden="true"></span></td>
+      <td><code>93</code></td>
+    </tr>
+    <tr>
+      <td><code>ORANGE</code></td>
+      <td><span class="color-swatch" style="background: #cdcd00;" aria-hidden="true"></span></td>
+      <td><code>33</code></td>
+    </tr>
+    <tr>
+      <td><code>DARK_ORANGE</code></td>
+      <td><span class="color-swatch" style="background: #cd0000;" aria-hidden="true"></span></td>
+      <td><code>31</code></td>
+    </tr>
+    <tr>
+      <td><code>RED</code></td>
+      <td><span class="color-swatch" style="background: #ff0000;" aria-hidden="true"></span></td>
+      <td><code>91</code></td>
+    </tr>
+    <tr>
+      <td><code>DARK_BLUE</code></td>
+      <td><span class="color-swatch" style="background: #0000ee;" aria-hidden="true"></span></td>
+      <td><code>34</code></td>
+    </tr>
+    <tr>
+      <td><code>BLUE</code></td>
+      <td><span class="color-swatch" style="background: #5c5cff;" aria-hidden="true"></span></td>
+      <td><code>94</code></td>
+    </tr>
+    <tr>
+      <td><code>CYAN</code></td>
+      <td><span class="color-swatch" style="background: #00ffff;" aria-hidden="true"></span></td>
+      <td><code>96</code></td>
+    </tr>
+    <tr>
+      <td><code>DARK_MAGENTA</code></td>
+      <td><span class="color-swatch" style="background: #cd00cd;" aria-hidden="true"></span></td>
+      <td><code>35</code></td>
+    </tr>
+    <tr>
+      <td><code>MAGENTA</code></td>
+      <td><span class="color-swatch" style="background: #ff00ff;" aria-hidden="true"></span></td>
+      <td><code>95</code></td>
+    </tr>
+    <tr>
+      <td><code>LIGHT_BLUE</code></td>
+      <td><span class="color-swatch" style="background: #00cdcd;" aria-hidden="true"></span></td>
+      <td><code>36</code></td>
+    </tr>
+    <tr>
+      <td><code>LIGHT_ORANGE</code></td>
+      <td><span class="color-swatch" style="background: #cdcd00;" aria-hidden="true"></span></td>
+      <td><code>33</code></td>
+    </tr>
+    <tr>
+      <td><code>NAVY</code></td>
+      <td><span class="color-swatch" style="background: #000087;" aria-hidden="true"></span></td>
+      <td><code>38;5;18</code></td>
+    </tr>
+    <tr>
+      <td><code>DARK_NAVY</code></td>
+      <td><span class="color-swatch" style="background: #00005f;" aria-hidden="true"></span></td>
+      <td><code>38;5;17</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>A few names are aliases that resolve to the same code: <code>GREEN</code> and
+  <code>LIGHT_GREEN</code>, <code>PURPLE</code> and <code>DARK_MAGENTA</code>, <code>ORANGE</code> and
+  <code>LIGHT_ORANGE</code>. Note also that the orange family sits on the terminal's yellow and red
+  slots rather than on a true orange, which is the main reason those three render differently from one
+  terminal to the next. Where an exact shade matters, reach for the brown ramp instead.</p>
+
+<p><code>DEFAULT</code> emits no code at all, leaving the text in the terminal's own foreground color.
+  That is the value both <code>color</code> and <code>bg_color</code> take when you pass neither.</p>
+
+<h3 id="gray-ramp">Gray ramp</h3>
+<p>Eleven steps from near-black to near-white, for output that should recede rather than compete -
+  timestamps, context lines, values that are present but not the point.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Member</th>
+      <th>Swatch</th>
+      <th>ANSI code</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>GRAY0</code></td>
+      <td><span class="color-swatch" style="background: #080808;" aria-hidden="true"></span></td>
+      <td><code>38;5;232</code></td>
+    </tr>
+    <tr>
+      <td><code>GRAY10</code></td>
+      <td><span class="color-swatch" style="background: #1c1c1c;" aria-hidden="true"></span></td>
+      <td><code>38;5;234</code></td>
+    </tr>
+    <tr>
+      <td><code>GRAY20</code></td>
+      <td><span class="color-swatch" style="background: #303030;" aria-hidden="true"></span></td>
+      <td><code>38;5;236</code></td>
+    </tr>
+    <tr>
+      <td><code>GRAY30</code></td>
+      <td><span class="color-swatch" style="background: #444444;" aria-hidden="true"></span></td>
+      <td><code>38;5;238</code></td>
+    </tr>
+    <tr>
+      <td><code>GRAY40</code></td>
+      <td><span class="color-swatch" style="background: #585858;" aria-hidden="true"></span></td>
+      <td><code>38;5;240</code></td>
+    </tr>
+    <tr>
+      <td><code>GRAY50</code></td>
+      <td><span class="color-swatch" style="background: #6c6c6c;" aria-hidden="true"></span></td>
+      <td><code>38;5;242</code></td>
+    </tr>
+    <tr>
+      <td><code>GRAY60</code></td>
+      <td><span class="color-swatch" style="background: #808080;" aria-hidden="true"></span></td>
+      <td><code>38;5;244</code></td>
+    </tr>
+    <tr>
+      <td><code>GRAY70</code></td>
+      <td><span class="color-swatch" style="background: #949494;" aria-hidden="true"></span></td>
+      <td><code>38;5;246</code></td>
+    </tr>
+    <tr>
+      <td><code>GRAY80</code></td>
+      <td><span class="color-swatch" style="background: #a8a8a8;" aria-hidden="true"></span></td>
+      <td><code>38;5;248</code></td>
+    </tr>
+    <tr>
+      <td><code>GRAY90</code></td>
+      <td><span class="color-swatch" style="background: #bcbcbc;" aria-hidden="true"></span></td>
+      <td><code>38;5;250</code></td>
+    </tr>
+    <tr>
+      <td><code>GRAY100</code></td>
+      <td><span class="color-swatch" style="background: #eeeeee;" aria-hidden="true"></span></td>
+      <td><code>38;5;255</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="brown-ramp">Brown ramp</h3>
+<p>Nine steps through the reds, ambers and tans, useful when a log needs several distinguishable warm
+  colors that the 16-color set cannot supply.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Member</th>
+      <th>Swatch</th>
+      <th>ANSI code</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>BROWN10</code></td>
+      <td><span class="color-swatch" style="background: #5f0000;" aria-hidden="true"></span></td>
+      <td><code>38;5;52</code></td>
+    </tr>
+    <tr>
+      <td><code>BROWN20</code></td>
+      <td><span class="color-swatch" style="background: #870000;" aria-hidden="true"></span></td>
+      <td><code>38;5;88</code></td>
+    </tr>
+    <tr>
+      <td><code>BROWN30</code></td>
+      <td><span class="color-swatch" style="background: #875f00;" aria-hidden="true"></span></td>
+      <td><code>38;5;94</code></td>
+    </tr>
+    <tr>
+      <td><code>BROWN40</code></td>
+      <td><span class="color-swatch" style="background: #878700;" aria-hidden="true"></span></td>
+      <td><code>38;5;100</code></td>
+    </tr>
+    <tr>
+      <td><code>BROWN50</code></td>
+      <td><span class="color-swatch" style="background: #af5f00;" aria-hidden="true"></span></td>
+      <td><code>38;5;130</code></td>
+    </tr>
+    <tr>
+      <td><code>BROWN60</code></td>
+      <td><span class="color-swatch" style="background: #af8700;" aria-hidden="true"></span></td>
+      <td><code>38;5;136</code></td>
+    </tr>
+    <tr>
+      <td><code>BROWN70</code></td>
+      <td><span class="color-swatch" style="background: #af875f;" aria-hidden="true"></span></td>
+      <td><code>38;5;137</code></td>
+    </tr>
+    <tr>
+      <td><code>BROWN80</code></td>
+      <td><span class="color-swatch" style="background: #d78700;" aria-hidden="true"></span></td>
+      <td><code>38;5;172</code></td>
+    </tr>
+    <tr>
+      <td><code>BROWN90</code></td>
+      <td><span class="color-swatch" style="background: #d7af87;" aria-hidden="true"></span></td>
+      <td><code>38;5;180</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Background codes are the same indices with a <code>48;5;</code> prefix in place of
+  <code>38;5;</code>, and the same 16-color codes offset into the background range - the framework
+  handles that translation, so a test only ever names the member.</p>

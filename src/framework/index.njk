@@ -3,5 +3,167 @@ title: Framework · Orcraft framework overview
 key: framework
 description: "The Orcraft test framework: suites, groups, tests, cases, flows and steps."
 ---
+{% import "partials/code-block.njk" as codeblock %}
 <h1>Orcraft framework overview</h1>
-<p>Framework content is in preparation.</p>
+<p>The Orcraft test framework is the plain-Python library your tests are written against. It ships with
+  the controller and is imported from a single package:</p>
+{{ codeblock.block('from orcraft import OrcraftTest, OrcraftTestConfig, OrcraftTestCase, OrcraftConfigField') }}
+
+<p>There is no domain-specific language, no runner conventions and no decorators to memorize. A test is a
+  Python class that inherits from a framework base class, declares its configuration as class attributes,
+  and implements one method. Everything else - discovery, configuration, distribution to endpoints,
+  execution, logging and result collection - is what the controller does with that class.</p>
+
+<p>Because a suite is ordinary Python, the same files run three ways without modification: standalone
+  from the command line, from the controller GUI, and from the controller CLI in a CI pipeline. The
+  <a class="text-accent" href="/tutorial/">Tutorial</a> walks through building one step by step; this
+  section is the reference for what the framework itself offers.</p>
+
+<h2 id="component-model">The component model</h2>
+<p>Orcraft models a test system as a hierarchy of <em>components</em>. Each level owns the level below it
+  and contributes its own configuration and its own result.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Component</th>
+      <th>Base class</th>
+      <th>Contains</th>
+      <th>You implement</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><a class="text-accent" href="/framework/suites/">Orcraft Test Suite</a></td>
+      <td><code>OrcraftTestSuite</code></td>
+      <td>Groups</td>
+      <td>Nothing - a suite is declared, not coded</td>
+    </tr>
+    <tr>
+      <td><a class="text-accent" href="/framework/groups/">Orcraft Test Group</a></td>
+      <td><code>OrcraftTestGroup</code></td>
+      <td>Tests</td>
+      <td>Nothing - a group is declared, not coded</td>
+    </tr>
+    <tr>
+      <td><a class="text-accent" href="/framework/test/">Orcraft Test</a></td>
+      <td><code>OrcraftTest</code></td>
+      <td>Cases</td>
+      <td><code>_run_case(case)</code></td>
+    </tr>
+    <tr>
+      <td><a class="text-accent" href="/framework/matrix/">Orcraft Test Case</a></td>
+      <td><code>OrcraftTestCase</code></td>
+      <td>Case cycles</td>
+      <td>Nothing - cases are generated from the matrix</td>
+    </tr>
+    <tr>
+      <td><a class="text-accent" href="/framework/flows/">Orcraft Test Flow</a></td>
+      <td><code>OrcraftTestFlow</code></td>
+      <td>Steps</td>
+      <td><code>_run_flow()</code></td>
+    </tr>
+    <tr>
+      <td><a class="text-accent" href="/framework/steps/">Orcraft Test Step</a></td>
+      <td><code>OrcraftTestStep</code></td>
+      <td>The smallest unit of work</td>
+      <td><code>_run_step()</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The first four levels are the <em>structural</em> hierarchy: a suite holds groups, a group holds tests,
+  and a test expands into cases. Flows and steps are the <em>procedural</em> hierarchy: they are what a
+  case body actually does. A case may call flows, a flow calls steps, and a step is the unit that can be
+  dispatched to a remote endpoint.</p>
+
+<p>Every level is optional above and below the one you need. A single test file with a <code>main()</code>
+  runs on its own without a group or a suite, and a case that only needs a few lines of Python does not
+  have to be split into flows and steps at all. That is why the pages in this section are ordered the way
+  a suite is actually built up: start with a <a class="text-accent" href="/framework/test/">test</a>, and
+  add the surrounding structure only where it earns its place.</p>
+
+<p>Whatever the level, a component is always three classes - a config that declares its inputs, the
+  component that holds its behavior, and a result that declares its outputs:</p>
+
+{{ codeblock.block('class MyTestConfig(OrcraftTestConfig):
+	name = OrcraftConfigField.Text(default="My Test")
+	iterations = OrcraftConfigField.Numeric(default=3, label="Iterations")
+
+
+class MyTestResult(OrcraftTestResult):
+	measured_value = OrcraftResultField.Numeric(default=0, label="Measured Value")
+
+
+class MyTest(OrcraftTest):
+	def __init__(self, config: MyTestConfig | None = None) -> None:
+		super().__init__(config or MyTestConfig())
+
+	def _run_case(self, case: OrcraftTestCase):
+		case.result = MyTestResult()
+		case.result.measured_value = measure(self.config.iterations)
+		return case.result') }}
+
+<p>Those declarations are not just Python defaults. The controller reads them to build the run
+  configuration panel in the GUI, to validate that required values are supplied before a run starts, and
+  to render the config and result tables in the log. A field added to a config class appears in the GUI
+  with no further wiring.</p>
+
+<h2 id="public-api">The public API</h2>
+<p>Everything the framework exposes is importable directly from <code>orcraft</code>. Each entry links to
+  the page that covers it:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Export</th>
+      <th>Purpose</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><a class="text-accent" href="/framework/test/"><code>OrcraftTest</code>, <code>OrcraftTestConfig</code>, <code>OrcraftTestResult</code></a></td>
+      <td>Orcraft Test - the unit that expands into cases, and the smallest thing worth running on its own.</td>
+    </tr>
+    <tr>
+      <td><a class="text-accent" href="/framework/configuration-fields/"><code>OrcraftConfigField</code></a></td>
+      <td>Namespace of config (input) field types.</td>
+    </tr>
+    <tr>
+      <td><a class="text-accent" href="/framework/results-and-statuses/"><code>OrcraftResultField</code></a></td>
+      <td>Namespace of result (output) field types.</td>
+    </tr>
+    <tr>
+      <td><a class="text-accent" href="/framework/results-and-statuses/"><code>OrcraftStatus</code></a></td>
+      <td>The <code>PASS</code> / <code>FAIL</code> / <code>ERROR</code> / <code>ABORT</code> enumeration.</td>
+    </tr>
+    <tr>
+      <td><a class="text-accent" href="/framework/matrix/"><code>OrcraftTestCase</code></a></td>
+      <td>Orcraft Test Case - the per-case object handed to <code>_run_case</code>.</td>
+    </tr>
+    <tr>
+      <td><a class="text-accent" href="/framework/steps/"><code>OrcraftTestStep</code>, <code>OrcraftTestStepConfig</code>, <code>OrcraftTestStepResult</code></a></td>
+      <td>Orcraft Test Step - the smallest unit of work, and the unit of remote execution.</td>
+    </tr>
+    <tr>
+      <td><a class="text-accent" href="/framework/flows/"><code>OrcraftTestFlow</code>, <code>OrcraftTestFlowConfig</code>, <code>OrcraftTestFlowResult</code></a></td>
+      <td>Orcraft Test Flow - an ordered sequence of steps with a shared result.</td>
+    </tr>
+    <tr>
+      <td><a class="text-accent" href="/framework/endpoints/"><code>OrcraftEndpointState</code></a></td>
+      <td>Endpoint availability, for tests that drive an endpoint offline and back.</td>
+    </tr>
+    <tr>
+      <td><a class="text-accent" href="/framework/groups/"><code>OrcraftTestGroup</code>, <code>OrcraftTestGroupConfig</code>, <code>OrcraftTestGroupResult</code></a></td>
+      <td>Orcraft Test Group - a collection of related tests.</td>
+    </tr>
+    <tr>
+      <td><a class="text-accent" href="/framework/suites/"><code>OrcraftTestSuite</code>, <code>OrcraftTestSuiteConfig</code>, <code>OrcraftTestSuiteResult</code></a></td>
+      <td>Orcraft Test Suite - the top-level collection of groups.</td>
+    </tr>
+    <tr>
+      <td><a class="text-accent" href="/framework/logging/"><code>OrcraftLogger</code></a></td>
+      <td>Structured, colored logging that the controller renders in its log panel.</td>
+    </tr>
+  </tbody>
+</table>

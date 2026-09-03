@@ -1,0 +1,235 @@
+---
+title: Framework · Orcraft Test Suite
+key: framework
+description: "OrcraftTestSuite: the top-level component, and the thing the controller and CI point at."
+---
+{% import "partials/code-block.njk" as codeblock %}
+<h1>Orcraft Test Suite</h1>
+<p>A suite is the top of the hierarchy - the thing the controller loads, the thing a CI pipeline runs. It
+  holds groups and nothing else, and like a group it is declared rather than coded.</p>
+
+{{ codeblock.block('from __future__ import annotations
+
+from orcraft import (
+	OrcraftTestSuite,
+	OrcraftTestSuiteConfig,
+	OrcraftTestSuiteResult,
+	OrcraftConfigField,
+)
+
+from my_first_group.my_first_group import MyFirstGroup
+from my_second_group.my_second_group import MySecondGroup
+
+
+class MySuiteConfig(OrcraftTestSuiteConfig):
+	name = OrcraftConfigField.Text(default="My Suite")
+	description = OrcraftConfigField.Text(
+		default="Covers the system under test end to end."
+	)
+	version = OrcraftConfigField.Text(default="0.0.1")
+	groups = OrcraftConfigField.Groups(
+		default_factory=lambda: [
+			MyFirstGroup(),
+			MySecondGroup(),
+		]
+	)
+
+
+class MySuiteResult(OrcraftTestSuiteResult):
+	pass
+
+
+class MySuite(OrcraftTestSuite):
+	def __init__(self) -> None:
+		super().__init__(config=MySuiteConfig())
+		self.result = MySuiteResult()
+
+
+def main() -> None:
+	MySuite().run()
+
+
+if __name__ == "__main__":
+	main()') }}
+
+<h2 id="groups-field">The groups field</h2>
+<p><code>groups</code> uses <code>default_factory</code> for the same reason
+  <a class="text-accent" href="/framework/groups/#tests-field"><code>tests</code></a> does: it constructs
+  objects, and a factory keeps two suite instances from sharing them.</p>
+
+<p>The suite file is also where the suite's import graph comes together - each group imported from its own
+  package. Keeping one group per folder, imported by its suite, is what lets the controller present the
+  suite as a tree that matches the layout on disk.</p>
+
+<h2 id="config-fields">Suite config fields</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Default</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>name</code></td>
+      <td><code>"Test Suite"</code></td>
+      <td>Display name in the GUI, CLI and logs.</td>
+    </tr>
+    <tr>
+      <td><code>description</code></td>
+      <td><code>""</code></td>
+      <td>Free text describing what the suite covers.</td>
+    </tr>
+    <tr>
+      <td><code>version</code></td>
+      <td><code>""</code></td>
+      <td>Suite version, recorded with the results. Worth setting - it is what ties a result set to a revision of the suite.</td>
+    </tr>
+    <tr>
+      <td><code>groups</code></td>
+      <td><code>[]</code></td>
+      <td>The groups this suite runs.</td>
+    </tr>
+    <tr>
+      <td><code>parallel</code></td>
+      <td><code>True</code></td>
+      <td>Whether the suite's groups may run concurrently.</td>
+    </tr>
+    <tr>
+      <td><code>upload_test_package</code></td>
+      <td><code>"if_missing"</code></td>
+      <td>Whether the test package is uploaded to the endpoint before the run.</td>
+    </tr>
+    <tr>
+      <td><code>update_endpoint_app</code></td>
+      <td><code>"defer"</code></td>
+      <td>Whether the endpoint application is updated before the run.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="policies">Policies across three levels</h2>
+<p><code>upload_test_package</code> and <code>update_endpoint_app</code> exist on suites, groups and
+  tests, and the level that speaks last does not win - the level that speaks <em>first</em> does. A
+  concrete value at suite level overrides every group and test beneath it, which is what makes a
+  one-off run reproducible: set <code>always</code> at the suite and nothing below can quietly skip the
+  upload.</p>
+
+<p><code>defer</code> is the opposite instruction: express no opinion and let the level below decide. It
+  is the default for suites and groups precisely because a suite is a collection of tests with different
+  needs, and overriding them all should be a deliberate act.</p>
+
+<p><code>update_endpoint_app</code> takes one of four values at suite level:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Value</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>always</code></td>
+      <td>Update the endpoint application before every run.</td>
+    </tr>
+    <tr>
+      <td><code>on_mismatch</code></td>
+      <td>Update only when the endpoint application does not match the controller. The default for a test.</td>
+    </tr>
+    <tr>
+      <td><code>never</code></td>
+      <td>Leave the endpoint application as it is.</td>
+    </tr>
+    <tr>
+      <td><code>defer</code></td>
+      <td>Express no opinion and leave the decision to the level below. The default for a suite.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><code>upload_test_package</code> has no <code>defer</code>:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Value</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>always</code></td>
+      <td>Upload on every run. The safe choice while the suite is changing.</td>
+    </tr>
+    <tr>
+      <td><code>if_missing</code></td>
+      <td>Upload only when the endpoint does not already have the package. The default.</td>
+    </tr>
+    <tr>
+      <td><code>never</code></td>
+      <td>Never upload - the endpoint is expected to have the package already.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="results">Suite results</h2>
+<p>A suite result aggregates three levels of counters at once - groups, tests and cases:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Counters</th>
+      <th>Fields</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Groups</td>
+      <td><code>total_groups</code>, <code>passed_groups</code>, <code>failed_groups</code>, <code>error_groups</code>, <code>warning_groups</code></td>
+    </tr>
+    <tr>
+      <td>Tests</td>
+      <td><code>total_tests</code>, <code>passed_tests</code>, <code>failed_tests</code>, <code>error_tests</code>, <code>warning_tests</code></td>
+    </tr>
+    <tr>
+      <td>Cases</td>
+      <td><code>total_cases</code>, <code>passed_cases</code>, <code>failed_cases</code>, <code>error_cases</code>, <code>warning_cases</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Carrying case counts all the way to the top is what makes a suite summary meaningful: two suites can
+  both report ten passing tests while one executed ten cases and the other four hundred.</p>
+
+<h2 id="running">Running a suite</h2>
+<p>The same file serves all three ways of running:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Where</th>
+      <th>How</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Standalone</td>
+      <td>Execute the suite file directly, via its <code>main()</code>.</td>
+    </tr>
+    <tr>
+      <td>Controller GUI</td>
+      <td>Add the suite file to the controller and configure the run from the panel.</td>
+    </tr>
+    <tr>
+      <td>CI</td>
+      <td>Run the controller in CLI mode against a CI snapshot exported from the GUI.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The CI snapshot is what makes the third reproducible: it carries the configuration exactly as it was
+  set in the GUI, so a pipeline reruns a configured suite rather than a differently configured one. See
+  <a class="text-accent" href="/setup/">Setup</a> for how the controller and its CI runner fit
+  together.</p>
