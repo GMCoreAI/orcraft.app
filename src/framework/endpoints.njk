@@ -13,7 +13,7 @@ description: "Declaring endpoints, dispatching steps to them, uploading packages
 <p>Endpoints are configuration, not code. A suite developed entirely against <code>localhost</code>
   becomes a distributed suite by changing values in the run panel, with no edit to the test body.</p>
 
-<h2 id="declaring">Declaring endpoint fields</h2>
+<h2 id="declaring">Endpoint fields</h2>
 <p>Every test config already declares <code>test_endpoint</code>, defaulting to <code>localhost</code>. A
   test that needs more than one, or a different kind of selection, declares its own:</p>
 
@@ -63,7 +63,7 @@ description: "Declaring endpoints, dispatching steps to them, uploading packages
 	shared=True,
 )') }}
 
-<h3 id="endpoint-options">Endpoint field options</h3>
+<h3 id="endpoint-options">Field options</h3>
 <table>
   <thead>
     <tr>
@@ -96,7 +96,7 @@ description: "Declaring endpoints, dispatching steps to them, uploading packages
   treating each run as an independent client, which is what you want when several fanout-expanded runs
   legitimately share one host.</p>
 
-<h2 id="dispatch">Dispatching steps</h2>
+<h2 id="dispatch">Step dispatch</h2>
 <p>Steps are the unit of remote execution. A <a class="text-accent" href="/framework/flows/">flow</a>
   chooses where each one runs:</p>
 
@@ -119,7 +119,7 @@ consume_result = self.run_step(
 <p>Because the step may run on another machine, everything it needs must arrive through its config, and
   everything it produces must leave through its result. A step cannot reach back into the test.</p>
 
-<h2 id="packages">Uploading the test package</h2>
+<h2 id="packages">Package upload</h2>
 <p>Before a step runs remotely, the endpoint needs the code. The controller packages the suite and
   uploads it, governed by <code>upload_test_package</code>:</p>
 
@@ -169,7 +169,7 @@ input_folders = OrcraftConfigField.PackageFolderList(
   binary, wasteful for a large data set that only one endpoint reads. The field types are listed in
   <a class="text-accent" href="/framework/configuration-fields/#package-types">Configuration fields</a>.</p>
 
-<h3 id="endpoint-app">Updating the endpoint application</h3>
+<h3 id="endpoint-app">Endpoint application update</h3>
 <p><code>update_endpoint_app</code> decides whether the endpoint application itself is brought up to date
   before the run:</p>
 
@@ -200,7 +200,7 @@ input_folders = OrcraftConfigField.PackageFolderList(
   </tbody>
 </table>
 
-<h2 id="transfer">Transferring files between endpoints</h2>
+<h2 id="transfer">File transfer</h2>
 <p>Package upload sends files from the controller. Moving files <em>between</em> endpoints during a run -
   produce on one machine, verify on another - is what a flow's <code>transfer</code> is for:</p>
 

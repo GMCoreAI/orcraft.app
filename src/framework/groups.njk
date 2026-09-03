@@ -51,7 +51,7 @@ def main() -> None:
 if __name__ == "__main__":
 	main()') }}
 
-<h2 id="tests-field">The tests field</h2>
+<h2 id="tests-field">Tests field</h2>
 <p><code>tests</code> uses <code>default_factory</code> rather than <code>default</code> because it
   constructs objects. A factory is called once per config instance, so two group instances never end up
   sharing the same test objects - a mistake that a plain <code>default</code> list would make easy and
@@ -61,7 +61,7 @@ if __name__ == "__main__":
   anything is still worth doing: it gives the group a result type of its own to extend later, and keeps
   the three-class shape consistent across the suite.</p>
 
-<h2 id="why-group">What a group buys you</h2>
+<h2 id="why-group">Purpose</h2>
 <p>A group is the unit the controller lets you act on as a whole:</p>
 
 <ul>
@@ -77,7 +77,7 @@ if __name__ == "__main__":
 <p>The tutorial works through the first two in
   <a class="text-accent" href="/tutorial/running-a-group/">Running a group</a>.</p>
 
-<h2 id="config-fields">Group config fields</h2>
+<h2 id="config-fields">Config fields</h2>
 <table>
   <thead>
     <tr>
@@ -145,7 +145,7 @@ if __name__ == "__main__":
   </tbody>
 </table>
 
-<h2 id="group-result-fields">Group result fields</h2>
+<h2 id="group-result-fields">Result fields</h2>
 <p>A group has no body, so its result is written entirely by the framework as its tests complete. An
   empty <code>OrcraftTestGroupResult</code> subclass therefore reports everything a group needs;
   declaring fields of your own is for the rare group that computes something across its tests.</p>
@@ -200,12 +200,12 @@ if __name__ == "__main__":
       <td>Palette plumbing for the log banners. Not user-facing.</td>
     </tr>
     <tr>
-      <td><code>total_tests</code>, <code>passed_tests</code>, <code>failed_tests</code>, <code>error_tests</code>, <code class="status-warning">warning_tests</code></td>
+      <td><code>total_tests</code>, <code class="status-pass">passed_tests</code>, <code class="status-fail">failed_tests</code>, <code class="status-error">error_tests</code>, <code class="status-warning">warning_tests</code></td>
       <td>Framework</td>
       <td>Test counters, summed from the tests that ran.</td>
     </tr>
     <tr>
-      <td><code>total_cases</code>, <code>passed_cases</code>, <code>failed_cases</code>, <code>error_cases</code>, <code class="status-warning">warning_cases</code></td>
+      <td><code>total_cases</code>, <code class="status-pass">passed_cases</code>, <code class="status-fail">failed_cases</code>, <code class="status-error">error_cases</code>, <code class="status-warning">warning_cases</code></td>
       <td>Framework</td>
       <td>Case counters, summed from every case of every test in the group.</td>
     </tr>
@@ -230,7 +230,7 @@ if __name__ == "__main__":
   <a class="text-accent" href="/framework/endpoints/#endpoint-options"><code>shared</code></a>. Turning
   off parallelism is for the contention Orcraft does not know about.</p>
 
-<h2 id="defer">Policies that flow downward</h2>
+<h2 id="defer">Policy inheritance</h2>
 <p><code>update_endpoint_app</code> is the one field where a group deliberately does not decide by
   default. <code>defer</code> means the group expresses no opinion and each test keeps its own choice;
   any other value overrides every test beneath it.</p>
@@ -294,7 +294,7 @@ if __name__ == "__main__":
   </tbody>
 </table>
 
-<h2 id="standalone">Running a group</h2>
+<h2 id="standalone">Standalone execution</h2>
 <p>Like a test, a group runs on its own:</p>
 
 {{ codeblock.block('def main() -> None:

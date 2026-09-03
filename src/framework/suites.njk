@@ -52,7 +52,7 @@ def main() -> None:
 if __name__ == "__main__":
 	main()') }}
 
-<h2 id="groups-field">The groups field</h2>
+<h2 id="groups-field">Groups field</h2>
 <p><code>groups</code> uses <code>default_factory</code> for the same reason
   <a class="text-accent" href="/framework/groups/#tests-field"><code>tests</code></a> does: it constructs
   objects, and a factory keeps two suite instances from sharing them.</p>
@@ -61,7 +61,7 @@ if __name__ == "__main__":
   package. Keeping one group per folder, imported by its suite, is what lets the controller present the
   suite as a tree that matches the layout on disk.</p>
 
-<h2 id="config-fields">Suite config fields</h2>
+<h2 id="config-fields">Config fields</h2>
 <table>
   <thead>
     <tr>
@@ -129,7 +129,7 @@ if __name__ == "__main__":
   </tbody>
 </table>
 
-<h2 id="policies">Policies across three levels</h2>
+<h2 id="policies">Policy inheritance</h2>
 <p><code>upload_test_package</code> and <code>update_endpoint_app</code> exist on suites, groups and
   tests, and the level that speaks last does not win - the level that speaks <em>first</em> does. A
   concrete value at suite level overrides every group and test beneath it, which is what makes a
@@ -194,7 +194,7 @@ if __name__ == "__main__":
   </tbody>
 </table>
 
-<h2 id="results">Suite result fields</h2>
+<h2 id="results">Result fields</h2>
 <p>Like a group, a suite has no body: its result is written entirely by the framework as its groups
   complete, and an empty <code>OrcraftTestSuiteResult</code> subclass reports everything below. It
   aggregates three levels of counters at once:</p>
@@ -249,17 +249,17 @@ if __name__ == "__main__":
       <td>Palette plumbing for the log banners. Not user-facing.</td>
     </tr>
     <tr>
-      <td><code>total_groups</code>, <code>passed_groups</code>, <code>failed_groups</code>, <code>error_groups</code>, <code class="status-warning">warning_groups</code></td>
+      <td><code>total_groups</code>, <code class="status-pass">passed_groups</code>, <code class="status-fail">failed_groups</code>, <code class="status-error">error_groups</code>, <code class="status-warning">warning_groups</code></td>
       <td>Framework</td>
       <td>Group counters, summed from the groups that ran.</td>
     </tr>
     <tr>
-      <td><code>total_tests</code>, <code>passed_tests</code>, <code>failed_tests</code>, <code>error_tests</code>, <code class="status-warning">warning_tests</code></td>
+      <td><code>total_tests</code>, <code class="status-pass">passed_tests</code>, <code class="status-fail">failed_tests</code>, <code class="status-error">error_tests</code>, <code class="status-warning">warning_tests</code></td>
       <td>Framework</td>
       <td>Test counters, summed from every test in every group.</td>
     </tr>
     <tr>
-      <td><code>total_cases</code>, <code>passed_cases</code>, <code>failed_cases</code>, <code>error_cases</code>, <code class="status-warning">warning_cases</code></td>
+      <td><code>total_cases</code>, <code class="status-pass">passed_cases</code>, <code class="status-fail">failed_cases</code>, <code class="status-error">error_cases</code>, <code class="status-warning">warning_cases</code></td>
       <td>Framework</td>
       <td>Case counters, summed from every case of every test in the suite.</td>
     </tr>
@@ -276,7 +276,7 @@ if __name__ == "__main__":
 <p>Carrying case counts all the way to the top is what makes a suite summary meaningful: two suites can
   both report ten passing tests while one executed ten cases and the other four hundred.</p>
 
-<h2 id="running">Running a suite</h2>
+<h2 id="running">Execution</h2>
 <p>The same file serves all three ways of running:</p>
 
 <table>

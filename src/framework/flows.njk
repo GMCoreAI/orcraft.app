@@ -63,7 +63,7 @@ class MyFlow(OrcraftTestFlow):
 			"The system under test reported no measurement.",
 		)') }}
 
-<h2 id="result-type">Declaring the result class</h2>
+<h2 id="result-type">Result class declaration</h2>
 <p>A test or a step builds its result inside the body. A flow names its result class up front instead,
   through the <code>result_type</code> class attribute, as <code>MyFlow</code> does above. The framework
   instantiates that class when the flow starts, so <code>self.result</code> exists and is ready to be
@@ -75,7 +75,7 @@ class MyFlow(OrcraftTestFlow):
   status, descriptions and timing, with no fields of its own - which is all a flow needs when it only
   sequences steps and has nothing of its own to measure.</p>
 
-<h3 id="result-type-errors">Why the framework builds it: error reporting</h3>
+<h3 id="result-type-errors">Error reporting</h3>
 <p>When a flow body raises, it is the framework that finishes the result. It sets the status to
   <code class="status-error">ERROR</code>, records the error description, stamps the finish and elapsed times, and emits the
   result the controller renders. All of that lands on whatever <code>self.result</code> is <em>at that
@@ -126,7 +126,7 @@ class MyFlow(OrcraftTestFlow):
   the first statement - that costs nothing when followed and quietly degrades error output when it is
   not.</p>
 
-<h2 id="flow-config-fields">Flow config fields</h2>
+<h2 id="flow-config-fields">Config fields</h2>
 <p>A flow config adds nothing of its own to the base set - its inputs are whatever fields you declare,
   such as <code>app_folder</code> and <code>payload_size</code> on <code>MyFlowConfig</code> above. What it
   starts with:</p>
@@ -173,7 +173,7 @@ class MyFlow(OrcraftTestFlow):
   </tbody>
 </table>
 
-<h2 id="flow-result-fields">Flow result fields</h2>
+<h2 id="flow-result-fields">Result fields</h2>
 <p>Whether the framework builds it from <code>result_type</code> or the body assigns it, a flow result
   starts with fields it did not declare. Beyond anything you add, <code>OrcraftTestFlowResult</code>
   carries:</p>
@@ -278,7 +278,7 @@ class MyFlow(OrcraftTestFlow):
   field. A renamed field is caught at the call site rather than silently ignored, which is the failure
   mode a dictionary of parameters would have given you instead.</p>
 
-<h2 id="short-circuit">Stopping on failure</h2>
+<h2 id="short-circuit">Failure handling</h2>
 <p>Steps in a flow are ordered because each one depends on the last. Two mechanisms keep a flow from
   running past a broken precondition.</p>
 
@@ -300,7 +300,7 @@ if self.handle_errors(step_result, self.result):
   finding, and a flow keeps going so it can report the rest of them; an error means the flow cannot
   meaningfully continue.</p>
 
-<h2 id="composing">Calling flows from a case</h2>
+<h2 id="composing">Flows in a case</h2>
 <p>A case body builds a flow, runs it, and reads its result:</p>
 
 {{ codeblock.block('def _run_case(self, case: OrcraftTestCase) -> OrcraftTestResult:

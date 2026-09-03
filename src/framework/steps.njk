@@ -57,7 +57,7 @@ class MyStep(OrcraftTestStep):
 
 		return self.result') }}
 
-<h2 id="run-step">The step body</h2>
+<h2 id="run-step">Step body</h2>
 <p><code>_run_step</code> is the only method a step must implement. It creates its result, does the work,
   and returns the result - and the returned object must be an <code>OrcraftTestStepResult</code>, which
   the framework checks rather than letting a mistyped return surface later as a missing attribute.</p>
@@ -67,7 +67,7 @@ class MyStep(OrcraftTestStep):
   lets the same step run locally during development and on a remote endpoint in a distributed run,
   unchanged.</p>
 
-<h2 id="config-fields">Step config fields</h2>
+<h2 id="config-fields">Config fields</h2>
 <p>Every field a step config starts with, before you add your own. Only <code>target_endpoint</code> and
   <code>expect_endpoint_disconnect</code> are specific to steps; the rest is the base every component
   shares:</p>
@@ -124,7 +124,7 @@ class MyStep(OrcraftTestStep):
   </tbody>
 </table>
 
-<h2 id="step-result-fields">Step result fields</h2>
+<h2 id="step-result-fields">Result fields</h2>
 <p>A step creates its result inside <code>_run_step</code> and returns it. The fields you declare on it
   come from the <a class="text-accent" href="/framework/result-fields/"><code>OrcraftResultField</code></a>
   namespace; the rest it inherits from <code>OrcraftTestStepResult</code>, and most of those are written
@@ -189,7 +189,7 @@ class MyStep(OrcraftTestStep):
     <code>log_orientation</code> is meant to be overridden, and only to change its default.</p>
 </div>
 
-<h2 id="granularity">How small is a step</h2>
+<h2 id="granularity">Granularity</h2>
 <p>A useful step is one action that can succeed or fail on its own terms: delete a file, launch a process,
   read a register, transfer a build. If a step needs two checkpoints about unrelated things, it is
   probably two steps. If it exists only to pass a value from one step to the next, it is probably not a
@@ -200,7 +200,7 @@ class MyStep(OrcraftTestStep):
   reusable - the same step appears in several
   <a class="text-accent" href="/framework/flows/">flows</a> across different tests.</p>
 
-<h2 id="remote">Steps on a remote endpoint</h2>
+<h2 id="remote">Remote execution</h2>
 <p>When a flow runs a step against a remote endpoint, the framework transfers the test package to that
   endpoint, executes <code>_run_step</code> there, and returns the result to the controller. The step
   code does not know the difference, which means two things in practice:</p>
@@ -210,13 +210,54 @@ class MyStep(OrcraftTestStep):
     arrive as a package field or through the flow's
     <a class="text-accent" href="/framework/endpoints/#transfer">transfer</a> helper.</li>
   <li>Anything a step wants to hand to the next step must go through its result, since the two may not be
-    running on the same machine.</li>
+    running on the same machine. It arrives with its Python type intact - see
+    <a class="text-accent" href="#type-fidelity">Type fidelity</a>.</li>
 </ul>
 
 <p><a class="text-accent" href="/framework/endpoints/">Orcraft Endpoints</a> covers dispatch, package upload and
   the endpoint field types in full.</p>
 
-<h2 id="standalone">Running a step directly</h2>
+<h2 id="type-fidelity">Type fidelity</h2>
+<p>A flow passes values between steps as if every step ran in the same process, and the framework keeps
+  that true across endpoints. Arguments are pickled to the endpoint and results are pickled back; lists,
+  tuples and dicts are walked so nested structures keep their shape; enums and your own classes work
+  because the test package is on the endpoint too. A tuple arrives as a tuple, not a list, and an enum
+  member arrives as that member, not its string.</p>
+
+{{ codeblock.block('first_result = self.run_step(
+	MyProduceStep,
+	endpoint=self.config.endpoint_1,
+)
+
+if self.handle_errors(first_result, self.result):
+	return
+
+# channel_map is still a tuple, mode still an Enum member, calibration still a dict of
+# floats - even though first_result came from endpoint_1 and MyConsumeStep runs on endpoint_2.
+second_result = self.run_step(
+	MyConsumeStep,
+	endpoint=self.config.endpoint_2,
+	channel_map=first_result.channel_map,
+	mode=first_result.mode,
+	calibration=first_result.calibration,
+)') }}
+
+<p>This is what lets a flow be written once and distributed later: the code that wires one step's output
+  into the next step's input does not change when the steps move to different machines. The values
+  usually travel as <a class="text-accent" href="/framework/result-fields/#plain-attributes">plain
+  attributes</a> on the result and <a class="text-accent" href="/framework/configuration-fields/#plain-attributes">plain
+  attributes</a> on the next config, since structured data is rarely something a person wants as a GUI
+  column or input.</p>
+
+<h3 id="remote-objects">Non-transferable values</h3>
+<p>Some values have no meaning off the machine that made them - a thread, an open socket, a process
+  handle. When a remote step puts one of those on its result, it does not come back as a value. It
+  stays on the endpoint, and the flow receives a <em>reference</em> to it instead. That reference can be
+  handed to a later step on the <em>same</em> endpoint, which gets the live object back; passing it to a
+  local step, or to a different endpoint, raises. That keeps a long-lived resource usable across several
+  steps without pretending it can be copied.</p>
+
+<h2 id="standalone">Direct execution</h2>
 <p>Steps are normally run by a flow through
   <a class="text-accent" href="/framework/flows/#run-step"><code>run_step</code></a>, which builds the
   step, applies the config values and dispatches it. A step can also be constructed and run directly,

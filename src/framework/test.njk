@@ -60,7 +60,7 @@ def main() -> None:
 if __name__ == "__main__":
 	main()') }}
 
-<h2 id="config-class">The config class</h2>
+<h2 id="config-class">Config class</h2>
 <p>The config declares everything about the test that can be configured from outside it. Each field is a
   class attribute built from the
   <a class="text-accent" href="/framework/configuration-fields/"><code>OrcraftConfigField</code></a>
@@ -207,7 +207,7 @@ if __name__ == "__main__":
   </tbody>
 </table>
 
-<h2 id="result-class">The result class</h2>
+<h2 id="result-class">Result class</h2>
 <p>The result declares what the test reports. Its fields come from the
   <a class="text-accent" href="/framework/result-fields/"><code>OrcraftResultField</code></a>
   namespace, and like the config it starts out with fields it did not declare. Unlike the config, most of
@@ -253,7 +253,7 @@ if __name__ == "__main__":
       <td>How long it took.</td>
     </tr>
     <tr>
-      <td><code>total_cases</code>, <code>passed_cases</code>, <code>failed_cases</code>, <code>error_cases</code>, <code class="status-warning">warning_cases</code></td>
+      <td><code>total_cases</code>, <code class="status-pass">passed_cases</code>, <code class="status-fail">failed_cases</code>, <code class="status-error">error_cases</code>, <code class="status-warning">warning_cases</code></td>
       <td>Framework</td>
       <td>Per-case counters, summed from the cases that ran and carried up into the group and suite results.</td>
     </tr>
@@ -282,7 +282,7 @@ if __name__ == "__main__":
   <code>case.result</code> alone and still produce a complete pass or fail. Declaring one is what makes
   measured values appear in the log tables, in the controller and in exported results.</p>
 
-<h2 id="run-case">The test body</h2>
+<h2 id="run-case">Test body</h2>
 <p><code>_run_case</code> is the only method a test must implement. The framework calls it once per case
   per cycle, hands it the <a class="text-accent" href="/framework/matrix/#cases">case</a>, and
   expects the case result back:</p>
@@ -355,7 +355,7 @@ def _teardown(self) -> None:
 <p>Every hook is optional. <a class="text-accent" href="/framework/lifecycle-hooks/">Orcraft Lifecycle Hooks</a>
   covers all six of them and what happens when one fails.</p>
 
-<h2 id="standalone">Running standalone</h2>
+<h2 id="standalone">Standalone execution</h2>
 <p>Giving the file a <code>main()</code> makes it directly executable, which is how a test is developed
   before it is added to a group:</p>
 

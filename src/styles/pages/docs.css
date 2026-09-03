@@ -84,6 +84,35 @@
   white-space: nowrap;
 }
 
+/* Ownership marks in the inherited-field tables: a green check for what the
+   user controls, an orange lock for what the framework owns, a dim dash for no. */
+.docs__article .mark .icon {
+  /* reset.css makes svg a block, which would pin the icon to the cell's left edge. */
+  display: inline-block;
+  vertical-align: -0.15em;
+}
+
+.docs__article th.mark-head {
+  text-align: center;
+}
+
+.docs__article .mark--user {
+  color: var(--color-success);
+}
+
+.docs__article .mark--reserved {
+  color: var(--color-orange);
+}
+
+.docs__article .mark--framework {
+  color: var(--color-cyan);
+}
+
+.docs__article .mark--none {
+  color: var(--color-text-muted);
+  opacity: 0.45;
+}
+
 /* Color reference swatch. Bordered so the near-black and near-white steps of a
    ramp stay visible against either page background. */
 .docs__article .color-swatch {

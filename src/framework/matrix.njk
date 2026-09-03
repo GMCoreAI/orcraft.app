@@ -10,7 +10,7 @@ description: "The test matrix: dimensions, exclusion rules and the cases they ge
   body serves one combination or four hundred, and which combinations run is decided before the run
   starts rather than inside the case.</p>
 
-<h2 id="matrix">The matrix</h2>
+<h2 id="matrix">Matrix definition</h2>
 <p>Cases come from the test matrix: a set of named dimensions whose values are combined.</p>
 
 {{ codeblock.block('matrix = OrcraftConfigField.Matrix(
@@ -77,7 +77,7 @@ description: "The test matrix: dimensions, exclusion rules and the cases they ge
   published, the devices currently attached. The factory runs when the run is configured, not when the
   test file is imported.</p>
 
-<h2 id="exclusion">Excluding combinations</h2>
+<h2 id="exclusion">Exclusion rules</h2>
 <p>A full cross product usually contains combinations that make no sense. <code>exclude</code> removes
   them before they ever become cases, as either a dict of values to match or a predicate over the
   case:</p>

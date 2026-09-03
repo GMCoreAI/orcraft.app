@@ -51,7 +51,7 @@ description: "The six optional setup and teardown hooks around a test, its cycle
   </tbody>
 </table>
 
-<h2 id="choosing-a-scope">Choosing a scope</h2>
+<h2 id="choosing-a-scope">Scope</h2>
 <p>The scope is a statement about how long the state is valid for. Something expensive that every case can
   share - an application process, a device connection - belongs in <code>_setup</code>. Something that
   must be pristine at the start of each pass through the matrix belongs in
@@ -61,7 +61,7 @@ description: "The six optional setup and teardown hooks around a test, its cycle
 <p>The framework knows which hooks a test overrides and shows them in the run plan, so the extra
   lifecycle work is visible before the run rather than a surprise in the log.</p>
 
-<h2 id="test-scope">Test setup and teardown</h2>
+<h2 id="test-scope">Test scope</h2>
 {{ codeblock.block('def _setup(self) -> None:
 	workspace_folder = self._workspace_folder()
 
@@ -93,7 +93,7 @@ def _teardown(self) -> None:
   so setup work can reuse the very flows the cases use. That is worth leaning on: preparing inputs with
   the same flow that a case exercises keeps one implementation instead of two.</p>
 
-<h2 id="case-scope">Case setup and teardown</h2>
+<h2 id="case-scope">Case scope</h2>
 <p><code>_case_setup</code> and <code>_case_teardown</code> receive the case, so they can tailor their
   work to that case's parameters:</p>
 
@@ -108,7 +108,7 @@ def _case_teardown(self, case: OrcraftTestCase, test_cycle_index: int) -> None:
   so a case that repeats three times gets one setup, three executions and one teardown, not three of
   each.</p>
 
-<h2 id="failures">When a hook fails</h2>
+<h2 id="failures">Hook failures</h2>
 <p>Raising from a setup hook is how you say the work it was guarding must not proceed. The blast radius
   follows the scope of the hook:</p>
 

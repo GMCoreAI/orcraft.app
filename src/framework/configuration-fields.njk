@@ -9,7 +9,7 @@ description: "Reference for OrcraftConfigField: every config field type and the 
   attributes, and they are read by the controller to build its run configuration panel, to validate a run
   before it starts, and to render the config table in the log.</p>
 
-<h2 id="declaring">Declaring a field</h2>
+<h2 id="declaring">Declaration</h2>
 <p>Config fields come from the <code>OrcraftConfigField</code> namespace and are declared on a config
   class:</p>
 
@@ -32,7 +32,191 @@ description: "Reference for OrcraftConfigField: every config field type and the 
 <p>Output fields work the same way, from the <code>OrcraftResultField</code> namespace - see
   <a class="text-accent" href="/framework/result-fields/">Orcraft Result Fields</a>.</p>
 
-<h2 id="options">Options every field accepts</h2>
+<h2 id="built-in-fields">Inherited fields</h2>
+<p>Every config class starts with fields it did not declare. They fall into three groups by who may
+  change them. All the overridable ones are optional - each has a working default, and redeclaring one
+  in your config replaces that default without changing what the field is for.</p>
+
+<h3 id="inherited-code">Overridable in code</h3>
+<p>Set in your config class, fixed for the run.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Declared on</th>
+      <th>Default</th>
+      <th>Purpose</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>name</code></td>
+      <td>Every component</td>
+      <td>per component</td>
+      <td>Display name in the GUI, CLI and logs. Defaults to <code>"Test"</code>, <code>"Step"</code>, <code>"Flow"</code>, <code>"Test Group"</code> or <code>"Test Suite"</code>.</td>
+    </tr>
+    <tr>
+      <td><code>description</code></td>
+      <td>Every component</td>
+      <td><code>""</code></td>
+      <td>Free text describing what the component does.</td>
+    </tr>
+    <tr>
+      <td><code>log_orientation</code></td>
+      <td>Every component</td>
+      <td><code>HORIZONTAL</code></td>
+      <td>Orientation of the logged config and result tables.</td>
+    </tr>
+    <tr>
+      <td><code>version</code></td>
+      <td>Suite, group, test</td>
+      <td><code>""</code></td>
+      <td>Version recorded with the results.</td>
+    </tr>
+    <tr>
+      <td><code>palette</code></td>
+      <td>Test</td>
+      <td><code>"gray"</code></td>
+      <td>Log color palette for the test and everything it runs.</td>
+    </tr>
+    <tr>
+      <td><code>parallel</code></td>
+      <td>Suite, group</td>
+      <td><code>True</code></td>
+      <td>Whether children may run concurrently.</td>
+    </tr>
+    <tr>
+      <td><code>groups</code> / <code>tests</code></td>
+      <td>Suite / group</td>
+      <td><code>[]</code></td>
+      <td>The children the component runs. Optional to the framework, but an empty list runs nothing.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="inherited-gui">Overridable in code or GUI</h3>
+<p>Set in your config class, and changeable again from the run configuration panel before a run.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Declared on</th>
+      <th>Default</th>
+      <th>Purpose</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>test_endpoint</code></td>
+      <td>Test</td>
+      <td><code>"localhost"</code></td>
+      <td>The endpoint the test executes against.</td>
+    </tr>
+    <tr>
+      <td><code>matrix</code></td>
+      <td>Test</td>
+      <td><code>None</code></td>
+      <td>The dimensions that expand into cases.</td>
+    </tr>
+    <tr>
+      <td><code>number_of_cycles</code></td>
+      <td>Test</td>
+      <td><code>1</code></td>
+      <td>How many times the whole test repeats.</td>
+    </tr>
+    <tr>
+      <td><code>case_number_of_cycles</code></td>
+      <td>Test</td>
+      <td><code>1</code></td>
+      <td>How many times each case repeats.</td>
+    </tr>
+    <tr>
+      <td><code>upload_test_package</code></td>
+      <td>Suite, group, test</td>
+      <td><code>"if_missing"</code></td>
+      <td>Whether the test package is uploaded to the endpoint before the run.</td>
+    </tr>
+    <tr>
+      <td><code>update_endpoint_app</code></td>
+      <td>Suite, group, test</td>
+      <td><code>"defer"; "on_mismatch" on a test</code></td>
+      <td>Whether the endpoint application is updated before the run.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="inherited-reserved">Reserved</h3>
+<p>Written by the framework while a run is in progress. A config that redeclares one of these changes
+  how nesting, timing or log layout behaves.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Declared on</th>
+      <th>Default</th>
+      <th>Purpose</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>target_endpoint</code></td>
+      <td>Step</td>
+      <td><code>""</code></td>
+      <td>The endpoint the step is dispatched to. Set by the flow that runs the step.</td>
+    </tr>
+    <tr>
+      <td><code>expect_endpoint_disconnect</code></td>
+      <td>Step</td>
+      <td><code>False</code></td>
+      <td>Marks a step that is meant to take its endpoint offline. Set by the flow through <code>run_step</code>.</td>
+    </tr>
+    <tr>
+      <td><code>start_time</code></td>
+      <td>Every component</td>
+      <td><code>""</code></td>
+      <td>When the run started, stamped at run time.</td>
+    </tr>
+    <tr>
+      <td><code>log_tab</code></td>
+      <td>Every component</td>
+      <td><code>0; 4 on a flow, 5 on a step</code></td>
+      <td>Indent level of the component's log block, so nested components indent beneath their parent.</td>
+    </tr>
+    <tr>
+      <td><code>log_title_color</code>, <code>log_title_bg_color</code></td>
+      <td>Every component</td>
+      <td><code>palette</code></td>
+      <td>Palette plumbing for the log banners.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="docs-callout docs-callout--caution">
+  <span class="docs-callout__label">Do not redeclare</span>
+  <p>A field of your own under any of these names replaces the framework's. The framework keeps writing
+    to the name, but through your definition - and the log indentation, the run timestamps and the
+    endpoint a step is dispatched to silently stop meaning what the controller expects.</p>
+</div>
+
+<h2 id="options">Common config field options</h2>
+<p>Every field type is constructed with keyword arguments, and these are the ones every type accepts.
+  They describe the field to the controller - its default, how it is labelled and laid out, whether a
+  run may start without it - rather than what the value means to your test:</p>
+
+{{ codeblock.block('input_folder = OrcraftConfigField.Folder(
+	default="",
+	label="Input Folder",
+	required=True,
+	layout=OrcraftConfigField.Layout.NewRow,
+	input_placeholder="Folder containing the input files",
+)') }}
+
+<p>Type-specific arguments - <code>options</code> for a selection, <code>port</code> for an endpoint,
+  <code>endpoints</code> for a package field - are covered with their types below.</p>
+
 <table>
   <thead>
     <tr>
@@ -92,7 +276,7 @@ description: "Reference for OrcraftConfigField: every config field type and the 
   </tbody>
 </table>
 
-<h2 id="config-types">Config types</h2>
+<h2 id="config-types">Config field types</h2>
 <p>Every field type in the <code>OrcraftConfigField</code> namespace, grouped by what it selects.</p>
 
 <h3 id="basic-types">Basic types</h3>
@@ -389,91 +573,73 @@ input_folders = OrcraftConfigField.PackageFolderList(
 	default=OrcraftConfigField.LogTableOrientation.VERTICAL
 )') }}
 
-<h2 id="built-in-fields">Fields you inherit</h2>
-<p>Every config class starts with fields it did not declare. Overriding one in your own config replaces
-  its default without changing what it does.</p>
+<h2 id="plain-attributes">Plain attributes</h2>
+<p>Not everything a config carries has to be an Orcraft field. A plain class attribute is a legitimate
+  way to hand a value to a component when nobody needs to see or edit it - the framework leaves it
+  alone entirely:</p>
+
+{{ codeblock.block('class MyConsumeStepConfig(OrcraftTestStepConfig):
+	name = OrcraftConfigField.Text(default="My Consume Step")
+	sample_rate = OrcraftConfigField.Numeric(default=48000, label="Sample Rate")
+
+	# Plain attributes: filled in by the calling flow, invisible everywhere else.
+	calibration = None
+	channel_map = ()') }}
+
+<p>A flow sets them the same way it sets declared fields, through <code>run_step</code> keywords or the
+  config constructor:</p>
+
+{{ codeblock.block('second_result = self.run_step(
+	MyConsumeStep,
+	sample_rate=self.config.sample_rate,
+	calibration=first_result.calibration,
+	channel_map=first_result.channel_map,
+)') }}
 
 <table>
   <thead>
     <tr>
-      <th>Field</th>
-      <th>Declared on</th>
-      <th>Purpose</th>
+      <th></th>
+      <th>Orcraft field</th>
+      <th>Plain attribute</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td><code>name</code></td>
-      <td>Every component</td>
-      <td>Display name in the GUI, CLI and logs.</td>
+      <td>Shown in the run configuration panel</td>
+      <td>Yes, when it has a label</td>
+      <td>Never</td>
     </tr>
     <tr>
-      <td><code>description</code></td>
-      <td>Every component</td>
-      <td>Free text describing what the component does.</td>
+      <td>Logged in the config table</td>
+      <td>Yes</td>
+      <td>Never</td>
     </tr>
     <tr>
-      <td><code>log_orientation</code></td>
-      <td>Every component</td>
-      <td>Orientation of the logged config and result tables.</td>
+      <td>Validated, coerced, <code>required</code>-checked</td>
+      <td>Yes</td>
+      <td>No - the value is stored as given</td>
     </tr>
     <tr>
-      <td><code>version</code></td>
-      <td>Suite, group, test</td>
-      <td>Version recorded with the results.</td>
+      <td>Settable through <code>run_step</code> keywords</td>
+      <td>Yes</td>
+      <td>Yes, as long as the attribute exists on the class</td>
     </tr>
     <tr>
-      <td><code>parallel</code></td>
-      <td>Suite, group</td>
-      <td>Whether children may run concurrently.</td>
-    </tr>
-    <tr>
-      <td><code>groups</code> / <code>tests</code></td>
-      <td>Suite / group</td>
-      <td>The children the component runs.</td>
-    </tr>
-    <tr>
-      <td><code>test_endpoint</code></td>
-      <td>Test</td>
-      <td>The endpoint the test executes against.</td>
-    </tr>
-    <tr>
-      <td><code>matrix</code></td>
-      <td>Test</td>
-      <td>The dimensions that expand into cases.</td>
-    </tr>
-    <tr>
-      <td><code>number_of_cycles</code></td>
-      <td>Test</td>
-      <td>How many times the whole test repeats.</td>
-    </tr>
-    <tr>
-      <td><code>case_number_of_cycles</code></td>
-      <td>Test</td>
-      <td>How many times each case repeats.</td>
-    </tr>
-    <tr>
-      <td><code>upload_test_package</code></td>
-      <td>Suite, group, test</td>
-      <td>Whether the test package is uploaded to the endpoint before the run.</td>
-    </tr>
-    <tr>
-      <td><code>update_endpoint_app</code></td>
-      <td>Suite, group, test</td>
-      <td>Whether the endpoint application is updated before the run.</td>
-    </tr>
-    <tr>
-      <td><code>target_endpoint</code></td>
-      <td>Step</td>
-      <td>The endpoint the step is dispatched to, set by the flow that runs it.</td>
-    </tr>
-    <tr>
-      <td><code>expect_endpoint_disconnect</code></td>
-      <td>Step</td>
-      <td>Marks a step that is meant to take its endpoint offline.</td>
+      <td>Travels to a remote endpoint with the step</td>
+      <td>Yes</td>
+      <td>Yes - see <a class="text-accent" href="/framework/steps/#type-fidelity">Type fidelity</a></td>
     </tr>
   </tbody>
 </table>
+
+<p>The one rule is that the attribute must be declared on the class, even if only as <code>None</code>.
+  <code>run_step</code> checks that the config has the name before setting it, so a keyword that matches
+  nothing raises at the call site instead of silently creating an attribute nobody reads.</p>
+
+<p>Use a plain attribute for data that is an implementation detail between a flow and its steps - a
+  calibration table, a handle, a structure too large or too structured to be a GUI input. Use an Orcraft
+  field for anything a person should be able to see or change before a run.</p>
 
 <p>Not every inherited field is user-facing. <code>name</code> and <code>description</code>, for
   instance, are configured in code but not editable from the GUI, and fields whose value is at its

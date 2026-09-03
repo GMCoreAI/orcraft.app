@@ -58,45 +58,103 @@ description: "OrcraftResultField, the fields every result inherits, and the coun
 <p>A <code>formatter</code> changes how a value is displayed without changing what is stored, which is
   how a raw number becomes a percentage or a status becomes a colored word in the log.</p>
 
-<h2 id="inherited-fields">Fields every result has</h2>
-<p>Result classes inherit a set of fields the framework maintains itself. You read them, and in a few
-  cases write them, but you never declare them.</p>
+<h2 id="plain-attributes">Plain attributes</h2>
+<p>The same holds on the way out. A result can carry plain attributes alongside its declared fields, and
+  the framework hands them to the caller without ever showing them:</p>
+
+{{ codeblock.block('class MyProduceStepResult(OrcraftTestStepResult):
+	item_count = OrcraftResultField.Numeric(default=0, label="Item Count")
+
+	# Plain attributes: for the calling flow, never a result column.
+	calibration = None
+	channel_map = ()
+
+
+class MyProduceStep(OrcraftTestStep):
+	def _run_step(self) -> OrcraftTestStepResult:
+		self.result = MyProduceStepResult()
+		self.result.item_count = len(items)
+		self.result.calibration = {"gain": 0.98, "offset": -0.02}
+		self.result.channel_map = (0, 2, 1, 3)
+		return self.result') }}
+
+<p>Declared fields are the step's visible surface: they appear in the logged result table and as result
+  columns in the controller. Plain attributes are private to the flow that ran the step. They come back
+  with the result - including from a remote endpoint, with their Python types intact - but they are
+  deliberately excluded from the result columns, because they are often exactly the kind of thing nobody
+  wants as a column: a whole state grid, a buffer, megabytes of structure that the next step needs and
+  a table would render as noise.</p>
+
+<p>Anything on the result that is not an Orcraft field, not underscored and not a method counts as a
+  plain attribute - whether it was declared on the class or assigned in the body.</p>
+
+<h2 id="inherited-fields">Inherited fields</h2>
+<p>Result classes inherit a set of fields they never declare. <em>Overridden by user</em> marks the ones
+  your code may assign - none of them has to be, since every result is complete without them.
+  <em>Reserved</em> marks the ones the framework writes as the run progresses, and its icon says how
+  strictly: <span class="mark mark--framework">{% icon "cpu" %}</span> is a field the framework sets on
+  your behalf - through a checkpoint, an exception - that you may still set directly;
+  <span class="mark mark--reserved">{% icon "shield-lock" %}</span> is fully reserved, and redeclaring
+  it changes what the log and the controller report. See the per-component pages for the counters each
+  level adds on top.</p>
 
 <table>
   <thead>
     <tr>
       <th>Field</th>
+      <th class="mark-head">Overridden by user (optional)</th>
+      <th class="mark-head">Reserved</th>
       <th>Meaning</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td><code>status</code></td>
-      <td>The component's outcome - one of the values listed under <a class="text-accent" href="/framework/statuses/#statuses">Statuses</a>.</td>
+      <td class="docs-table__number mark mark--user">{% icon "check" %}</td>
+      <td class="docs-table__number mark mark--framework">{% icon "cpu" %}</td>
+      <td>The component's outcome - one of the values listed under <a class="text-accent" href="/framework/statuses/#statuses">Statuses</a>. The framework derives it from checkpoints and descriptions; assign it yourself only for <code class="status-error">ERROR</code>.</td>
     </tr>
     <tr>
       <td><code class="status-fail">failure_description</code></td>
-      <td>Why the system under test was judged incorrect. Setting it moves a passing result to <code class="status-fail">FAIL</code> on its own.</td>
+      <td class="docs-table__number mark mark--user">{% icon "check" %}</td>
+      <td class="docs-table__number mark mark--framework">{% icon "cpu" %}</td>
+      <td>Why the system under test was judged incorrect. Set by you or by a failing checkpoint; setting it moves a passing result to <code class="status-fail">FAIL</code> on its own.</td>
     </tr>
     <tr>
       <td><code class="status-error">error_description</code></td>
-      <td>Why the component could not complete.</td>
+      <td class="docs-table__number mark mark--user">{% icon "check" %}</td>
+      <td class="docs-table__number mark mark--framework">{% icon "cpu" %}</td>
+      <td>Why the component could not complete. Set by you, or by the framework on an uncaught exception.</td>
     </tr>
     <tr>
       <td><code class="status-warning">warning_description</code></td>
+      <td class="docs-table__number mark mark--user">{% icon "check" %}</td>
+      <td class="docs-table__number mark mark--none">&ndash;</td>
       <td>Something worth flagging that did not change the status.</td>
     </tr>
     <tr>
       <td><code>finish_time</code></td>
+      <td class="docs-table__number mark mark--none">&ndash;</td>
+      <td class="docs-table__number mark mark--reserved">{% icon "shield-lock" %}</td>
       <td>When the component finished.</td>
     </tr>
     <tr>
       <td><code>elapsed_time</code></td>
+      <td class="docs-table__number mark mark--none">&ndash;</td>
+      <td class="docs-table__number mark mark--reserved">{% icon "shield-lock" %}</td>
       <td>How long it took.</td>
     </tr>
     <tr>
       <td><code>log_orientation</code></td>
-      <td>Whether the result table is logged horizontally or vertically.</td>
+      <td class="docs-table__number mark mark--user">{% icon "check" %}</td>
+      <td class="docs-table__number mark mark--none">&ndash;</td>
+      <td>Whether the result table is logged horizontally or vertically. Override its default in code.</td>
+    </tr>
+    <tr>
+      <td><code>log_title_color</code>, <code>log_title_bg_color</code></td>
+      <td class="docs-table__number mark mark--none">&ndash;</td>
+      <td class="docs-table__number mark mark--reserved">{% icon "shield-lock" %}</td>
+      <td>Palette plumbing for the log banners. Not user-facing.</td>
     </tr>
   </tbody>
 </table>
@@ -115,15 +173,15 @@ description: "OrcraftResultField, the fields every result inherits, and the coun
   <tbody>
     <tr>
       <td><code>OrcraftTestResult</code></td>
-      <td><code>total_cases</code>, <code>passed_cases</code>, <code>failed_cases</code>, <code>error_cases</code>, <code class="status-warning">warning_cases</code></td>
+      <td><code>total_cases</code>, <code class="status-pass">passed_cases</code>, <code class="status-fail">failed_cases</code>, <code class="status-error">error_cases</code>, <code class="status-warning">warning_cases</code></td>
     </tr>
     <tr>
       <td><code>OrcraftTestGroupResult</code></td>
-      <td>The same case counters, plus <code>total_tests</code>, <code>passed_tests</code>, <code>failed_tests</code>, <code>error_tests</code>, <code class="status-warning">warning_tests</code></td>
+      <td>The same case counters, plus <code>total_tests</code>, <code class="status-pass">passed_tests</code>, <code class="status-fail">failed_tests</code>, <code class="status-error">error_tests</code>, <code class="status-warning">warning_tests</code></td>
     </tr>
     <tr>
       <td><code>OrcraftTestSuiteResult</code></td>
-      <td>The case and test counters, plus <code>total_groups</code>, <code>passed_groups</code>, <code>failed_groups</code>, <code>error_groups</code>, <code class="status-warning">warning_groups</code></td>
+      <td>The case and test counters, plus <code>total_groups</code>, <code class="status-pass">passed_groups</code>, <code class="status-fail">failed_groups</code>, <code class="status-error">error_groups</code>, <code class="status-warning">warning_groups</code></td>
     </tr>
   </tbody>
 </table>

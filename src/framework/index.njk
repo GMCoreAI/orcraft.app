@@ -7,7 +7,7 @@ description: "The Orcraft test framework: suites, groups, tests, cases, flows an
 {% import "partials/zoomable-image.njk" as media %}
 <h1>Orcraft framework overview</h1>
 
-<h2 id="component-model">The component model</h2>
+<h2 id="component-model">Component model</h2>
 {{ media.zoomableImage("/assets/images/Diagrams/Orcraft-Framework.png", "Orcraft component model diagram: the structural hierarchy of suite, group, test and case on the left, the procedural hierarchy of case body, flow and step on the right, and the config, component and result pattern every level shares along the bottom", "large") }}
 
 <p>Orcraft models a test system as a hierarchy of <em>components</em>. Each level owns the level below it
@@ -73,7 +73,7 @@ description: "The Orcraft test framework: suites, groups, tests, cases, flows an
   a suite is actually built up: start with a <a class="text-accent" href="/framework/test/">test</a>, and
   add the surrounding structure only where it earns its place.</p>
 
-<h2 id="package">The Orcraft package</h2>
+<h2 id="package">Orcraft package</h2>
 <p>The Orcraft test framework is the plain-Python library your tests are written against. It ships with
   the controller and is imported from a single package:</p>
 {{ codeblock.block('from orcraft import (
@@ -120,7 +120,7 @@ class MyTest(OrcraftTest):
   to render the config and result tables in the log. A field added to a config class appears in the GUI
   with no further wiring.</p>
 
-<h2 id="public-api">The public API</h2>
+<h2 id="public-api">Public API</h2>
 <p>Everything the framework exposes is importable directly from <code>orcraft</code>. Each entry links to
   the page that covers it:</p>
 
