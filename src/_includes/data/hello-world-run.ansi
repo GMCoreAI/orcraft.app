@@ -1,5 +1,5 @@
 
-Orcraft Controller (v0.1.0.dev139)
+Orcraft Controller (v0.1.0.dev149)
 ----------------------------------
 
 [30;48;5;248m                                    Test: Hello World | Description                                     [00m
@@ -9,39 +9,17 @@ It demonstrates how to define a test config, inherit from OrcraftTest, and imple
 When executed, the test logs a simple Hello World message and returns a passing test result.
 
 
-[30;48;5;248m                                     Test: Hello World | Configuration                                      [00m
+[30;48;5;248m     Test: Hello World | Configuration      [00m
 
-Name              | Version | Update Endpoint App | Cycles | Case Cycles | Start Time               | Matrix
-------------------------------------------------------------------------------------------------------------
-Test: Hello World | -       | on_mismatch         | 1      | 1           | 2026-08-15  17:07:21.858 | -     
-
-
-[00m    [30;48;5;248m                           Test Cycle 1 | Configuration                          [00m
-
-    Name         | Start Time               | Number Of Cycles | Cycle | Total Cycles
-    ---------------------------------------------------------------------------------
-    Test Cycle 1 | 2026-08-15  17:07:21.859 | 1                | 1     | 1           
+Name              | Start Time
+--------------------------------------------
+Test: Hello World | 2026-09-02  19:21:08.453
 
 [00m    [94m[TestHelloWorld] Hello World[00m
-
-[00m    [30;48;5;248m                     Test Cycle 1 | Result                     [00m
-
-    Name         | Status | Finish Time              | Elapsed Time
-    ---------------------------------------------------------------
-    Test Cycle 1 | [92mPASS[00m   | 2026-08-15  17:07:21.861 | 0.002 s     
-
-
-[00m    [30;48;5;248mTest Cycles | Results[00m
-
-    Test Cycle   | Status
-    ---------------------
-    Test Cycle 1 | [92mPASS[00m  
-
-
 
 [30;48;5;248m                     Test: Hello World | Result                     [00m
 
 Name              | Status | Finish Time              | Elapsed Time
 --------------------------------------------------------------------
-Test: Hello World | [92mPASS[00m   | 2026-08-15  17:07:21.862 | 0.003 s     
+Test: Hello World | [92mPASS[00m   | 2026-09-02  19:21:08.455 | 0.002 s
 
