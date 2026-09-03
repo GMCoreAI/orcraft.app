@@ -133,3 +133,110 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Headaches: a two-column ledger. Pain muted on the left with a red mark,
+   the answer on the right with a green one. Rows reveal in sequence. */
+.solved {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+  max-width: 920px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.solved__head,
+.solved__row {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr;
+  column-gap: var(--space-12);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.solved__head {
+  padding-block: var(--space-3);
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.solved__head > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.solved__wordmark {
+  height: 1.7em;
+  width: auto;
+}
+
+.solved__row {
+  padding-block: var(--space-4);
+}
+
+.solved__row:last-child {
+  border-bottom: 0;
+}
+
+.solved__pain,
+.solved__fix {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  font-size: var(--font-size-base);
+  line-height: 1.45;
+}
+
+.solved__pain {
+  color: var(--color-text-muted);
+}
+
+.solved__fix {
+  color: var(--color-text);
+}
+
+.solved__mark {
+  display: inline-flex;
+  flex: none;
+  margin-top: 0.2em;
+  font-size: 1em;
+}
+
+.solved__pain .solved__mark {
+  color: var(--color-danger);
+}
+
+.solved__fix .solved__mark {
+  color: var(--color-success);
+}
+
+/* Stagger the scroll reveal so the ledger fills top to bottom. Only when
+   motion is allowed: reveal.js shows everything at once otherwise. */
+@media (prefers-reduced-motion: no-preference) {
+  .solved__row:nth-child(3) { transition-delay: 60ms; }
+  .solved__row:nth-child(4) { transition-delay: 120ms; }
+  .solved__row:nth-child(5) { transition-delay: 180ms; }
+  .solved__row:nth-child(6) { transition-delay: 240ms; }
+  .solved__row:nth-child(7) { transition-delay: 300ms; }
+  .solved__row:nth-child(8) { transition-delay: 360ms; }
+}
+
+@media (max-width: 700px) {
+  .solved {
+    padding-inline: var(--space-4);
+  }
+
+  .solved__head {
+    display: none;
+  }
+
+  .solved__row {
+    grid-template-columns: 1fr;
+    row-gap: var(--space-2);
+  }
+}
