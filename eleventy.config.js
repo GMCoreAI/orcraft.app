@@ -1,5 +1,6 @@
 import { closeSync, openSync, readFileSync, readSync } from "node:fs";
 import { AnsiUp } from "ansi_up";
+import * as pagefind from "pagefind";
 
 const ICON_DIR = "src/assets/icons/ui";
 const DOCS_ARTICLE = /(<article class="docs__article">)([\s\S]*?)(<\/article>)/;
@@ -77,6 +78,19 @@ export default function (eleventyConfig) {
     const raw = readFileSync(`src/_includes/data/${filename}`, "utf8").replace(/^\n+|\n+$/g, "");
     const html = new AnsiUp().ansi_to_html(raw);
     return `<div class="code-block-wrap"><pre class="code-block"><code>${html}</code></pre></div>`;
+  });
+
+  // Search index, built after every write (including --serve and --watch) so
+  // /pagefind/pagefind.js exists wherever _site is served from. Only pages
+  // carrying data-pagefind-body (the docs articles and the home page) are indexed.
+  eleventyConfig.on("eleventy.after", async ({ dir }) => {
+    const { index, errors } = await pagefind.createIndex();
+    if (!index) throw new Error(`Pagefind: ${errors.join("; ")}`);
+
+    const { page_count: pages } = await index.addDirectory({ path: dir.output });
+    await index.writeFiles({ outputPath: `${dir.output}/pagefind` });
+    await pagefind.close();
+    console.log(`[pagefind] Indexed ${pages} pages`);
   });
 
   eleventyConfig.addTransform("docsSections", function (content) {

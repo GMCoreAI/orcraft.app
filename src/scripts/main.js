@@ -7,6 +7,7 @@ import { initCopy } from "./components/copy.js";
 import { initReveal } from "./components/reveal.js";
 import { initCurrentYear } from "./components/current-year.js";
 import { initDocsNav } from "./components/docs-nav.js";
+import { initSearch } from "./components/search.js";
 import { initPage } from "./pages/index.js";
 
 function initContent(page) {
@@ -23,6 +24,7 @@ function boot() {
   initTopbar();
   initLightbox();
   initCopy();
+  initSearch();
   initContent();
 }
 

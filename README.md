@@ -18,7 +18,7 @@ Static site built with [Eleventy](https://www.11ty.dev/). Source lives in `src/`
 the build writes plain static files to `_site/` (git-ignored).
 
 ```
-eleventy.config.js    Build config: input src/, output _site/, passthrough copies
+eleventy.config.js    Build config: input src/, output _site/, passthrough copies, search index
 package.json          npm run dev | watch | build
 
 src/
@@ -45,7 +45,7 @@ src/
   scripts/
     main.js           Single JS entry point (ES module)
     core/             Shared helpers
-    components/       Router, scroll reveal, current year
+    components/       Router, scroll reveal, current year, search
     pages/            Page modules, dispatched by <body data-page="...">
 
   assets/
@@ -61,6 +61,21 @@ UI icons are used as `{% raw %}{% icon "shield-lock" %}{% endraw %}`, which inli
 inherits `currentColor` and the surrounding font size. To add one, drop the file
 into `src/assets/icons/ui/` — the whole set lives at
 [tabler.io/icons](https://tabler.io/icons).
+
+## Search
+
+The docs are searchable through [Pagefind](https://pagefind.app/). After every
+build (`npm run build` as well as `dev`/`watch`) the `eleventy.after` hook in
+`eleventy.config.js` indexes `_site/` and writes the index to `_site/pagefind/`,
+which is deployed with the rest of the site. Only content wrapped in
+`data-pagefind-body` is indexed: the docs articles (via the docs layout) and the
+home page, whose capabilities and "how it works" sections are not written up
+anywhere else. Demo, login, contact and legal pages stay out of the results.
+
+The search box lives in the topbar (`partials/search-trigger.njk`) and opens a
+modal (`partials/search-dialog.njk`, `scripts/components/search.js`); `Ctrl K`
+(`⌘ K` on macOS) or `/` opens it from anywhere. The Pagefind runtime is fetched
+on first use, not on page load.
 
 ## The persistent frame
 

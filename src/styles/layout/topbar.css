@@ -63,6 +63,11 @@ body:not([data-page="home"]) .topbar__spacer {
   width: 110px;
 }
 
+.topbar__tools {
+  grid-column: 3;
+  justify-self: end;
+}
+
 .topbar .nav {
   grid-column: 2;
   padding-block: 0;

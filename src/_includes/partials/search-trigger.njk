@@ -1,0 +1,7 @@
+{# Opens the search dialog (partials/search-dialog.njk). The shortcut label is
+   swapped to the Command key on macOS by scripts/components/search.js. #}
+<button class="search-trigger" type="button" data-search-open aria-label="Search the docs">
+  {% icon "search" %}
+  <span class="search-trigger__label">Search</span>
+  <kbd class="search-trigger__kbd" data-search-shortcut>Ctrl K</kbd>
+</button>
