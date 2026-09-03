@@ -99,6 +99,24 @@
   color: var(--color-danger);
 }
 
+/* Status names in prose and tables take the same colors the controller and the
+   log use: pass green, fail red, error orange, warnings yellow. */
+.docs__article code.status-pass {
+  color: var(--color-success);
+}
+
+.docs__article code.status-fail {
+  color: var(--color-danger);
+}
+
+.docs__article code.status-error {
+  color: var(--color-orange);
+}
+
+.docs__article code.status-warning {
+  color: var(--color-warning);
+}
+
 /* Framed disclaimer under a table. A labelled box keeps the caution visible
    without painting the whole paragraph in the danger color. */
 .docs__article .docs-callout {

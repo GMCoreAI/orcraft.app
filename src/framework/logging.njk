@@ -7,7 +7,7 @@ description: "OrcraftLogger: colored console output, tables and progress that th
 <h1>Orcraft Logger</h1>
 <p>Most of an Orcraft log writes itself. Every component logs its config table when it starts and its
   result table when it finishes, nested by level, and every
-  <a class="text-accent" href="/framework/results-and-statuses/#checkpoints">checkpoint</a> logs its
+  <a class="text-accent" href="/framework/statuses/#checkpoints">checkpoint</a> logs its
   outcome either way. <code>OrcraftLogger</code> is for everything a test wants to add on top of that.</p>
 
 {{ codeblock.block('from orcraft import OrcraftLogger as Logger
@@ -71,7 +71,7 @@ Logger.log(completed.stderr, color=Logger.Color.RED, module_tag=False)') }}
 
 <p><code>Logger.log_error</code> takes the same arguments, forces red and writes to stderr. It is for
   reporting a problem, not for causing one - the result status is set by
-  <a class="text-accent" href="/framework/results-and-statuses/#checkpoints">checkpoints</a> and by the
+  <a class="text-accent" href="/framework/statuses/#checkpoints">checkpoints</a> and by the
   result descriptions, never by a log call.</p>
 
 <h2 id="colors">Colors</h2>
@@ -95,7 +95,7 @@ status_text = Logger.colorize_if(
   status rendering ends up wanting.</p>
 
 <p>The same mechanism drives result field
-  <a class="text-accent" href="/framework/results-and-statuses/#result-fields">formatters</a>: a
+  <a class="text-accent" href="/framework/result-fields/#result-fields">formatters</a>: a
   formatter that returns a colorized string is how a value arrives in the result table already
   colored.</p>
 

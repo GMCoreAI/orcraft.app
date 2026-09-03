@@ -77,7 +77,7 @@ class MyFlow(OrcraftTestFlow):
 
 <h3 id="result-type-errors">Why the framework builds it: error reporting</h3>
 <p>When a flow body raises, it is the framework that finishes the result. It sets the status to
-  <code>ERROR</code>, records the error description, stamps the finish and elapsed times, and emits the
+  <code class="status-error">ERROR</code>, records the error description, stamps the finish and elapsed times, and emits the
   result the controller renders. All of that lands on whatever <code>self.result</code> is <em>at that
   moment</em>. Building the declared class before the body runs guarantees that an early failure still
   reports through the flow's own result class: the log table and the controller show the flow's declared
@@ -190,20 +190,20 @@ class MyFlow(OrcraftTestFlow):
     <tr>
       <td><code>status</code></td>
       <td>Framework, via checkpoints and descriptions</td>
-      <td><code>PASS</code>, <code>FAIL</code>, <code>ERROR</code> or <code>ABORT</code>. Assign it directly only for <code>ERROR</code> - see <a class="text-accent" href="/framework/results-and-statuses/#setting-a-status">Setting a status</a>.</td>
+      <td><code class="status-pass">PASS</code>, <code class="status-fail">FAIL</code> or <code class="status-error">ERROR</code>. Assign it directly only for <code class="status-error">ERROR</code> - see <a class="text-accent" href="/framework/statuses/#setting-a-status">Setting a status</a>.</td>
     </tr>
     <tr>
-      <td><code>failure_description</code></td>
+      <td><code class="status-fail">failure_description</code></td>
       <td>You, or a failing checkpoint</td>
-      <td>Why the system under test was judged incorrect. Setting it moves a passing result to <code>FAIL</code>.</td>
+      <td>Why the system under test was judged incorrect. Setting it moves a passing result to <code class="status-fail">FAIL</code>.</td>
     </tr>
     <tr>
-      <td><code>error_description</code></td>
+      <td><code class="status-error">error_description</code></td>
       <td>You, or the framework on an uncaught exception</td>
       <td>Why the component could not complete.</td>
     </tr>
     <tr>
-      <td><code>warning_description</code></td>
+      <td><code class="status-warning">warning_description</code></td>
       <td>You</td>
       <td>Something worth flagging that does not change the status.</td>
     </tr>
@@ -283,7 +283,7 @@ class MyFlow(OrcraftTestFlow):
   running past a broken precondition.</p>
 
 <p>The first is explicit:
-  <a class="text-accent" href="/framework/results-and-statuses/#handle-errors"><code>handle_errors</code></a>
+  <a class="text-accent" href="/framework/statuses/#handle-errors"><code>handle_errors</code></a>
   after each step, copying the step result into the flow result and returning <code>True</code> when the
   flow should stop.</p>
 
@@ -292,11 +292,11 @@ class MyFlow(OrcraftTestFlow):
 if self.handle_errors(step_result, self.result):
 	return') }}
 
-<p>The second is automatic: once the flow result is in <code>ERROR</code>, further <code>run_step</code>
+<p>The second is automatic: once the flow result is in <code class="status-error">ERROR</code>, further <code>run_step</code>
   calls short-circuit instead of executing. A flow that loses its first step does not go on to run the
   rest against a state that never got set up.</p>
 
-<p>Note that this applies to <code>ERROR</code>, not to <code>FAIL</code>. A failing checkpoint is a
+<p>Note that this applies to <code class="status-error">ERROR</code>, not to <code class="status-fail">FAIL</code>. A failing checkpoint is a
   finding, and a flow keeps going so it can report the rest of them; an error means the flow cannot
   meaningfully continue.</p>
 

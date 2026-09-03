@@ -30,7 +30,7 @@ description: "Reference for OrcraftConfigField: every config field type and the 
   default. There is no lookup by string key and no dictionary to keep in sync.</p>
 
 <p>Output fields work the same way, from the <code>OrcraftResultField</code> namespace - see
-  <a class="text-accent" href="/framework/results-and-statuses/">Orcraft Results and Statuses</a>.</p>
+  <a class="text-accent" href="/framework/result-fields/">Orcraft Result Fields</a>.</p>
 
 <h2 id="options">Options every field accepts</h2>
 <table>
@@ -92,7 +92,10 @@ description: "Reference for OrcraftConfigField: every config field type and the 
   </tbody>
 </table>
 
-<h2 id="basic-types">Basic types</h2>
+<h2 id="config-types">Config types</h2>
+<p>Every field type in the <code>OrcraftConfigField</code> namespace, grouped by what it selects.</p>
+
+<h3 id="basic-types">Basic types</h3>
 <table>
   <thead>
     <tr>
@@ -125,7 +128,7 @@ verbose = OrcraftConfigField.Boolean(default=False, label="Verbose")
 attempts = OrcraftConfigField.Numeric(default=3, label="Attempts")
 timeout = OrcraftConfigField.Numeric(default=None, label="Timeout", required=False)') }}
 
-<h2 id="selection-types">Selection types</h2>
+<h3 id="selection-types">Selection types</h3>
 <table>
   <thead>
     <tr>
@@ -174,7 +177,7 @@ version = OrcraftConfigField.SelectLambda(
 	options_lambda=list_available_versions,
 )') }}
 
-<h2 id="filesystem-types">Filesystem types</h2>
+<h3 id="filesystem-types">Filesystem types</h3>
 <table>
   <thead>
     <tr>
@@ -210,7 +213,7 @@ version = OrcraftConfigField.SelectLambda(
 <p>These give the GUI a browse button and store the chosen path. The path is used as-is: the file stays
   where it is, and the test reads it from there.</p>
 
-<h2 id="package-types">Package upload types</h2>
+<h3 id="package-types">Package upload types</h3>
 <table>
   <thead>
     <tr>
@@ -270,7 +273,7 @@ input_folders = OrcraftConfigField.PackageFolderList(
 
 <p>Without <code>endpoints</code>, a package field is uploaded to every endpoint the test uses.</p>
 
-<h2 id="endpoint-types">Endpoint types</h2>
+<h3 id="endpoint-types">Endpoint types</h3>
 <table>
   <thead>
     <tr>
@@ -302,7 +305,7 @@ input_folders = OrcraftConfigField.PackageFolderList(
   the shared options. <a class="text-accent" href="/framework/endpoints/">Orcraft Endpoints</a> covers what they
   do and when to reach for each field type.</p>
 
-<h2 id="composition-types">Composition types</h2>
+<h3 id="composition-types">Composition types</h3>
 <table>
   <thead>
     <tr>

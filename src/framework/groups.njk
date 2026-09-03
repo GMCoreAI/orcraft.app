@@ -162,20 +162,20 @@ if __name__ == "__main__":
     <tr>
       <td><code>status</code></td>
       <td>Framework, from the tests beneath</td>
-      <td><code>PASS</code>, <code>FAIL</code>, <code>ERROR</code> or <code>ABORT</code>, derived from the children.</td>
+      <td><code class="status-pass">PASS</code>, <code class="status-fail">FAIL</code> or <code class="status-error">ERROR</code>, derived from the children.</td>
     </tr>
     <tr>
-      <td><code>failure_description</code></td>
+      <td><code class="status-fail">failure_description</code></td>
       <td>Framework, rolled up from the tests</td>
-      <td>Why the system under test was judged incorrect. Setting it moves a passing result to <code>FAIL</code>.</td>
+      <td>Why the system under test was judged incorrect. Setting it moves a passing result to <code class="status-fail">FAIL</code>.</td>
     </tr>
     <tr>
-      <td><code>error_description</code></td>
+      <td><code class="status-error">error_description</code></td>
       <td>Framework, rolled up from the tests</td>
       <td>Why the component could not complete.</td>
     </tr>
     <tr>
-      <td><code>warning_description</code></td>
+      <td><code class="status-warning">warning_description</code></td>
       <td>Framework, rolled up from the tests</td>
       <td>Something worth flagging that does not change the status.</td>
     </tr>
@@ -200,12 +200,12 @@ if __name__ == "__main__":
       <td>Palette plumbing for the log banners. Not user-facing.</td>
     </tr>
     <tr>
-      <td><code>total_tests</code>, <code>passed_tests</code>, <code>failed_tests</code>, <code>error_tests</code>, <code>warning_tests</code></td>
+      <td><code>total_tests</code>, <code>passed_tests</code>, <code>failed_tests</code>, <code>error_tests</code>, <code class="status-warning">warning_tests</code></td>
       <td>Framework</td>
       <td>Test counters, summed from the tests that ran.</td>
     </tr>
     <tr>
-      <td><code>total_cases</code>, <code>passed_cases</code>, <code>failed_cases</code>, <code>error_cases</code>, <code>warning_cases</code></td>
+      <td><code>total_cases</code>, <code>passed_cases</code>, <code>failed_cases</code>, <code>error_cases</code>, <code class="status-warning">warning_cases</code></td>
       <td>Framework</td>
       <td>Case counters, summed from every case of every test in the group.</td>
     </tr>

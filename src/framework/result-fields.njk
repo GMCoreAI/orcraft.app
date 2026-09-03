@@ -1,0 +1,133 @@
+---
+title: Framework · Orcraft Result Fields
+key: framework
+description: "OrcraftResultField, the fields every result inherits, and the counters that roll up the hierarchy."
+---
+{% import "partials/code-block.njk" as codeblock %}
+<h1>Orcraft Result Fields</h1>
+<p>A result reports whatever measurements its component chose to declare, on top of the status and
+  descriptions every result carries. This page covers the declared fields, the inherited ones, and the
+  counters each level sums from the level below. How the status itself is set is covered in
+  <a class="text-accent" href="/framework/statuses/">Orcraft Statuses</a>.</p>
+
+<h2 id="result-fields">Result fields</h2>
+<p>Result fields come from the <code>OrcraftResultField</code> namespace and are declared on a result
+  class, exactly the way config fields are declared on a config class:</p>
+
+{{ codeblock.block('class MyTestResult(OrcraftTestResult):
+	measured_value = OrcraftResultField.Numeric(default=0, label="Measured Value")
+	within_limits = OrcraftResultField.Boolean(default=False, label="Within Limits")
+	output_file = OrcraftResultField.Text(default="", label="Output File")
+	log_orientation = OrcraftResultField.Format(
+		default=OrcraftResultField.LogTableOrientation.VERTICAL
+	)') }}
+
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Text</code></td>
+      <td><code>str</code></td>
+    </tr>
+    <tr>
+      <td><code>Numeric</code></td>
+      <td><code>int</code> or <code>float</code></td>
+    </tr>
+    <tr>
+      <td><code>Boolean</code></td>
+      <td><code>bool</code></td>
+    </tr>
+    <tr>
+      <td><code>Format</code></td>
+      <td>Presentation-only, used for <code>log_orientation</code>.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Each accepts <code>default</code>, <code>default_factory</code>, <code>label</code> and
+  <code>formatter</code>, with the same meanings they have for
+  <a class="text-accent" href="/framework/configuration-fields/#options">config fields</a>. A field with
+  a <code>label</code> appears in the logged result table and in the controller; one without stays
+  internal.</p>
+
+<p>A <code>formatter</code> changes how a value is displayed without changing what is stored, which is
+  how a raw number becomes a percentage or a status becomes a colored word in the log.</p>
+
+<h2 id="inherited-fields">Fields every result has</h2>
+<p>Result classes inherit a set of fields the framework maintains itself. You read them, and in a few
+  cases write them, but you never declare them.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>status</code></td>
+      <td>The component's outcome - one of the values listed under <a class="text-accent" href="/framework/statuses/#statuses">Statuses</a>.</td>
+    </tr>
+    <tr>
+      <td><code class="status-fail">failure_description</code></td>
+      <td>Why the system under test was judged incorrect. Setting it moves a passing result to <code class="status-fail">FAIL</code> on its own.</td>
+    </tr>
+    <tr>
+      <td><code class="status-error">error_description</code></td>
+      <td>Why the component could not complete.</td>
+    </tr>
+    <tr>
+      <td><code class="status-warning">warning_description</code></td>
+      <td>Something worth flagging that did not change the status.</td>
+    </tr>
+    <tr>
+      <td><code>finish_time</code></td>
+      <td>When the component finished.</td>
+    </tr>
+    <tr>
+      <td><code>elapsed_time</code></td>
+      <td>How long it took.</td>
+    </tr>
+    <tr>
+      <td><code>log_orientation</code></td>
+      <td>Whether the result table is logged horizontally or vertically.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="aggregation">Aggregated counters</h2>
+<p>Each level above a case counts what happened beneath it, so a summary is available without any code
+  keeping score:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Result</th>
+      <th>Counters</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>OrcraftTestResult</code></td>
+      <td><code>total_cases</code>, <code>passed_cases</code>, <code>failed_cases</code>, <code>error_cases</code>, <code class="status-warning">warning_cases</code></td>
+    </tr>
+    <tr>
+      <td><code>OrcraftTestGroupResult</code></td>
+      <td>The same case counters, plus <code>total_tests</code>, <code>passed_tests</code>, <code>failed_tests</code>, <code>error_tests</code>, <code class="status-warning">warning_tests</code></td>
+    </tr>
+    <tr>
+      <td><code>OrcraftTestSuiteResult</code></td>
+      <td>The case and test counters, plus <code>total_groups</code>, <code>passed_groups</code>, <code>failed_groups</code>, <code>error_groups</code>, <code class="status-warning">warning_groups</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Because case counts carry all the way to the top, a suite result answers both questions at once: how
+  many of its groups came back clean, and how many individual cases were actually executed to get
+  there.</p>

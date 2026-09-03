@@ -126,7 +126,7 @@ class MyStep(OrcraftTestStep):
 
 <h2 id="step-result-fields">Step result fields</h2>
 <p>A step creates its result inside <code>_run_step</code> and returns it. The fields you declare on it
-  come from the <a class="text-accent" href="/framework/results-and-statuses/"><code>OrcraftResultField</code></a>
+  come from the <a class="text-accent" href="/framework/result-fields/"><code>OrcraftResultField</code></a>
   namespace; the rest it inherits from <code>OrcraftTestStepResult</code>, and most of those are written
   by the framework rather than by you:</p>
 
@@ -142,20 +142,20 @@ class MyStep(OrcraftTestStep):
     <tr>
       <td><code>status</code></td>
       <td>Framework, via checkpoints and descriptions</td>
-      <td><code>PASS</code>, <code>FAIL</code>, <code>ERROR</code> or <code>ABORT</code>. Assign it directly only for <code>ERROR</code> - see <a class="text-accent" href="/framework/results-and-statuses/#setting-a-status">Setting a status</a>.</td>
+      <td><code class="status-pass">PASS</code>, <code class="status-fail">FAIL</code> or <code class="status-error">ERROR</code>. Assign it directly only for <code class="status-error">ERROR</code> - see <a class="text-accent" href="/framework/statuses/#setting-a-status">Setting a status</a>.</td>
     </tr>
     <tr>
-      <td><code>failure_description</code></td>
+      <td><code class="status-fail">failure_description</code></td>
       <td>You, or a failing checkpoint</td>
-      <td>Why the system under test was judged incorrect. Setting it moves a passing result to <code>FAIL</code>.</td>
+      <td>Why the system under test was judged incorrect. Setting it moves a passing result to <code class="status-fail">FAIL</code>.</td>
     </tr>
     <tr>
-      <td><code>error_description</code></td>
+      <td><code class="status-error">error_description</code></td>
       <td>You, or the framework on an uncaught exception</td>
       <td>Why the component could not complete.</td>
     </tr>
     <tr>
-      <td><code>warning_description</code></td>
+      <td><code class="status-warning">warning_description</code></td>
       <td>You</td>
       <td>Something worth flagging that does not change the status.</td>
     </tr>

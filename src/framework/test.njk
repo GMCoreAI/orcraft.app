@@ -209,7 +209,7 @@ if __name__ == "__main__":
 
 <h2 id="result-class">The result class</h2>
 <p>The result declares what the test reports. Its fields come from the
-  <a class="text-accent" href="/framework/results-and-statuses/"><code>OrcraftResultField</code></a>
+  <a class="text-accent" href="/framework/result-fields/"><code>OrcraftResultField</code></a>
   namespace, and like the config it starts out with fields it did not declare. Unlike the config, most of
   these are written by the framework, not by you:</p>
 
@@ -225,20 +225,20 @@ if __name__ == "__main__":
     <tr>
       <td><code>status</code></td>
       <td>Framework, via checkpoints and descriptions</td>
-      <td><code>PASS</code>, <code>FAIL</code>, <code>ERROR</code> or <code>ABORT</code>. Assign it directly only for <code>ERROR</code> - see <a class="text-accent" href="/framework/results-and-statuses/#setting-a-status">Setting a status</a>.</td>
+      <td><code class="status-pass">PASS</code>, <code class="status-fail">FAIL</code> or <code class="status-error">ERROR</code>. Assign it directly only for <code class="status-error">ERROR</code> - see <a class="text-accent" href="/framework/statuses/#setting-a-status">Setting a status</a>.</td>
     </tr>
     <tr>
-      <td><code>failure_description</code></td>
+      <td><code class="status-fail">failure_description</code></td>
       <td>You, or a failing checkpoint</td>
-      <td>Why the system under test was judged incorrect. Setting it moves a passing result to <code>FAIL</code>.</td>
+      <td>Why the system under test was judged incorrect. Setting it moves a passing result to <code class="status-fail">FAIL</code>.</td>
     </tr>
     <tr>
-      <td><code>error_description</code></td>
+      <td><code class="status-error">error_description</code></td>
       <td>You, or the framework on an uncaught exception</td>
       <td>Why the test could not complete.</td>
     </tr>
     <tr>
-      <td><code>warning_description</code></td>
+      <td><code class="status-warning">warning_description</code></td>
       <td>You</td>
       <td>Something worth flagging that does not change the status.</td>
     </tr>
@@ -253,7 +253,7 @@ if __name__ == "__main__":
       <td>How long it took.</td>
     </tr>
     <tr>
-      <td><code>total_cases</code>, <code>passed_cases</code>, <code>failed_cases</code>, <code>error_cases</code>, <code>warning_cases</code></td>
+      <td><code>total_cases</code>, <code>passed_cases</code>, <code>failed_cases</code>, <code>error_cases</code>, <code class="status-warning">warning_cases</code></td>
       <td>Framework</td>
       <td>Per-case counters, summed from the cases that ran and carried up into the group and suite results.</td>
     </tr>
@@ -296,7 +296,7 @@ if __name__ == "__main__":
   play - without it the case reports only the inherited ones. Everything else about the body is ordinary
   Python: call into the system under test however you like, record what you measured on
   <code>case.result</code>, and assert with
-  <a class="text-accent" href="/framework/results-and-statuses/#checkpoints"><code>checkpoint</code></a>.</p>
+  <a class="text-accent" href="/framework/statuses/#checkpoints"><code>checkpoint</code></a>.</p>
 
 <p>A case body does not have to be small. When it grows past what reads well in one method, split it into
   <a class="text-accent" href="/framework/steps/">steps</a> and

@@ -122,7 +122,7 @@ def _case_teardown(self, case: OrcraftTestCase, test_cycle_index: int) -> None:
   <tbody>
     <tr>
       <td><code>_setup</code></td>
-      <td>The whole test is aborted: no cases run, <code>_teardown</code> is skipped, and the test is marked <code>ERROR</code>.</td>
+      <td>The whole test is aborted: no cases run, <code>_teardown</code> is skipped, and the test is marked <code class="status-error">ERROR</code>.</td>
     </tr>
     <tr>
       <td><code>_test_cycle_setup</code></td>
@@ -144,8 +144,8 @@ def _case_teardown(self, case: OrcraftTestCase, test_cycle_index: int) -> None:
 
 <h2 id="checkpoints-in-hooks">Checkpoints in hooks</h2>
 <p>Inside a hook, a failing
-  <a class="text-accent" href="/framework/results-and-statuses/#checkpoints"><code>checkpoint</code></a>
-  is always treated as an <code>ERROR</code>, whether or not <code>is_error</code> was passed:</p>
+  <a class="text-accent" href="/framework/statuses/#checkpoints"><code>checkpoint</code></a>
+  is always treated as an <code class="status-error">ERROR</code>, whether or not <code>is_error</code> was passed:</p>
 
 {{ codeblock.block('def _setup(self) -> None:
 	self.checkpoint(

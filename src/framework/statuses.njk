@@ -1,0 +1,256 @@
+---
+title: Framework · Orcraft Statuses
+key: framework
+description: "OrcraftStatus, checkpoints, warnings and how a failure travels up the hierarchy."
+---
+{% import "partials/code-block.njk" as codeblock %}
+<h1>Orcraft Statuses</h1>
+<p>Every component result carries a status saying how it went and descriptions saying why. This page
+  covers the statuses themselves and the mechanisms that set them - <code>checkpoint</code>,
+  <code>handle_errors</code> and the description fields - before
+  <a class="text-accent" href="/framework/result-fields/">Orcraft Result Fields</a> covers what else a
+  result can carry.</p>
+
+<h2 id="statuses">Statuses</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Status</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="status-pass">PASS</code></td>
+      <td>The component ran and every expected value matched the actual one.</td>
+    </tr>
+    <tr>
+      <td><code class="status-fail">FAIL</code></td>
+      <td>The component ran and found a mismatch: an expected value did not match the actual one. This is the component doing its job - a real finding about the system under test.</td>
+    </tr>
+    <tr>
+      <td><code class="status-error">ERROR</code></td>
+      <td>An exception - an unexpected failure the component was not testing for. It could not reach a verdict, so there is no finding.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The distinction between <code class="status-fail">FAIL</code> and <code class="status-error">ERROR</code> is the one that matters in practice.
+  <code class="status-fail">FAIL</code> is an <em>expected</em> kind of failure: the component compared expected against actual,
+  they differed, and it reported that - the system under test is wrong. <code class="status-error">ERROR</code> is an
+  <em>unexpected</em> failure: something raised - a missing file, a dead connection, a bug in the test
+  itself - before a comparison could be made, so nothing has been established about the system under
+  test either way. A suite where half the results are errors has an infrastructure problem, not a
+  quality problem, and Orcraft counts the two separately so that difference is visible at a glance.</p>
+
+<p>A result starts at <code class="status-pass">PASS</code> and is moved from there - by a failing checkpoint, by an
+  assignment to one of the descriptions, or by an uncaught exception, which is what produces
+  <code class="status-error">ERROR</code>.</p>
+
+<p><code>OrcraftStatus</code> also declares an <code>ABORT</code> member. Nothing in the framework or the
+  controller produces it, so a result never carries it; a run halted from the controller is shown there
+  as stopped rather than reported through a component status.</p>
+
+<h3 id="setting-a-status">Setting a status</h3>
+<p>A test rarely assigns <code>status</code> directly. Most of the time it states a finding and lets the
+  framework derive the status from it:</p>
+
+{{ codeblock.block('from orcraft import OrcraftStatus
+
+...
+
+def _run_case(self, case: OrcraftTestCase) -> OrcraftTestResult:
+	case.result = MyTestResult()
+
+	response = self.query_system(self.config.payload_size)
+
+	# ERROR: the case cannot produce a finding at all, so say why and stop.
+	if response is None:
+		case.result.status = OrcraftStatus.ERROR
+		case.result.error_description = "The system under test returned no response."
+		return case.result
+
+	case.result.measured_value = response.value
+
+	# FAIL: a failing checkpoint records the finding and carries on.
+	self.checkpoint(
+		response.value <= self.config.threshold,
+		f"Measured {response.value}, within the threshold.",
+		f"Measured {response.value}, above the threshold of {self.config.threshold}.",
+	)
+
+	# FAIL: assigning a failure description has the same effect as a failed checkpoint.
+	if response.code != 0:
+		case.result.failure_description = f"The system reported code {response.code}."
+
+	# Still PASS, but worth flagging.
+	if response.retries:
+		case.result.warning_description = f"Succeeded after {response.retries} retries."
+
+	return case.result') }}
+
+<p>Each status has its own route:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Status</th>
+      <th>How a test produces it</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="status-pass">PASS</code></td>
+      <td>The value a result starts at. Nothing to set.</td>
+    </tr>
+    <tr>
+      <td><code class="status-fail">FAIL</code></td>
+      <td>A failing <a class="text-accent" href="#checkpoints"><code>checkpoint</code></a>, or assigning <code class="status-fail">failure_description</code>.</td>
+    </tr>
+    <tr>
+      <td><code class="status-error">ERROR</code></td>
+      <td>An uncaught exception, a checkpoint with <code>is_error=True</code>, or assigning <code>status</code> together with <code class="status-error">error_description</code>.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Note what the example does <em>not</em> do: it never sets <code>OrcraftStatus.FAIL</code> by hand. Going
+  through a checkpoint or a description means the reason travels with the status, so the log and the
+  controller show why the case failed and not merely that it did. Assigning
+  <code class="status-fail">failure_description</code> on a passing result moves it to <code class="status-fail">FAIL</code> on its own, which is
+  why the two are never set together.</p>
+
+<p>Only <code class="status-error">ERROR</code> is worth assigning explicitly, and only when the case has to stop early - it is
+  the one status that says the finding is missing rather than negative.</p>
+
+<h3 id="reading-a-status">Reading a status</h3>
+<p>Statuses compare as an enum, which is occasionally useful when a caller wants to branch on the outcome
+  of a nested component rather than just propagate it:</p>
+
+{{ codeblock.block('flow_result = flow.run()
+
+if flow_result.status is OrcraftStatus.ERROR:
+	Logger.log("Skipping verification - the flow could not complete.", color=Logger.Color.YELLOW)
+	return case.result') }}
+
+<p>For the usual case - copy the outcome upward and stop if it failed - reach for
+  <a class="text-accent" href="#handle-errors"><code>handle_errors</code></a> instead of comparing
+  statuses by hand.</p>
+
+<h2 id="checkpoints">Checkpoints</h2>
+<p><code>checkpoint</code> is the framework's assertion, available on every component. It takes a
+  condition and the message to log for each outcome:</p>
+
+{{ codeblock.block('self.checkpoint(
+	measured <= threshold,
+	f"Measured {measured}, within the threshold of {threshold}.",
+	f"Measured {measured}, above the threshold of {threshold}.",
+	details="Measured over the full run, not a single sample.",
+)') }}
+
+<table>
+  <thead>
+    <tr>
+      <th>Argument</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>result</code></td>
+      <td>The condition being asserted.</td>
+    </tr>
+    <tr>
+      <td><code>pass_msg</code></td>
+      <td>Logged when the condition holds.</td>
+    </tr>
+    <tr>
+      <td><code>fail_msg</code></td>
+      <td>Logged when it does not, and used as the failure description.</td>
+    </tr>
+    <tr>
+      <td><code>details</code></td>
+      <td>Optional extra context, logged alongside the outcome.</td>
+    </tr>
+    <tr>
+      <td><code>is_error</code></td>
+      <td>Treat a failed check as <code class="status-error">ERROR</code> rather than <code class="status-fail">FAIL</code>, abandoning the surrounding scope.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Both outcomes are logged, so the log records what was checked and not only what broke. This is what
+  makes a passing Orcraft run readable as evidence rather than as silence.</p>
+
+<p>A failing checkpoint sets the component to <code class="status-fail">FAIL</code> with the failure message as its
+  description, and then <em>continues</em>. That is deliberate: one case can report every problem it
+  found instead of only the first. Pass <code>is_error=True</code> when a failed check means the rest of
+  the work would be meaningless - a missing file, an application that did not start - and the component
+  is marked <code class="status-error">ERROR</code> and the scope abandoned instead.</p>
+
+<p>Inside a <a class="text-accent" href="/framework/lifecycle-hooks/">setup or teardown hook</a> a failing
+  checkpoint is always treated as an error, whether or not <code>is_error</code> was passed. A lifecycle
+  assertion that does not hold means the work it was guarding should not proceed.</p>
+
+<h2 id="warnings">Warnings</h2>
+<p>A warning records something worth surfacing that does not make the result wrong - a retry that
+  succeeded, output that was unusual but valid, a slower run than expected. It is raised by assigning
+  <code class="status-warning">warning_description</code> on the result:</p>
+
+{{ codeblock.block('case.result.warning_description = f"Retried {retries} times before succeeding."') }}
+
+<p>The status is unaffected - setting <code class="status-warning">warning_description</code> never
+  moves a result off <code class="status-pass">PASS</code> - but the case is counted as a case with
+  warnings, and that count aggregates up through the group and suite results. A run can therefore be
+  entirely green and still tell you where to look.</p>
+
+<h2 id="handle-errors">Propagating statuses</h2>
+<p>Components do not raise their way up the hierarchy - they return results, and the caller decides.
+  <code>handle_errors</code> copies status and descriptions from one result to another and returns
+  <code>True</code> when the caller should stop:</p>
+
+{{ codeblock.block('flow_result = flow.run()
+
+if self.handle_errors(flow_result, case.result):
+	return case.result') }}
+
+<p>This is the idiom to use after every flow call in a case and after every step call in a
+  <a class="text-accent" href="/framework/flows/">flow</a>. It keeps the failure attached to the component
+  that produced it while still surfacing it at every level above, so the controller can show which step
+  of which flow of which case of which test failed - rather than a single stack trace at the top.</p>
+
+<h3 id="handle-errors-signature">Signature</h3>
+{{ codeblock.block('def handle_errors(self, source_result, target_result) -> bool') }}
+
+<table>
+  <thead>
+    <tr>
+      <th>Argument</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>source_result</code></td>
+      <td>The result just produced by the nested component - a flow result in a case, a step result in a flow.</td>
+    </tr>
+    <tr>
+      <td><code>target_result</code></td>
+      <td>The result of the caller, which receives the outcome - <code>case.result</code> in a case, <code>self.result</code> in a flow.</td>
+    </tr>
+    <tr>
+      <td>Returns</td>
+      <td><code>True</code> when the source status is <code class="status-fail">FAIL</code> or <code class="status-error">ERROR</code>, meaning the caller should stop; <code>False</code> on <code class="status-pass">PASS</code>, including a pass with a warning.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>It copies four fields from source to target: <code>status</code>, <code class="status-fail">failure_description</code>,
+  <code class="status-error">error_description</code> and <code class="status-warning">warning_description</code>. The copy is unconditional - the last
+  call wins. That is harmless for failures, because the idiom returns on the first one, but it means a
+  warning carried by an earlier flow is overwritten when a later flow passes cleanly. Read
+  <code class="status-warning">warning_description</code> off the earlier result before the next call if you need to keep it.</p>
+
+<p><code>handle_errors</code> is available on <code>OrcraftTest</code> and <code>OrcraftTestFlow</code>
+  - the two components that call something beneath them. A step runs nothing below it, and groups and
+  suites aggregate their children's results on their own, so none of them carries the method.</p>
