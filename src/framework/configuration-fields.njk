@@ -95,6 +95,14 @@ description: "Reference for OrcraftConfigField: every config field type and the 
   </tbody>
 </table>
 
+<div class="docs-callout docs-callout--warning">
+  <span class="docs-callout__label">Override carefully</span>
+  <p>Redeclare a field with the same <code>OrcraftConfigField</code> type and a new default -
+    <code>name = OrcraftConfigField.Text(default="My Test")</code>. A bare assignment such as
+    <code>name = "My Test"</code> is not an override: it shadows the field with a plain attribute, and the
+    GUI, the log table and <code>required</code> validation no longer see it.</p>
+</div>
+
 <h3 id="inherited-gui">Overridable in code or GUI</h3>
 <p>Set in your config class, and changeable again from the run configuration panel before a run.</p>
 
@@ -147,6 +155,13 @@ description: "Reference for OrcraftConfigField: every config field type and the 
   </tbody>
 </table>
 
+<div class="docs-callout docs-callout--warning">
+  <span class="docs-callout__label">Override carefully</span>
+  <p>Same rule as above: redeclare with the same <code>OrcraftConfigField</code> type and a new default,
+    never a bare value. The default you set here is what the run configuration panel shows until someone
+    changes it there.</p>
+</div>
+
 <h3 id="inherited-reserved">Reserved</h3>
 <p>Written by the framework while a run is in progress. A config that redeclares one of these changes
   how nesting, timing or log layout behaves.</p>
@@ -156,7 +171,6 @@ description: "Reference for OrcraftConfigField: every config field type and the 
     <tr>
       <th>Field</th>
       <th>Declared on</th>
-      <th>Default</th>
       <th>Purpose</th>
     </tr>
   </thead>
@@ -164,31 +178,26 @@ description: "Reference for OrcraftConfigField: every config field type and the 
     <tr>
       <td><code>target_endpoint</code></td>
       <td>Step</td>
-      <td><code>""</code></td>
       <td>The endpoint the step is dispatched to. Set by the flow that runs the step.</td>
     </tr>
     <tr>
       <td><code>expect_endpoint_disconnect</code></td>
       <td>Step</td>
-      <td><code>False</code></td>
       <td>Marks a step that is meant to take its endpoint offline. Set by the flow through <code>run_step</code>.</td>
     </tr>
     <tr>
       <td><code>start_time</code></td>
       <td>Every component</td>
-      <td><code>""</code></td>
       <td>When the run started, stamped at run time.</td>
     </tr>
     <tr>
       <td><code>log_tab</code></td>
       <td>Every component</td>
-      <td><code>0; 4 on a flow, 5 on a step</code></td>
-      <td>Indent level of the component's log block, so nested components indent beneath their parent.</td>
+      <td>Log indentation. Assigned by the framework at every level - it cannot be overridden, only collided with.</td>
     </tr>
     <tr>
       <td><code>log_title_color</code>, <code>log_title_bg_color</code></td>
       <td>Every component</td>
-      <td><code>palette</code></td>
       <td>Palette plumbing for the log banners.</td>
     </tr>
   </tbody>
@@ -196,7 +205,7 @@ description: "Reference for OrcraftConfigField: every config field type and the 
 
 <div class="docs-callout docs-callout--caution">
   <span class="docs-callout__label">Do not redeclare</span>
-  <p>A field of your own under any of these names replaces the framework's. The framework keeps writing
+  <p>A field of your own under one of these names replaces the framework's. The framework keeps writing
     to the name, but through your definition - and the log indentation, the run timestamps and the
     endpoint a step is dispatched to silently stop meaning what the controller expects.</p>
 </div>

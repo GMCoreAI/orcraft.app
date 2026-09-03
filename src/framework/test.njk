@@ -71,10 +71,13 @@ if __name__ == "__main__":
   Overriding one, as <code>name</code> and <code>description</code> are overridden above, replaces its
   default without changing what it is for.</p>
 
+<h3 id="config-code">Overridable in code</h3>
+<p>Set in your config class, fixed for the run.</p>
+
 <table>
   <thead>
     <tr>
-      <th>Inherited field</th>
+      <th>Field</th>
       <th>Default</th>
       <th>Meaning</th>
     </tr>
@@ -95,6 +98,39 @@ if __name__ == "__main__":
       <td><code>""</code></td>
       <td>Test version, recorded with the results.</td>
     </tr>
+    <tr>
+      <td><code>palette</code></td>
+      <td><code>"gray"</code></td>
+      <td>Log color palette applied to the test and everything it runs: <code>default</code>, <code>classic</code>, <code>gray</code> or <code>brown</code>.</td>
+    </tr>
+    <tr>
+      <td><code>log_orientation</code></td>
+      <td><code>HORIZONTAL</code></td>
+      <td>Orientation of the logged config and result tables.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="docs-callout docs-callout--warning">
+  <span class="docs-callout__label">Override carefully</span>
+  <p>Redeclare a field with the same <code>OrcraftConfigField</code> type and a new default -
+    <code>name = OrcraftConfigField.Text(default="My Test")</code>. A bare assignment such as
+    <code>name = "My Test"</code> is not an override: it shadows the field with a plain attribute, and the
+    GUI, the log table and <code>required</code> validation no longer see it.</p>
+</div>
+
+<h3 id="config-gui">Overridable in code or GUI</h3>
+<p>Set in your config class, and changeable again from the run configuration panel before a run.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Default</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
     <tr>
       <td><code>test_endpoint</code></td>
       <td><code>"localhost"</code></td>
@@ -125,33 +161,16 @@ if __name__ == "__main__":
       <td><code>"on_mismatch"</code></td>
       <td>Whether the endpoint application is updated before the run.</td>
     </tr>
-    <tr>
-      <td><code>palette</code></td>
-      <td><code>"gray"</code></td>
-      <td>Log color palette applied to the test and everything it runs: <code>default</code>, <code>classic</code>, <code>gray</code> or <code>brown</code>.</td>
-    </tr>
-    <tr>
-      <td><code>log_orientation</code></td>
-      <td><code>HORIZONTAL</code></td>
-      <td>Orientation of the logged config and result tables.</td>
-    </tr>
-    <tr>
-      <td><code>start_time</code></td>
-      <td><code>""</code></td>
-      <td>When the run started. Stamped by the framework at run time - leave it alone.</td>
-    </tr>
-    <tr>
-      <td><code>log_tab</code></td>
-      <td><code>0</code></td>
-      <td>Indent level of this component's log block. Internal: the framework sets it so nested components indent beneath their parent.</td>
-    </tr>
-    <tr>
-      <td><code>log_title_color</code>, <code>log_title_bg_color</code></td>
-      <td>palette</td>
-      <td>Palette plumbing for the log banners. Not user-facing.</td>
-    </tr>
   </tbody>
 </table>
+
+<div class="docs-callout docs-callout--warning">
+  <span class="docs-callout__label">Override carefully</span>
+  <p>Same rule as above: redeclare with the same <code>OrcraftConfigField</code> type and a new default,
+    never a bare value. The default you set here is what the run configuration panel shows until someone
+    changes it there.</p>
+</div>
+
 
 <p>Fields sitting at their default - a single cycle, an empty matrix - are hidden from the run panel
   rather than shown as clutter, and the endpoint policy fields only appear for a test that actually uses
@@ -207,68 +226,124 @@ if __name__ == "__main__":
   </tbody>
 </table>
 
+<h3 id="config-reserved">Reserved</h3>
+<p>Written by the framework while a run is in progress.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>start_time</code></td>
+      <td>When the run started. Stamped by the framework at run time - leave it alone.</td>
+    </tr>
+    <tr>
+      <td><code>log_tab</code></td>
+      <td>Log indentation. Assigned by the framework at every level - it cannot be overridden, only collided with.</td>
+    </tr>
+    <tr>
+      <td><code>log_title_color</code>, <code>log_title_bg_color</code></td>
+      <td>Palette plumbing for the log banners. Not user-facing.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="docs-callout docs-callout--caution">
+  <span class="docs-callout__label">Do not redeclare</span>
+  <p>A field of your own under one of these names replaces the framework's. The framework keeps writing
+    to the name, but through your definition - and the log indentation, the run timestamps and the
+    endpoint a step is dispatched to silently stop meaning what the controller expects.</p>
+</div>
+
 <h2 id="result-class">Result class</h2>
 <p>The result declares what the test reports. Its fields come from the
   <a class="text-accent" href="/framework/result-fields/"><code>OrcraftResultField</code></a>
   namespace, and like the config it starts out with fields it did not declare. Unlike the config, most of
   these are written by the framework, not by you:</p>
 
+<p class="docs-legend"><span class="mark mark--user">{% icon "check" %}</span> overridable by user (optional)
+  &nbsp;&middot;&nbsp; <span class="mark mark--framework">{% icon "cpu" %}</span> written by the framework, may still be set directly
+  &nbsp;&middot;&nbsp; <span class="mark mark--reserved">{% icon "shield-lock" %}</span> reserved</p>
+
 <table>
   <thead>
     <tr>
       <th>Inherited field</th>
-      <th>Written by</th>
+      <th class="mark-head">Overridden by user (optional)</th>
+      <th class="mark-head">Reserved</th>
       <th>Meaning</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td><code>status</code></td>
-      <td>Framework, via checkpoints and descriptions</td>
+      <td class="docs-table__number mark mark--user">{% icon "check" %}</td>
+      <td class="docs-table__number mark mark--framework">{% icon "cpu" %}</td>
       <td><code class="status-pass">PASS</code>, <code class="status-fail">FAIL</code> or <code class="status-error">ERROR</code>. Assign it directly only for <code class="status-error">ERROR</code> - see <a class="text-accent" href="/framework/statuses/#setting-a-status">Setting a status</a>.</td>
     </tr>
     <tr>
       <td><code class="status-fail">failure_description</code></td>
-      <td>You, or a failing checkpoint</td>
+      <td class="docs-table__number mark mark--user">{% icon "check" %}</td>
+      <td class="docs-table__number mark mark--framework">{% icon "cpu" %}</td>
       <td>Why the system under test was judged incorrect. Setting it moves a passing result to <code class="status-fail">FAIL</code>.</td>
     </tr>
     <tr>
       <td><code class="status-error">error_description</code></td>
-      <td>You, or the framework on an uncaught exception</td>
+      <td class="docs-table__number mark mark--user">{% icon "check" %}</td>
+      <td class="docs-table__number mark mark--framework">{% icon "cpu" %}</td>
       <td>Why the test could not complete.</td>
     </tr>
     <tr>
       <td><code class="status-warning">warning_description</code></td>
-      <td>You</td>
+      <td class="docs-table__number mark mark--user">{% icon "check" %}</td>
+      <td class="docs-table__number mark mark--none">&ndash;</td>
       <td>Something worth flagging that does not change the status.</td>
     </tr>
     <tr>
       <td><code>finish_time</code></td>
-      <td>Framework</td>
+      <td class="docs-table__number mark mark--none">&ndash;</td>
+      <td class="docs-table__number mark mark--reserved">{% icon "shield-lock" %}</td>
       <td>When the component finished.</td>
     </tr>
     <tr>
       <td><code>elapsed_time</code></td>
-      <td>Framework</td>
+      <td class="docs-table__number mark mark--none">&ndash;</td>
+      <td class="docs-table__number mark mark--reserved">{% icon "shield-lock" %}</td>
       <td>How long it took.</td>
     </tr>
     <tr>
       <td><code>total_cases</code>, <code class="status-pass">passed_cases</code>, <code class="status-fail">failed_cases</code>, <code class="status-error">error_cases</code>, <code class="status-warning">warning_cases</code></td>
-      <td>Framework</td>
+      <td class="docs-table__number mark mark--none">&ndash;</td>
+      <td class="docs-table__number mark mark--reserved">{% icon "shield-lock" %}</td>
       <td>Per-case counters, summed from the cases that ran and carried up into the group and suite results.</td>
     </tr>
     <tr>
       <td><code>log_orientation</code></td>
-      <td>You, by overriding the default</td>
+      <td class="docs-table__number mark mark--user">{% icon "check" %}</td>
+      <td class="docs-table__number mark mark--none">&ndash;</td>
       <td>Whether the result table is logged horizontally or vertically. Test results default to vertical because the counters make a horizontal row too wide.</td>
     </tr>
     <tr>
       <td><code>log_title_color</code>, <code>log_title_bg_color</code></td>
-      <td>Framework</td>
+      <td class="docs-table__number mark mark--none">&ndash;</td>
+      <td class="docs-table__number mark mark--reserved">{% icon "shield-lock" %}</td>
       <td>Palette plumbing for the log banners. Not user-facing.</td>
     </tr>
   </tbody>
 </table>
+
+<div class="docs-callout docs-callout--warning">
+  <span class="docs-callout__label">Override carefully</span>
+  <p>Fields you may set are assigned at run time - <code>case.result.warning_description = "..."</code> -
+    not redeclared. Redeclare only to change a default, and then with the same
+    <code>OrcraftResultField</code> type:
+    <code>log_orientation = OrcraftResultField.Format(default=OrcraftResultField.LogTableOrientation.VERTICAL)</code>.
+    A bare value on the class shadows the field, and the log table and the controller no longer see it.</p>
+</div>
 
 <div class="docs-callout docs-callout--caution">
   <span class="docs-callout__label">Do not redeclare</span>

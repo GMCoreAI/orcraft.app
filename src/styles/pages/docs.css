@@ -96,6 +96,11 @@
   text-align: center;
 }
 
+.docs__article .docs-legend {
+  margin-bottom: var(--space-2);
+  font-size: var(--font-size-sm);
+}
+
 .docs__article .mark--user {
   color: var(--color-success);
 }
@@ -187,6 +192,17 @@
   color: var(--color-danger);
   background: color-mix(in srgb, var(--color-danger) 12%, transparent);
   border: 1px solid color-mix(in srgb, var(--color-danger) 35%, transparent);
+}
+
+.docs__article .docs-callout--warning {
+  border-left-color: var(--color-warning);
+  background: color-mix(in srgb, var(--color-warning) 6%, var(--color-surface));
+}
+
+.docs__article .docs-callout--warning .docs-callout__label {
+  color: var(--color-warning);
+  background: color-mix(in srgb, var(--color-warning) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-warning) 35%, transparent);
 }
 
 .docs__article h2 {

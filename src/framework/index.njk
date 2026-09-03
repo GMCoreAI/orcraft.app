@@ -69,9 +69,10 @@ description: "The Orcraft test framework: suites, groups, tests, cases, flows an
 
 <p>Every level is optional above and below the one you need. A single test file with a <code>main()</code>
   runs on its own without a group or a suite, and a case that only needs a few lines of Python does not
-  have to be split into flows and steps at all. That is why the pages in this section are ordered the way
-  a suite is actually built up: start with a <a class="text-accent" href="/framework/test/">test</a>, and
-  add the surrounding structure only where it earns its place.</p>
+  have to be split into flows and steps at all. The pages in this section follow that order of
+  dependence: the building blocks first - configuration fields, statuses and result fields - then the
+  <a class="text-accent" href="/framework/test/">test</a> that uses them, and outward from there to
+  steps, flows, endpoints, groups and suites.</p>
 
 <h2 id="package">Orcraft package</h2>
 <p>The Orcraft test framework is the plain-Python library your tests are written against. It ships with

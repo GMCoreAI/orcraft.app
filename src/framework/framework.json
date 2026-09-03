@@ -4,15 +4,15 @@
   "docsBase": "/framework/",
   "docsItems": [
     { "label": "Orcraft framework overview", "slug": "" },
-    { "label": "Orcraft Test", "slug": "test/" },
     { "label": "Orcraft Configuration Fields", "slug": "configuration-fields/" },
     { "label": "Orcraft Statuses", "slug": "statuses/" },
     { "label": "Orcraft Result Fields", "slug": "result-fields/" },
+    { "label": "Orcraft Test", "slug": "test/" },
     { "label": "Orcraft Matrix", "slug": "matrix/" },
-    { "label": "Orcraft Lifecycle Hooks", "slug": "lifecycle-hooks/" },
     { "label": "Orcraft Test Step", "slug": "steps/" },
     { "label": "Orcraft Test Flow", "slug": "flows/" },
     { "label": "Orcraft Endpoints", "slug": "endpoints/" },
+    { "label": "Orcraft Lifecycle Hooks", "slug": "lifecycle-hooks/" },
     { "label": "Orcraft Test Group", "slug": "groups/" },
     { "label": "Orcraft Test Suite", "slug": "suites/" },
     { "label": "Orcraft Logger", "slug": "logging/" }

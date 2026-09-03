@@ -22,11 +22,11 @@ description: "OrcraftStatus, checkpoints, warnings and how a failure travels up 
   <tbody>
     <tr>
       <td><code class="status-pass">PASS</code></td>
-      <td>The component ran and every expected value matched the actual one.</td>
+      <td>The component ran and everything it checked came out as expected.</td>
     </tr>
     <tr>
       <td><code class="status-fail">FAIL</code></td>
-      <td>The component ran and found a mismatch: an expected value did not match the actual one. This is the component doing its job - a real finding about the system under test.</td>
+      <td>The component ran and something it checked did not come out as expected - a value, a timing, a state, whatever the test verifies; a returned value differing from the expected one is the common case. This is the component doing its job: a real finding about the system under test.</td>
     </tr>
     <tr>
       <td><code class="status-error">ERROR</code></td>
@@ -36,8 +36,8 @@ description: "OrcraftStatus, checkpoints, warnings and how a failure travels up 
 </table>
 
 <p>The distinction between <code class="status-fail">FAIL</code> and <code class="status-error">ERROR</code> is the one that matters in practice.
-  <code class="status-fail">FAIL</code> is an <em>expected</em> kind of failure: the component compared expected against actual,
-  they differed, and it reported that - the system under test is wrong. <code class="status-error">ERROR</code> is an
+  <code class="status-fail">FAIL</code> is an <em>expected</em> kind of failure: the component compared what it expected with what
+  it observed, they differed, and it reported that - the system under test is wrong. <code class="status-error">ERROR</code> is an
   <em>unexpected</em> failure: something raised - a missing file, a dead connection, a bug in the test
   itself - before a comparison could be made, so nothing has been established about the system under
   test either way. A suite where half the results are errors has an infrastructure problem, not a
@@ -47,9 +47,6 @@ description: "OrcraftStatus, checkpoints, warnings and how a failure travels up 
   assignment to one of the descriptions, or by an uncaught exception, which is what produces
   <code class="status-error">ERROR</code>.</p>
 
-<p><code>OrcraftStatus</code> also declares an <code>ABORT</code> member. Nothing in the framework or the
-  controller produces it, so a result never carries it; a run halted from the controller is shown there
-  as stopped rather than reported through a component status.</p>
 
 <h3 id="setting-a-status">Setting a status</h3>
 <p>A test rarely assigns <code>status</code> directly. Most of the time it states a finding and lets the

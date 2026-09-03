@@ -159,6 +159,22 @@ class MyProduceStep(OrcraftTestStep):
   </tbody>
 </table>
 
+<div class="docs-callout docs-callout--warning">
+  <span class="docs-callout__label">Override carefully</span>
+  <p>Fields you may set are assigned at run time - <code>case.result.warning_description = "..."</code> -
+    not redeclared. Redeclare only to change a default, and then with the same
+    <code>OrcraftResultField</code> type:
+    <code>log_orientation = OrcraftResultField.Format(default=OrcraftResultField.LogTableOrientation.VERTICAL)</code>.
+    A bare value on the class shadows the field, and the log table and the controller no longer see it.</p>
+</div>
+
+<div class="docs-callout docs-callout--caution">
+  <span class="docs-callout__label">Do not redeclare</span>
+  <p>A field of your own under one of the reserved names replaces the framework's. The framework keeps
+    writing to the name, but through your definition - and status comparisons, the counters rolled up
+    from below, and the controller's result columns silently break.</p>
+</div>
+
 <h2 id="aggregation">Aggregated counters</h2>
 <p>Each level above a case counts what happened beneath it, so a summary is available without any code
   keeping score:</p>
