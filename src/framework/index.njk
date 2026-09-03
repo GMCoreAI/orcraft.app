@@ -4,10 +4,18 @@ key: framework
 description: "The Orcraft test framework: suites, groups, tests, cases, flows and steps."
 ---
 {% import "partials/code-block.njk" as codeblock %}
+{% import "partials/zoomable-image.njk" as media %}
 <h1>Orcraft framework overview</h1>
+{{ media.zoomableImage("/assets/images/Diagrams/Orcraft-Framework.png", "Orcraft component model diagram: the structural hierarchy of suite, group, test and case on the left, the procedural hierarchy of case body, flow and step on the right, and the config, component and result pattern every level shares along the bottom", "large") }}
+
 <p>The Orcraft test framework is the plain-Python library your tests are written against. It ships with
   the controller and is imported from a single package:</p>
-{{ codeblock.block('from orcraft import OrcraftTest, OrcraftTestConfig, OrcraftTestCase, OrcraftConfigField') }}
+{{ codeblock.block('from orcraft import (
+	OrcraftTest,
+	OrcraftTestConfig,
+	OrcraftTestCase,
+	OrcraftConfigField,
+)') }}
 
 <p>There is no domain-specific language, no runner conventions and no decorators to memorize. A test is a
   Python class that inherits from a framework base class, declares its configuration as class attributes,

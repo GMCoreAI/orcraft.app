@@ -90,12 +90,12 @@ if __name__ == "__main__":
     <tr>
       <td><code>name</code></td>
       <td><code>"Test Group"</code></td>
-      <td>Display name in the GUI, CLI and logs.</td>
+      <td>Display name in the GUI, CLI and logs. Not editable from the GUI.</td>
     </tr>
     <tr>
       <td><code>description</code></td>
       <td><code>""</code></td>
-      <td>Free text describing what the group covers.</td>
+      <td>Free text describing what the group does. Not editable from the GUI.</td>
     </tr>
     <tr>
       <td><code>version</code></td>
@@ -120,10 +120,104 @@ if __name__ == "__main__":
     <tr>
       <td><code>update_endpoint_app</code></td>
       <td><code>"defer"</code></td>
-      <td>Whether the endpoint application is updated before the run.</td>
+      <td>Whether the endpoint application is updated before the run. <code>defer</code> leaves the decision to the level below.</td>
+    </tr>
+    <tr>
+      <td><code>log_orientation</code></td>
+      <td><code>HORIZONTAL</code></td>
+      <td>Orientation of the logged config table.</td>
+    </tr>
+    <tr>
+      <td><code>start_time</code></td>
+      <td><code>""</code></td>
+      <td>When the run started. Stamped by the framework at run time - leave it alone.</td>
+    </tr>
+    <tr>
+      <td><code>log_tab</code></td>
+      <td><code>0</code></td>
+      <td>Indent level of this component's log block. Internal: the framework sets it so nested components indent beneath their parent.</td>
+    </tr>
+    <tr>
+      <td><code>log_title_color</code>, <code>log_title_bg_color</code></td>
+      <td>palette</td>
+      <td>Palette plumbing for the log banners. Not user-facing.</td>
     </tr>
   </tbody>
 </table>
+
+<h2 id="group-result-fields">Group result fields</h2>
+<p>A group has no body, so its result is written entirely by the framework as its tests complete. An
+  empty <code>OrcraftTestGroupResult</code> subclass therefore reports everything a group needs;
+  declaring fields of your own is for the rare group that computes something across its tests.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Inherited field</th>
+      <th>Written by</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>status</code></td>
+      <td>Framework, from the tests beneath</td>
+      <td><code>PASS</code>, <code>FAIL</code>, <code>ERROR</code> or <code>ABORT</code>, derived from the children.</td>
+    </tr>
+    <tr>
+      <td><code>failure_description</code></td>
+      <td>Framework, rolled up from the tests</td>
+      <td>Why the system under test was judged incorrect. Setting it moves a passing result to <code>FAIL</code>.</td>
+    </tr>
+    <tr>
+      <td><code>error_description</code></td>
+      <td>Framework, rolled up from the tests</td>
+      <td>Why the component could not complete.</td>
+    </tr>
+    <tr>
+      <td><code>warning_description</code></td>
+      <td>Framework, rolled up from the tests</td>
+      <td>Something worth flagging that does not change the status.</td>
+    </tr>
+    <tr>
+      <td><code>finish_time</code></td>
+      <td>Framework</td>
+      <td>When the component finished.</td>
+    </tr>
+    <tr>
+      <td><code>elapsed_time</code></td>
+      <td>Framework</td>
+      <td>How long it took.</td>
+    </tr>
+    <tr>
+      <td><code>log_orientation</code></td>
+      <td>You, by overriding the default</td>
+      <td>Whether the result table is logged horizontally or vertically. Defaults to vertical.</td>
+    </tr>
+    <tr>
+      <td><code>log_title_color</code>, <code>log_title_bg_color</code></td>
+      <td>Framework</td>
+      <td>Palette plumbing for the log banners. Not user-facing.</td>
+    </tr>
+    <tr>
+      <td><code>total_tests</code>, <code>passed_tests</code>, <code>failed_tests</code>, <code>error_tests</code>, <code>warning_tests</code></td>
+      <td>Framework</td>
+      <td>Test counters, summed from the tests that ran.</td>
+    </tr>
+    <tr>
+      <td><code>total_cases</code>, <code>passed_cases</code>, <code>failed_cases</code>, <code>error_cases</code>, <code>warning_cases</code></td>
+      <td>Framework</td>
+      <td>Case counters, summed from every case of every test in the group.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="docs-callout docs-callout--caution">
+  <span class="docs-callout__label">Do not redeclare</span>
+  <p>A field of your own under any of these names replaces the framework's. The framework keeps writing
+    to the name, but through your definition - and status comparisons, the counters the suite rolls up from this group, and the controller's result columns silently break. Only
+    <code>log_orientation</code> is meant to be overridden, and only to change its default.</p>
+</div>
 
 <h2 id="parallel">Parallel execution</h2>
 <p>With <code>parallel</code> left at its default, tests in a group may run concurrently, which is what

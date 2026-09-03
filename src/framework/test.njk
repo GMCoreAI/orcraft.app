@@ -83,7 +83,7 @@ if __name__ == "__main__":
     <tr>
       <td><code>name</code></td>
       <td><code>"Test"</code></td>
-      <td>Display name in the GUI, CLI and logs. Not editable from the GUI.</td>
+      <td>Display name in the GUI, CLI and logs. Not editable from the GUI. The framework prefixes it with <code>Test: </code> in the log.</td>
     </tr>
     <tr>
       <td><code>description</code></td>
@@ -126,9 +126,29 @@ if __name__ == "__main__":
       <td>Whether the endpoint application is updated before the run.</td>
     </tr>
     <tr>
+      <td><code>palette</code></td>
+      <td><code>"gray"</code></td>
+      <td>Log color palette applied to the test and everything it runs: <code>default</code>, <code>classic</code>, <code>gray</code> or <code>brown</code>.</td>
+    </tr>
+    <tr>
       <td><code>log_orientation</code></td>
       <td><code>HORIZONTAL</code></td>
       <td>Orientation of the logged config and result tables.</td>
+    </tr>
+    <tr>
+      <td><code>start_time</code></td>
+      <td><code>""</code></td>
+      <td>When the run started. Stamped by the framework at run time - leave it alone.</td>
+    </tr>
+    <tr>
+      <td><code>log_tab</code></td>
+      <td><code>0</code></td>
+      <td>Indent level of this component's log block. Internal: the framework sets it so nested components indent beneath their parent.</td>
+    </tr>
+    <tr>
+      <td><code>log_title_color</code>, <code>log_title_bg_color</code></td>
+      <td>palette</td>
+      <td>Palette plumbing for the log banners. Not user-facing.</td>
     </tr>
   </tbody>
 </table>

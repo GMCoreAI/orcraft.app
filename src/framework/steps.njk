@@ -68,8 +68,9 @@ class MyStep(OrcraftTestStep):
   unchanged.</p>
 
 <h2 id="config-fields">Step config fields</h2>
-<p>Beyond <code>name</code>, <code>description</code> and <code>log_orientation</code>, a step config
-  inherits two fields of its own:</p>
+<p>Every field a step config starts with, before you add your own. Only <code>target_endpoint</code> and
+  <code>expect_endpoint_disconnect</code> are specific to steps; the rest is the base every component
+  shares:</p>
 
 <table>
   <thead>
@@ -81,6 +82,16 @@ class MyStep(OrcraftTestStep):
   </thead>
   <tbody>
     <tr>
+      <td><code>name</code></td>
+      <td><code>"Step"</code></td>
+      <td>Display name in the GUI, CLI and logs. Not editable from the GUI. The framework prefixes it with <code>Step: </code> in the log.</td>
+    </tr>
+    <tr>
+      <td><code>description</code></td>
+      <td><code>""</code></td>
+      <td>Free text describing what the step does. Not editable from the GUI.</td>
+    </tr>
+    <tr>
       <td><code>target_endpoint</code></td>
       <td><code>""</code></td>
       <td>The endpoint the step is dispatched to. Set by the flow that runs it, not usually by hand.</td>
@@ -90,8 +101,93 @@ class MyStep(OrcraftTestStep):
       <td><code>False</code></td>
       <td>Marks a step that is <em>supposed</em> to take its endpoint offline - a reboot, a service restart - so the disconnection is not reported as an error.</td>
     </tr>
+    <tr>
+      <td><code>log_orientation</code></td>
+      <td><code>HORIZONTAL</code></td>
+      <td>Orientation of the logged config table.</td>
+    </tr>
+    <tr>
+      <td><code>start_time</code></td>
+      <td><code>""</code></td>
+      <td>When the run started. Stamped by the framework at run time - leave it alone.</td>
+    </tr>
+    <tr>
+      <td><code>log_tab</code></td>
+      <td><code>5</code></td>
+      <td>Indent level of this component's log block. Internal: the framework sets it so nested components indent beneath their parent.</td>
+    </tr>
+    <tr>
+      <td><code>log_title_color</code>, <code>log_title_bg_color</code></td>
+      <td>palette</td>
+      <td>Palette plumbing for the log banners. Not user-facing.</td>
+    </tr>
   </tbody>
 </table>
+
+<h2 id="step-result-fields">Step result fields</h2>
+<p>A step creates its result inside <code>_run_step</code> and returns it. The fields you declare on it
+  come from the <a class="text-accent" href="/framework/results-and-statuses/"><code>OrcraftResultField</code></a>
+  namespace; the rest it inherits from <code>OrcraftTestStepResult</code>, and most of those are written
+  by the framework rather than by you:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Inherited field</th>
+      <th>Written by</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>status</code></td>
+      <td>Framework, via checkpoints and descriptions</td>
+      <td><code>PASS</code>, <code>FAIL</code>, <code>ERROR</code> or <code>ABORT</code>. Assign it directly only for <code>ERROR</code> - see <a class="text-accent" href="/framework/results-and-statuses/#setting-a-status">Setting a status</a>.</td>
+    </tr>
+    <tr>
+      <td><code>failure_description</code></td>
+      <td>You, or a failing checkpoint</td>
+      <td>Why the system under test was judged incorrect. Setting it moves a passing result to <code>FAIL</code>.</td>
+    </tr>
+    <tr>
+      <td><code>error_description</code></td>
+      <td>You, or the framework on an uncaught exception</td>
+      <td>Why the component could not complete.</td>
+    </tr>
+    <tr>
+      <td><code>warning_description</code></td>
+      <td>You</td>
+      <td>Something worth flagging that does not change the status.</td>
+    </tr>
+    <tr>
+      <td><code>finish_time</code></td>
+      <td>Framework</td>
+      <td>When the component finished.</td>
+    </tr>
+    <tr>
+      <td><code>elapsed_time</code></td>
+      <td>Framework</td>
+      <td>How long it took.</td>
+    </tr>
+    <tr>
+      <td><code>log_orientation</code></td>
+      <td>You, by overriding the default</td>
+      <td>Whether the result table is logged horizontally or vertically. Defaults to horizontal.</td>
+    </tr>
+    <tr>
+      <td><code>log_title_color</code>, <code>log_title_bg_color</code></td>
+      <td>Framework</td>
+      <td>Palette plumbing for the log banners. Not user-facing.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="docs-callout docs-callout--caution">
+  <span class="docs-callout__label">Do not redeclare</span>
+  <p>A field of your own under any of these names replaces the framework's. The framework keeps writing
+    to the name, but through your definition - and status comparisons, the calling flow's <code>handle_errors</code>, and the controller's result columns silently break. Only
+    <code>log_orientation</code> is meant to be overridden, and only to change its default.</p>
+</div>
 
 <h2 id="granularity">How small is a step</h2>
 <p>A useful step is one action that can succeed or fail on its own terms: delete a file, launch a process,

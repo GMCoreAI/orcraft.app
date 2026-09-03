@@ -126,6 +126,117 @@ class MyFlow(OrcraftTestFlow):
   the first statement - that costs nothing when followed and quietly degrades error output when it is
   not.</p>
 
+<h2 id="flow-config-fields">Flow config fields</h2>
+<p>A flow config adds nothing of its own to the base set - its inputs are whatever fields you declare,
+  such as <code>app_folder</code> and <code>iterations</code> on <code>MyFlowConfig</code> above. What it
+  starts with:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Default</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>name</code></td>
+      <td><code>"Flow"</code></td>
+      <td>Display name in the GUI, CLI and logs. Not editable from the GUI. The framework prefixes it with <code>Flow: </code> in the log.</td>
+    </tr>
+    <tr>
+      <td><code>description</code></td>
+      <td><code>""</code></td>
+      <td>Free text describing what the flow does. Not editable from the GUI.</td>
+    </tr>
+    <tr>
+      <td><code>log_orientation</code></td>
+      <td><code>HORIZONTAL</code></td>
+      <td>Orientation of the logged config table.</td>
+    </tr>
+    <tr>
+      <td><code>start_time</code></td>
+      <td><code>""</code></td>
+      <td>When the run started. Stamped by the framework at run time - leave it alone.</td>
+    </tr>
+    <tr>
+      <td><code>log_tab</code></td>
+      <td><code>4</code></td>
+      <td>Indent level of this component's log block. Internal: the framework sets it so nested components indent beneath their parent.</td>
+    </tr>
+    <tr>
+      <td><code>log_title_color</code>, <code>log_title_bg_color</code></td>
+      <td>palette</td>
+      <td>Palette plumbing for the log banners. Not user-facing.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="flow-result-fields">Flow result fields</h2>
+<p>Whether the framework builds it from <code>result_type</code> or the body assigns it, a flow result
+  starts with fields it did not declare. Beyond anything you add, <code>OrcraftTestFlowResult</code>
+  carries:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Inherited field</th>
+      <th>Written by</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>status</code></td>
+      <td>Framework, via checkpoints and descriptions</td>
+      <td><code>PASS</code>, <code>FAIL</code>, <code>ERROR</code> or <code>ABORT</code>. Assign it directly only for <code>ERROR</code> - see <a class="text-accent" href="/framework/results-and-statuses/#setting-a-status">Setting a status</a>.</td>
+    </tr>
+    <tr>
+      <td><code>failure_description</code></td>
+      <td>You, or a failing checkpoint</td>
+      <td>Why the system under test was judged incorrect. Setting it moves a passing result to <code>FAIL</code>.</td>
+    </tr>
+    <tr>
+      <td><code>error_description</code></td>
+      <td>You, or the framework on an uncaught exception</td>
+      <td>Why the component could not complete.</td>
+    </tr>
+    <tr>
+      <td><code>warning_description</code></td>
+      <td>You</td>
+      <td>Something worth flagging that does not change the status.</td>
+    </tr>
+    <tr>
+      <td><code>finish_time</code></td>
+      <td>Framework</td>
+      <td>When the component finished.</td>
+    </tr>
+    <tr>
+      <td><code>elapsed_time</code></td>
+      <td>Framework</td>
+      <td>How long it took.</td>
+    </tr>
+    <tr>
+      <td><code>log_orientation</code></td>
+      <td>You, by overriding the default</td>
+      <td>Whether the result table is logged horizontally or vertically. Defaults to horizontal.</td>
+    </tr>
+    <tr>
+      <td><code>log_title_color</code>, <code>log_title_bg_color</code></td>
+      <td>Framework</td>
+      <td>Palette plumbing for the log banners. Not user-facing.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="docs-callout docs-callout--caution">
+  <span class="docs-callout__label">Do not redeclare</span>
+  <p>A field of your own under any of these names replaces the framework's. The framework keeps writing
+    to the name, but through your definition - and status comparisons, the case's <code>handle_errors</code>, and the controller's result columns silently break. Only
+    <code>log_orientation</code> is meant to be overridden, and only to change its default.</p>
+</div>
+
 <h2 id="run-step">Running steps</h2>
 <p><code>run_step</code> takes a step class, keyword values for that step's config fields, and optionally
   the endpoint to run it on:</p>
