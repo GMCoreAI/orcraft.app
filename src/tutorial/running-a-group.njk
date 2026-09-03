@@ -26,7 +26,8 @@ description: "Configure and run every test in a test group."
 <p>This is still one group run, but every test keeps its own fields, cases and planned values. Move through the
   test list to configure each one before starting the run. The table provides a quick overview of all test
   values, while the editor below it lets us configure the selected test.</p>
-<p><strong>All action buttons at the bottom now apply to the entire group.</strong> For example,
+<p><strong>All action buttons at the bottom now apply to the entire group</strong> - this is the
+  <a class="text-accent" href="/framework/groups/#why-group">purpose of a group</a>. For example,
   <strong class="text-accent">Update Plan</strong> saves the configuration of every child test, and
   <strong>Reset To Defaults</strong> resets every child test - not only the test currently selected in the editor.
   The same group-wide scope applies to <strong>Export for CI</strong> and <strong>Run</strong>. Selecting a child in
@@ -103,7 +104,8 @@ description: "Configure and run every test in a test group."
 <p>Select <strong>Yes</strong> to continue. Orcraft validates every selected test before the run begins. If a
   required value is missing, the Missing Arguments dialog identifies the test and field that still need
   attention; return to that test in the configuration tree, set the value and run again.</p>
-<p>Once validation passes, Orcraft creates a run for every child test and starts all nine in parallel. Their test
+<p>Once validation passes, Orcraft creates a run for every child test and starts all nine
+  <a class="text-accent" href="/framework/groups/#parallel">in parallel</a>. Their test
   run rows appear beneath the group, with live progress in the Status column and a <strong>Running 9</strong>
   summary above the tree:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/running-a-group/tests-started-running.png", "All nine Basic Configuration Parameters child test runs executing in parallel with live progress", "large") }}
@@ -123,7 +125,8 @@ description: "Configure and run every test in a test group."
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/running-a-group/right-clicking-group-details.png", "Details action in the context menu of the completed Basic Configuration Parameters group", "large") }}
 <p>The Details dialog brings the group configuration and child results together. On the left, each test compares
   its default, planned and run values. On the right, the results tree lists every test and cycle with its
-  endpoint, status, timing and controller version, while the summary reports aggregate counts and progress:</p>
+  endpoint, status, timing and controller version, while the summary reports
+  <a class="text-accent" href="/framework/groups/#group-result-fields">aggregate counts</a> and progress:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/running-a-group/group-details-view.png", "Basic Configuration Parameters Details dialog showing test configurations, aggregate counts and the test and cycle result hierarchy", "large") }}
 <p>This group contains one case and one cycle per test, so the hierarchy is still simple. The Details view becomes
   more useful later in the tutorial, when runs include multiple cases, flows and steps that can be inspected at

@@ -11,7 +11,8 @@ description: "Run the Hello World test from the controller's GUI and from the CL
   started</a> guide already walked through click by click.</p>
 
 <h2 id="running-from-cli">Running from CLI</h2>
-<p>The test's <code>main</code> function makes it directly runnable as a script - from the test's own directory:</p>
+<p>The test's <code>main</code> function makes it <a class="text-accent" href="/framework/test/#standalone">directly runnable
+  as a script</a> - from the test's own directory:</p>
 {{ cmd.copyCommand("cd orcraft-test-suite-tutorial/test_group_intro/test_hello_world") }}
 {{ cmd.copyCommand("python test_hello_world.py") }}
 <h3 id="ansi-output">ANSI output</h3>
@@ -21,11 +22,13 @@ description: "Run the Hello World test from the controller's GUI and from the CL
   and <code>description</code> fields set on
   <a class="text-accent" href="/tutorial/hello-world-test-structure/#config-class">TestHelloWorldConfig</a>
   earlier. The rest of the output -
-  timing, the configuration table, the pass/fail result - is the framework at work: the test itself only
+  timing, the <a class="text-accent" href="/framework/configuration-fields/">configuration table</a>, the
+  <a class="text-accent" href="/framework/statuses/#statuses">pass/fail result</a> - is the framework at work: the test itself only
   logged one line, and the framework did everything else. Each of these built-in pieces is covered in its own
   place, later in this tutorial and in the <a class="text-accent" href="/framework/">Framework</a> section.</p>
 <h3 id="log-files">Log files</h3>
-<p>This same output is also saved alongside the test, in a <code>Logs</code> folder created next to it:</p>
+<p>This same output is also <a class="text-accent" href="/framework/logging/#log-files">saved alongside the test</a>, in a
+  <code>Logs</code> folder created next to it:</p>
 {{ cmd.copyCommand("cd Logs") }}
 {{ cmd.copyCommand("ls") }}
 {% ansiOutput "hello-world-logs-dir.txt" %}

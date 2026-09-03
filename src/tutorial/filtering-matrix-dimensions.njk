@@ -15,7 +15,8 @@ description: "Narrow or widen the values a matrix dimension offers, and commit t
 	the matrix alone and unticks combinations that exist; a filter takes a value away, the matrix is rebuilt without
 	it, and the cases carrying that value are never generated at all. The two are told apart by what the panel
 	reports, and the difference is visible in a single number.</p>
-<p>Select the <strong>Matrix and Cases</strong> test. Its four dimensions produce
+<p>Select the <strong>Matrix and Cases</strong> test. Its four
+	<a class="text-accent" href="/framework/matrix/#dimensions">dimensions</a> produce
 	<code>3 × 2 × 2 × 2 = 24</code> cases, all of them selected:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/filtering-matrix-dimensions/cases-before-filtering.png", "Matrix and Cases run panel before filtering, reporting Total Cases 24 and a Test Cases group header reading 24 of 24", "large") }}
 <p>Two readings matter here. <strong>Total Cases: 24</strong> is what the run will execute, and the
@@ -109,12 +110,13 @@ description: "Narrow or widen the values a matrix dimension offers, and commit t
 
 <h2 id="filtering-and-selection">Filtering, selection and the plan</h2>
 <p>Three mechanisms narrow a run, and they sit at different levels:</p>
-<p><strong>The matrix</strong>, declared in the test source, defines which dimensions exist and which values they
-	can take. <strong>Dimension filters</strong> change the values a dimension offers for this configuration, so
+<p><a class="text-accent" href="/framework/matrix/#matrix"><strong>The matrix</strong></a>, declared in the test source,
+	defines which dimensions exist and which values they can take. <strong>Dimension filters</strong> change the values a dimension offers for this configuration, so
 	they change which cases are generated. <strong>Case selection</strong> leaves the generated cases in place and
 	chooses which of them run. Only <strong class="text-accent">Update Plan</strong> commits any of it, and until
 	then the execution tree keeps reporting the plan that is already there.</p>
-<p>A dimension can also be told to draw its values at random instead of listing them, which replaces the value list
-	rather than filtering it — while a random mode is active the list, <strong>Select All</strong> and
+<p>A dimension can also be told to
+	<a class="text-accent" href="/framework/matrix/#dimensions">draw its values at random</a> instead of listing them, which
+	replaces the value list rather than filtering it — while a random mode is active the list, <strong>Select All</strong> and
 	<strong>Clear All</strong> are disabled, and <strong>Add value</strong> is hidden. That is the subject of
 	<strong>Matrix Dimensions Randomization</strong>.</p>

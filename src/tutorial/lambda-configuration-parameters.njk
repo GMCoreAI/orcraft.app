@@ -34,9 +34,10 @@ description: "Use Lambda Selector parameters to fetch one or more configuration 
 <p>Source directory:</p>
 {{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_advanced_configuration_parameters/test_lambda_selector_parameter/") }}
 
-<p>A regular <code>OrcraftConfigField.Select</code> receives its choices through <code>options</code> when the
-	configuration class is defined. <code>OrcraftConfigField.SelectLambda</code> instead receives an
-	<code>options_lambda</code> callback that the controller invokes when options are requested. This mechanism
+<p>A regular <a class="text-accent" href="/framework/configuration-fields/#selection-types"><code>OrcraftConfigField.Select</code></a>
+	receives its choices through <code>options</code> when the configuration class is defined.
+	<a class="text-accent" href="/framework/configuration-fields/#selection-types"><code>OrcraftConfigField.SelectLambda</code></a>
+	instead receives an <code>options_lambda</code> callback that the controller invokes when options are requested. This mechanism
 	supports values obtained from external or changing sources.</p>
 
 <p>The test developer declares a <code>SelectLambda</code> field in the test's configuration class and assigns
@@ -50,7 +51,8 @@ description: "Use Lambda Selector parameters to fetch one or more configuration 
 	layout=OrcraftConfigField.Layout.NewRow,
 )') }}
 <p>The field starts empty. <code>input_placeholder</code> describes the optional filter accepted by the callback,
-  while <code>button_text</code> labels the action that invokes it. The lambda receives the text entered in the
+  while <code>button_text</code> labels the action that invokes it - both are listed with the other
+  <a class="text-accent" href="/framework/configuration-fields/#options">common config field options</a>. The lambda receives the text entered in the
   dialog and returns the values supplied by <code>fetch_maze_app_release_versions</code>.</p>
 
 <h3 id="versions-provider">Supplying dynamic options</h3>
@@ -113,7 +115,8 @@ def fetch_maze_app_release_versions(filter_text: str = "") -> tuple[str, ...]:
 
 <h3 id="defining-a-dynamic-multi-selector">Defining a dynamic multi-selector</h3>
 <p>The implementation differs from the single-value selector in two respects: the configuration uses
-	<code>MultiSelectLambda</code> with a tuple default, and the test iterates over the selected values.</p>
+	<a class="text-accent" href="/framework/configuration-fields/#selection-types"><code>MultiSelectLambda</code></a> with a tuple
+	default, and the test iterates over the selected values.</p>
 <p>Source directory:</p>
 {{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_advanced_configuration_parameters/test_lambda_multi_selector_parameter/") }}
 

@@ -16,11 +16,13 @@ description: "Run the Folder Parameter test from the CLI and from the controller
 <h3 id="required-field-unset-error">Required field unset error</h3>
 <p>Running the test file as-is fails, because the required folder was never set:</p>
 {{ cmd.copyCommand("python test_folder_parameter.py") }}
-<p>With no folder to run the executable from, the case ends in an <strong class="text-warning">ERROR</strong>
-  status, and the reason is carried into both the case's and the test's result tables:</p>
+<p>With no folder to run the executable from, the case ends in an
+  <a class="text-accent" href="/framework/statuses/#statuses"><strong class="text-warning">ERROR</strong></a>
+  status, and the reason is carried into both the case's and the test's
+  <a class="text-accent" href="/framework/result-fields/">result tables</a>:</p>
 {% ansiOutput "folder-parameter-run-failed.ansi" %}
-<p>To run it from the CLI, set the parameter's <code>default</code> in the config class to the folder you
-  downloaded the Maze application into:</p>
+<p>To run it from the CLI, set the parameter's <a class="text-accent" href="/framework/configuration-fields/#options"><code>default</code></a>
+  in the config class to the folder you downloaded the Maze application into:</p>
 {{ codeblock.block('	maze_executable_folder = OrcraftConfigField.Folder(
 		default=r"C:\\Orcraft\\Maze\\bin\\v3.0.0",
 		label="Maze Executable Folder",

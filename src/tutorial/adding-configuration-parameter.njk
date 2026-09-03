@@ -9,7 +9,8 @@ description: "Add a Folder configuration parameter and use it to locate the Maze
 <h1>Adding configuration parameter</h1>
 <p>Now that we have the <a class="text-accent" href="/tutorial/maze-application/">Maze application</a> downloaded,
   let's write a test that runs it. This test introduces its first configuration parameter - a
-  <code>Folder</code> field pointing at the folder holding the Maze executable.</p>
+  <a class="text-accent" href="/framework/configuration-fields/#filesystem-types"><code>Folder</code></a> field pointing at the
+  folder holding the Maze executable.</p>
 
 <h2 id="folder-parameter-test">Folder Parameter test</h2>
 <p>This test lives in the tutorial suite's <strong>Basic Configuration Parameters</strong> test group, alongside
@@ -48,11 +49,14 @@ from common.maze_app import MazeApp') }}
 	
 	maze_executable_folder = OrcraftConfigField.Folder(default="", label="Maze Executable Folder", required=True)') }}
 <p><code>maze_executable_folder</code> is this test's first configuration parameter beyond the built-in
-  <code>name</code> and <code>description</code>. It's declared with <code>OrcraftConfigField.Folder</code>, which
+  <code>name</code> and <code>description</code>. It's declared with
+  <a class="text-accent" href="/framework/configuration-fields/#filesystem-types"><code>OrcraftConfigField.Folder</code></a>, which
   renders as a folder picker in the controller's GUI.</p>
 <p><code>label</code> sets the field's display name in the GUI, separate from its Python attribute name.
   <code>required=True</code> means the test can't be run until a folder is selected - there's no meaningful
-  default, since it depends entirely on where you downloaded the Maze application to.</p>
+  default, since it depends entirely on where you downloaded the Maze application to. These and the other
+  options every field accepts are listed in
+  <a class="text-accent" href="/framework/configuration-fields/#options">Common config field options</a>.</p>
 
 <h2 id="test-class">Test class</h2>
 {{ codeblock.block('class TestFolderParameter(OrcraftTest):
@@ -67,7 +71,8 @@ from common.maze_app import MazeApp') }}
 
 		return case.result') }}
 <p><code>_run_case</code> reads <code>self.config.maze_executable_folder</code> - the folder selected in the
-  GUI (or the CLI) - and passes it to <code>MazeApp</code>. Called with no command, <code>MazeApp</code> runs the
+  GUI (or the CLI), exposed as an ordinary attribute of the
+  <a class="text-accent" href="/framework/test/#config-class">config</a> - and passes it to <code>MazeApp</code>. Called with no command, <code>MazeApp</code> runs the
   executable with no arguments, which - as we saw in the <a class="text-accent"
   href="/tutorial/maze-application/#usage">Maze application</a> chapter - prints its help page.</p>
 

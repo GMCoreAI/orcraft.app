@@ -36,8 +36,9 @@ from test_group_basic_configuration_parameters.test_file_list_parameter.test_fil
 from test_group_basic_configuration_parameters.test_numeric_parameter.test_numeric_parameter import TestNumericParameter
 from test_group_basic_configuration_parameters.test_multi_selector_parameter.test_multi_selector_parameter import TestMultiSelectorParameter
 from test_group_basic_configuration_parameters.test_string_parameter.test_string_parameter import TestStringParameter') }}
-<p>Unlike a test, a group imports <code>OrcraftTestGroup</code> and <code>OrcraftTestGroupConfig</code> instead of
-  <code>OrcraftTest</code> and <code>OrcraftTestConfig</code> - plus one import per test it bundles together.</p>
+<p>Unlike a test, a group imports <a class="text-accent" href="/framework/groups/"><code>OrcraftTestGroup</code></a> and
+  <code>OrcraftTestGroupConfig</code> instead of <code>OrcraftTest</code> and <code>OrcraftTestConfig</code> - plus one
+  import per test it bundles together.</p>
 
 <h3 id="config-class">Config class</h3>
 {{ codeblock.block('class TestGroupBasicConfigurationParametersConfig(OrcraftTestGroupConfig):
@@ -59,9 +60,11 @@ from test_group_basic_configuration_parameters.test_string_parameter.test_string
 		]
 	)') }}
 <p>Just like <code>name</code> and <code>description</code> on a test config, a group config has the same two
-  fields - shown for the group itself in the execution tree. The field that matters here is <code>tests</code>,
-  declared with <code>OrcraftConfigField.Tests</code>: it's a list of test instances, each one becoming a child
-  node of this group in the execution tree, in the order given.</p>
+  fields - shown for the group itself in the execution tree. The field that matters here is
+  <a class="text-accent" href="/framework/groups/#tests-field"><code>tests</code></a>, declared with
+  <a class="text-accent" href="/framework/configuration-fields/#composition-types"><code>OrcraftConfigField.Tests</code></a>:
+  it's a list of test instances, each one becoming a child node of this group in the execution tree, in the order
+  given.</p>
 <p>If you want to remove a test from showing up - and running - under this group, you can just comment out its
   line in this list, instead of deleting it.</p>
 
@@ -76,7 +79,8 @@ class TestGroupBasicConfigurationParameters(OrcraftTestGroup):
 		self.result = TestGroupBasicConfigurationParametersResult()') }}
 <p>Unlike a test, a group has no <code>_run_case</code> to implement - running it simply means running every test
   it contains. <code>TestGroupBasicConfigurationParametersResult</code> is empty here, since this group doesn't
-  add any result fields of its own beyond what <code>OrcraftTestGroupResult</code> already provides.</p>
+  add any result fields of its own beyond what
+  <a class="text-accent" href="/framework/groups/#group-result-fields"><code>OrcraftTestGroupResult</code></a> already provides.</p>
 
 <h3 id="main">Main</h3>
 {{ codeblock.block('def main() -> None:
@@ -86,13 +90,14 @@ class TestGroupBasicConfigurationParameters(OrcraftTestGroup):
 
 if __name__ == "__main__":
 	main()') }}
-<p>Running the group's <code>main</code> runs every test it contains. When we run the group from the controller in
-  the next chapter, the controller creates a separate run for each child test and executes them in parallel.</p>
+<p>Running the group's <code>main</code> <a class="text-accent" href="/framework/groups/#standalone">runs every test it contains</a>.
+  When we run the group from the controller in the next chapter, the controller creates a separate run for each child
+  test and executes them <a class="text-accent" href="/framework/groups/#parallel">in parallel</a>.</p>
 
 <h2 id="basic-configuration-parameters">Basic configuration parameters</h2>
-<p>Here's a short summary of each test in this group and the parameter type it demonstrates. See the
-  <a class="text-accent" href="/framework/">Framework</a> chapter for complete implementation details of each
-  field type.</p>
+<p>Here's a short summary of each test in this group and the parameter type it demonstrates. See
+  <a class="text-accent" href="/framework/configuration-fields/#config-types">Config field types</a> for complete
+  implementation details of each field type.</p>
 <table>
   <thead>
     <tr>
@@ -104,47 +109,47 @@ if __name__ == "__main__":
   <tbody>
     <tr>
       <td><a class="text-accent" href="/tutorial/adding-configuration-parameter/">Folder Parameter</a></td>
-      <td><code>OrcraftConfigField.Folder</code></td>
+      <td><a class="text-accent" href="/framework/configuration-fields/#filesystem-types"><code>OrcraftConfigField.Folder</code></a></td>
       <td>A single folder path, picked through a folder browser.</td>
     </tr>
     <tr>
       <td>Boolean Parameter</td>
-      <td><code>OrcraftConfigField.Boolean</code></td>
+      <td><a class="text-accent" href="/framework/configuration-fields/#basic-types"><code>OrcraftConfigField.Boolean</code></a></td>
       <td>An on/off toggle, shown as a checkbox.</td>
     </tr>
     <tr>
       <td>Selector Parameter</td>
-      <td><code>OrcraftConfigField.Select</code></td>
+      <td><a class="text-accent" href="/framework/configuration-fields/#selection-types"><code>OrcraftConfigField.Select</code></a></td>
       <td>A single choice out of a predefined list of options.</td>
     </tr>
     <tr>
       <td>Folder List Parameter</td>
-      <td><code>OrcraftConfigField.FolderList</code></td>
+      <td><a class="text-accent" href="/framework/configuration-fields/#filesystem-types"><code>OrcraftConfigField.FolderList</code></a></td>
       <td>Several folder paths at once, held as a list.</td>
     </tr>
     <tr>
       <td>File Parameter</td>
-      <td><code>OrcraftConfigField.File</code></td>
+      <td><a class="text-accent" href="/framework/configuration-fields/#filesystem-types"><code>OrcraftConfigField.File</code></a></td>
       <td>A single file path, picked through a file browser.</td>
     </tr>
     <tr>
       <td>File List Parameter</td>
-      <td><code>OrcraftConfigField.FileList</code></td>
+      <td><a class="text-accent" href="/framework/configuration-fields/#filesystem-types"><code>OrcraftConfigField.FileList</code></a></td>
       <td>Several file paths at once, held as a list.</td>
     </tr>
     <tr>
       <td>Numeric Parameter</td>
-      <td><code>OrcraftConfigField.Numeric</code></td>
+      <td><a class="text-accent" href="/framework/configuration-fields/#basic-types"><code>OrcraftConfigField.Numeric</code></a></td>
       <td>A number, optionally bounded by a minimum and maximum.</td>
     </tr>
     <tr>
       <td>Multi-Selector Parameter</td>
-      <td><code>OrcraftConfigField.MultiSelect</code></td>
+      <td><a class="text-accent" href="/framework/configuration-fields/#selection-types"><code>OrcraftConfigField.MultiSelect</code></a></td>
       <td>Any number of choices out of a predefined list of options.</td>
     </tr>
     <tr>
       <td>String Parameter</td>
-      <td><code>OrcraftConfigField.Text</code></td>
+      <td><a class="text-accent" href="/framework/configuration-fields/#basic-types"><code>OrcraftConfigField.Text</code></a></td>
       <td>Free-form text, typed directly into the field.</td>
     </tr>
   </tbody>
@@ -227,7 +232,8 @@ if __name__ == "__main__":
 
 <h3 id="arranging-the-fields">Arranging the fields</h3>
 <p>The order and grouping of fields in the panel isn't decided by the controller - it follows the config class.
-  Fields are laid out in declaration order, and each one can carry a <code>layout</code> hint:</p>
+  Fields are laid out in declaration order, and each one can carry a
+  <a class="text-accent" href="/framework/configuration-fields/#layout"><code>layout</code></a> hint:</p>
 <table>
   <thead>
     <tr>
@@ -294,7 +300,7 @@ if __name__ == "__main__":
 	seed = OrcraftConfigField.Numeric(default=42, label="Seed")') }}
 <p>The folder and file fields each take a full row of their own. <code>Use String Command Line</code> opens a new
   row, and <code>Command Line</code> follows it on the same row - which is also why it sets an explicit
-  <code>width</code>. The numeric fields form the grid at the bottom: <code>Height</code>,
+  <a class="text-accent" href="/framework/configuration-fields/#options"><code>width</code></a>. The numeric fields form the grid at the bottom: <code>Height</code>,
   <code>Start Row</code> and <code>End Row</code> stack into one column, <code>Width</code> starts the next
   column beside it with <code>Start Col</code> and <code>End Col</code> underneath, and <code>Seed</code> sits on
   its own.</p>
