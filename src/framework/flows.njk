@@ -156,7 +156,7 @@ class MyFlow(OrcraftTestFlow):
     <tr>
       <td><code>log_orientation</code></td>
       <td><code>HORIZONTAL</code></td>
-      <td>Orientation of the logged config table.</td>
+      <td>Orientation of the logged config table, or <code>OFF</code> to leave it out of the log.</td>
     </tr>
   </tbody>
 </table>
@@ -261,7 +261,7 @@ class MyFlow(OrcraftTestFlow):
       <td><code>log_orientation</code></td>
       <td class="docs-table__number mark mark--user">{% icon "check" %}</td>
       <td class="docs-table__number mark mark--none">&ndash;</td>
-      <td>Whether the result table is logged horizontally or vertically. Defaults to horizontal.</td>
+      <td>Whether the result table is logged horizontally, vertically or not at all (<code>OFF</code>). Defaults to horizontal.</td>
     </tr>
     <tr>
       <td><code>log_title_color</code>, <code>log_title_bg_color</code></td>

@@ -115,7 +115,9 @@ status_text = Logger.colorize_if(
 
 <p>Whether the framework's own tables read horizontally or vertically is set per component with
   <code>log_orientation</code>. Horizontal is compact for a handful of fields; vertical stays readable
-  when there are many, or when values are long:</p>
+  when there are many, or when values are long; <code>OFF</code> drops the table from the log entirely.
+  The config class and the result class each carry their own <code>log_orientation</code>, so the two
+  tables are switched independently:</p>
 
 {{ codeblock.block('log_orientation = OrcraftConfigField.Format(
 	default=OrcraftConfigField.LogTableOrientation.VERTICAL

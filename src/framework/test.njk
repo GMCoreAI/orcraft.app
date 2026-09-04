@@ -106,7 +106,7 @@ if __name__ == "__main__":
     <tr>
       <td><code>log_orientation</code></td>
       <td><code>HORIZONTAL</code></td>
-      <td>Orientation of the logged config and result tables.</td>
+      <td>Orientation of the logged config table, or <code>OFF</code> to leave it out of the log - together with the framework's own test cycle, case and matrix tables. The result table has its own <code>log_orientation</code>.</td>
     </tr>
   </tbody>
 </table>
@@ -325,7 +325,7 @@ if __name__ == "__main__":
       <td><code>log_orientation</code></td>
       <td class="docs-table__number mark mark--user">{% icon "check" %}</td>
       <td class="docs-table__number mark mark--none">&ndash;</td>
-      <td>Whether the result table is logged horizontally or vertically. Test results default to vertical because the counters make a horizontal row too wide.</td>
+      <td>Whether the result table is logged horizontally, vertically or not at all (<code>OFF</code>). Test results default to vertical because the counters make a horizontal row too wide.</td>
     </tr>
     <tr>
       <td><code>log_title_color</code>, <code>log_title_bg_color</code></td>

@@ -66,7 +66,7 @@ description: "Reference for OrcraftConfigField: every config field type and the 
       <td><code>log_orientation</code></td>
       <td>Every component</td>
       <td><code>HORIZONTAL</code></td>
-      <td>Orientation of the logged config and result tables.</td>
+      <td>Orientation of the logged config table, or <code>OFF</code> to leave it out of the log. The result table has its own <code>log_orientation</code>.</td>
     </tr>
     <tr>
       <td><code>version</code></td>
@@ -575,12 +575,36 @@ input_folders = OrcraftConfigField.PackageFolderList(
       <td><code>LogTableOrientation.VERTICAL</code></td>
       <td>Log one field per line - readable for many fields or long values.</td>
     </tr>
+    <tr>
+      <td><code>LogTableOrientation.OFF</code></td>
+      <td>Do not log the table at all - for components whose fields add nothing to the log.</td>
+    </tr>
   </tbody>
 </table>
 
 {{ codeblock.block('log_orientation = OrcraftConfigField.Format(
 	default=OrcraftConfigField.LogTableOrientation.VERTICAL
 )') }}
+
+<p>Every component logs two tables: a configuration table before it runs and a result table after.
+  Each has its own <code>log_orientation</code> - the one on the config class controls the configuration
+  table, the one on the result class controls the result table - so you can turn off one and keep the
+  other. Turning off the configuration table also hides the description banner printed above it.</p>
+
+<p>Test cycles, matrix cases and case cycles are built by the framework and have no config class of
+  their own, so they follow the test: <code>OFF</code> on a test's config also hides the framework's
+  cycle, case and matrix tables beneath it. The test's own result table still follows the result
+  class. The demo suite's <code>test_log_tables_off</code> runs a matrix with two test cycles and two
+  case cycles and prints nothing but plain log lines.</p>
+
+<p>For example, a step whose inputs are obvious from its name can drop its configuration table and
+  still log its result:</p>
+
+{{ codeblock.block('class MyStepConfig(OrcraftTestStepConfig):
+	name = OrcraftConfigField.Text(default="My Step")
+	log_orientation = OrcraftConfigField.Format(
+		default=OrcraftConfigField.LogTableOrientation.OFF
+	)') }}
 
 <h2 id="plain-attributes">Plain attributes</h2>
 <p>Not everything a config carries has to be an Orcraft field. A plain class attribute is a legitimate
