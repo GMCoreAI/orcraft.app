@@ -140,7 +140,6 @@
   list-style: none;
   margin: 0 auto;
   padding: 0 var(--space-6);
-  max-width: 920px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-surface);
@@ -175,8 +174,10 @@
   width: auto;
 }
 
+/* Both cells sit vertically centered in the row. */
 .solved__row {
   padding-block: var(--space-4);
+  align-items: center;
 }
 
 .solved__row:last-child {
@@ -203,8 +204,8 @@
 .solved__mark {
   display: inline-flex;
   flex: none;
-  margin-top: 0.2em;
-  font-size: 1em;
+  margin-top: 0.1em;
+  font-size: 1.15em;
 }
 
 .solved__pain .solved__mark {
