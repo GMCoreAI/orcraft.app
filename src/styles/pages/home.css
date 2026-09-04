@@ -181,12 +181,6 @@
   width: auto;
 }
 
-.solved__wordmark {
-  height: 36px;
-  width: auto;
-  margin-left: var(--space-3);
-}
-
 /* Both cells sit vertically centered in the row. */
 .solved__row {
   padding-block: var(--space-4);
