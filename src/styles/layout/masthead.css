@@ -4,7 +4,13 @@
   text-align: center;
   padding-block: 0;
   background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
+}
+
+/* Dark strip under the lead; the band that follows it draws the dividing line. */
+.masthead__principles {
+  padding-block: var(--space-12);
+  background: var(--color-bg);
+  border-top: 1px solid var(--color-border);
 }
 
 /* Only the home page shows the full masthead; other pages use the topbar. */
@@ -55,7 +61,7 @@ body:not([data-page="home"]) .masthead {
 }
 
 .lead--strong {
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-12);
   color: var(--color-text);
 }
 
@@ -64,7 +70,7 @@ body:not([data-page="home"]) .masthead {
   grid-template-columns: repeat(3, 1fr);
   gap: var(--space-8);
   max-width: 1000px;
-  margin: var(--space-16) auto var(--space-8);
+  margin: 0 auto;
   text-align: left;
 }
 
