@@ -1,5 +1,9 @@
 /* Same-origin content swapping: the masthead frame stays mounted, only
-   [data-page-content] is replaced, so the logo animation never restarts. */
+   [data-page-content] is replaced, so the logo animation never restarts.
+
+   Because the content is swapped after an async fetch, the browser's own
+   scroll restoration finds the wrong page and gives up. The router keeps the
+   scroll position of each history entry in its state and restores it itself. */
 
 import { qs, qsa, on } from "../core/dom.js";
 
@@ -23,7 +27,7 @@ function markCurrent(pathname) {
   });
 }
 
-async function loadPage(url, { push }) {
+async function loadPage(url, { push, scrollY }) {
   const container = qs(CONTENT_SELECTOR);
   if (!container) return;
 
@@ -42,11 +46,14 @@ async function loadPage(url, { push }) {
   document.body.dataset.page = doc.body.dataset.page ?? "";
 
   const target = new URL(url, window.location.origin);
-  if (push) window.history.pushState({}, "", target);
+  if (push) window.history.pushState({ scrollY: 0 }, "", target);
   markCurrent(target.pathname);
 
   const anchored = target.hash && document.getElementById(target.hash.slice(1));
-  if (anchored) {
+  if (typeof scrollY === "number") {
+    // Back/forward: land where the reader left, without a smooth sweep across the page.
+    window.scrollTo({ top: scrollY, behavior: "instant" });
+  } else if (anchored) {
     anchored.scrollIntoView({ behavior: "smooth" });
   } else {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -57,6 +64,8 @@ async function loadPage(url, { push }) {
 
 export function initRouter(onPageLoaded) {
   if (!qs(CONTENT_SELECTOR)) return;
+
+  window.history.scrollRestoration = "manual";
 
   const navigate = (url, options) =>
     loadPage(url, options)
@@ -76,8 +85,11 @@ export function initRouter(onPageLoaded) {
     if (url.pathname === window.location.pathname) return;
 
     event.preventDefault();
+    window.history.replaceState({ scrollY: window.scrollY }, "", window.location.href);
     navigate(url.href, { push: true });
   });
 
-  on(window, "popstate", () => navigate(window.location.href, { push: false }));
+  on(window, "popstate", (event) =>
+    navigate(window.location.href, { push: false, scrollY: event.state?.scrollY ?? 0 })
+  );
 }

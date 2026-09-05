@@ -286,7 +286,8 @@ if self.wait_for_endpoint_state(
 
 <h2 id="security">Security</h2>
 <p>Communication with an endpoint is secured with mutual TLS and token-based authentication, negotiated
-  from how the endpoint was registered with the controller. Tests do not handle credentials: the security
+  from <a class="text-accent" href="/setup/endpoints/#secure-endpoint-connection">how the endpoint was
+  registered with the controller</a>. Tests do not handle credentials: the security
   context follows the endpoint field, and flows and steps - including those called from
   <a class="text-accent" href="/framework/lifecycle-hooks/">lifecycle hooks</a> - inherit it
   automatically.</p>
