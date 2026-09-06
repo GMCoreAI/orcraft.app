@@ -8,11 +8,26 @@ key: home
 <div data-pagefind-body data-pagefind-meta="title:Home">
 <h1 class="visually-hidden">Orcraft: test orchestration platform</h1>
 
-<!-- Headaches -->
+<!-- Evaluation -->
 <section class="band band--tight">
-  <div class="container">
+  <div class="container text-center">
+  <h2 id="try-it-now" class="section__title section__title--caps">Try it now</h2>
+  <div class="install">
+    <code class="install__command">pip install orcraft</code>
+    <button class="button button--ghost install__copy" type="button" data-copy="pip install orcraft"
+      aria-label="Copy command" title="Copy command">
+      <span class="install__copy-idle">{% icon "copy" %}</span>
+      <span class="install__copy-done">{% icon "check" %}</span>
+    </button>
+  </div>
+  <p class="text-muted" style="margin-top: var(--space-8); margin-bottom: 0;">See <a class="text-accent" href="/setup/">Setup</a> for details</p>
+  </div>
+</section>
+
+<!-- Headaches -->
+<section class="section--tight container">
   <h2 id="headaches-solved" class="section__title section__title--caps"><span class="text-danger">Headaches</span>, <span class="text-success">solved</span></h2>
-  <ul class="solved" aria-label="Testing headaches and how Orcraft solves them">
+  <ul class="solved" data-reveal-group aria-label="Testing headaches and how Orcraft solves them">
     <li class="solved__head" aria-hidden="true">
       <span><img class="solved__figure" src="/assets/images/headaches/headache.png" alt="" /></span>
       <span><img class="solved__figure" src="/assets/images/headaches/solved.png" alt="" /></span>
@@ -46,21 +61,6 @@ key: home
       <span class="solved__fix"><span class="solved__mark">{% icon "mood-smile" %}</span>One place: live logs, step-level results, spreadsheet export, AI analysis.</span>
     </li>
   </ul>
-  </div>
-</section>
-
-<!-- Evaluation -->
-<section class="section--tight container text-center">
-  <h2 id="try-it-now" class="section__title section__title--caps">Try it now</h2>
-  <div class="install">
-    <code class="install__command">pip install orcraft</code>
-    <button class="button button--ghost install__copy" type="button" data-copy="pip install orcraft"
-      aria-label="Copy command" title="Copy command">
-      <span class="install__copy-idle">{% icon "copy" %}</span>
-      <span class="install__copy-done">{% icon "check" %}</span>
-    </button>
-  </div>
-  <p class="text-muted" style="margin-top: var(--space-8); margin-bottom: 0;">See <a class="text-accent" href="/setup/">Setup</a> for details</p>
 </section>
 
 <!-- Product preview -->
