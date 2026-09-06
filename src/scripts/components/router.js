@@ -3,7 +3,8 @@
 
    Because the content is swapped after an async fetch, the browser's own
    scroll restoration finds the wrong page and gives up. The router keeps the
-   scroll position of each history entry in its state and restores it itself. */
+   scroll position of each history entry in its state and restores it itself.
+   Hash navigation within the current page is left entirely to the browser. */
 
 import { qs, qsa, on } from "../core/dom.js";
 
@@ -65,11 +66,14 @@ async function loadPage(url, { push, scrollY }) {
 export function initRouter(onPageLoaded) {
   if (!qs(CONTENT_SELECTOR)) return;
 
-  window.history.scrollRestoration = "manual";
+  let currentPath = window.location.pathname;
 
   const navigate = (url, options) =>
     loadPage(url, options)
-      .then((page) => onPageLoaded?.(page))
+      .then((page) => {
+        currentPath = window.location.pathname;
+        onPageLoaded?.(page);
+      })
       .catch(() => {
         window.location.href = url;
       });
@@ -89,7 +93,9 @@ export function initRouter(onPageLoaded) {
     navigate(url.href, { push: true });
   });
 
-  on(window, "popstate", (event) =>
-    navigate(window.location.href, { push: false, scrollY: event.state?.scrollY ?? 0 })
-  );
+  on(window, "popstate", (event) => {
+    // Same page, only the hash changed: the browser has already scrolled to the heading.
+    if (window.location.pathname === currentPath) return;
+    navigate(window.location.href, { push: false, scrollY: event.state?.scrollY });
+  });
 }
