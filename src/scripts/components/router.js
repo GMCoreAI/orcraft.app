@@ -2,9 +2,10 @@
    [data-page-content] is replaced, so the logo animation never restarts.
 
    Because the content is swapped after an async fetch, the browser's own
-   scroll restoration finds the wrong page and gives up. The router keeps the
-   scroll position of each history entry in its state and restores it itself.
-   Hash navigation within the current page is left entirely to the browser. */
+   scroll restoration finds the wrong page and gives up. The router stamps
+   every history entry with an id, remembers where each one was scrolled to,
+   and restores that on Back/Forward - across pages and between headings of
+   the same page alike. A fresh jump to a heading is left to the browser. */
 
 import { qs, qsa, on } from "../core/dom.js";
 
@@ -47,7 +48,7 @@ async function loadPage(url, { push, scrollY }) {
   document.body.dataset.page = doc.body.dataset.page ?? "";
 
   const target = new URL(url, window.location.origin);
-  if (push) window.history.pushState({ scrollY: 0 }, "", target);
+  if (push) window.history.pushState({ entry: newEntryId() }, "", target);
   markCurrent(target.pathname);
 
   const anchored = target.hash && document.getElementById(target.hash.slice(1));
@@ -63,15 +64,37 @@ async function loadPage(url, { push, scrollY }) {
   return document.body.dataset.page;
 }
 
+/* Unique per entry, also across reloads: the ids live in history state, which
+   outlives the page, while the remembered positions do not. */
+function newEntryId() {
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+/* Gives the current history entry an id if it has none yet (the initial page
+   load, or an entry the browser created for a jump to a heading). */
+function stampEntry() {
+  const state = window.history.state ?? {};
+  if (!state.entry) {
+    window.history.replaceState({ ...state, entry: newEntryId() }, "", window.location.href);
+  }
+  return window.history.state.entry;
+}
+
 export function initRouter(onPageLoaded) {
   if (!qs(CONTENT_SELECTOR)) return;
 
+  const positions = new Map();
   let currentPath = window.location.pathname;
+  let currentEntry = stampEntry();
+
+  // Cheap enough per scroll event: one Map write, no history API call.
+  on(window, "scroll", () => positions.set(currentEntry, window.scrollY), { passive: true });
 
   const navigate = (url, options) =>
     loadPage(url, options)
       .then((page) => {
         currentPath = window.location.pathname;
+        currentEntry = stampEntry();
         onPageLoaded?.(page);
       })
       .catch(() => {
@@ -89,13 +112,37 @@ export function initRouter(onPageLoaded) {
     if (url.pathname === window.location.pathname) return;
 
     event.preventDefault();
-    window.history.replaceState({ scrollY: window.scrollY }, "", window.location.href);
+    // Kept in state as well, so the position survives a reload of the next page.
+    window.history.replaceState(
+      { ...(window.history.state ?? {}), scrollY: window.scrollY },
+      "",
+      window.location.href
+    );
     navigate(url.href, { push: true });
   });
 
   on(window, "popstate", (event) => {
-    // Same page, only the hash changed: the browser has already scrolled to the heading.
-    if (window.location.pathname === currentPath) return;
-    navigate(window.location.href, { push: false, scrollY: event.state?.scrollY });
+    if (!event.state?.entry) {
+      // A fresh jump to a heading on this page: the browser scrolls to it, this
+      // only adopts the entry it created so it can be restored later.
+      currentEntry = stampEntry();
+      return;
+    }
+
+    const entry = event.state.entry;
+    const remembered = positions.get(entry) ?? event.state.scrollY;
+
+    if (window.location.pathname !== currentPath) {
+      navigate(window.location.href, { push: false, scrollY: remembered });
+      return;
+    }
+
+    currentEntry = entry;
+    if (typeof remembered === "number") {
+      window.scrollTo({ top: remembered, behavior: "instant" });
+    } else {
+      const heading = window.location.hash && document.getElementById(window.location.hash.slice(1));
+      if (heading) heading.scrollIntoView({ behavior: "smooth" });
+    }
   });
 }
