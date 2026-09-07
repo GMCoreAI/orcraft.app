@@ -111,11 +111,6 @@ if __name__ == "__main__":
       <td>The tests this group runs.</td>
     </tr>
     <tr>
-      <td><code>parallel</code></td>
-      <td><code>True</code></td>
-      <td>Whether the group's tests may run concurrently.</td>
-    </tr>
-    <tr>
       <td><code>log_orientation</code></td>
       <td><code>HORIZONTAL</code></td>
       <td>Orientation of the logged config table, or <code>OFF</code> to leave it out of the log.</td>
@@ -294,16 +289,15 @@ if __name__ == "__main__":
     <code>log_orientation</code> is meant to be overridden, and only to change its default.</p>
 </div>
 
-<h2 id="parallel">Parallel execution</h2>
-<p>With <code>parallel</code> left at its default, tests in a group may run concurrently, which is what
-  makes a suite spread across several endpoints finish in a useful amount of time. Set it to
-  <code>False</code> for a group whose tests contend for something the framework cannot see - a shared
-  device, a fixed port, a single working directory.</p>
+<h2 id="concurrency">Concurrent execution</h2>
+<p>A group runs its tests as concurrent subprocesses, considered in declaration order, which is what
+  makes a suite spread across several endpoints finish in a useful amount of time. A test starts as soon
+  as every endpoint it needs is free; until then it waits without holding a process, and the group log
+  notes which endpoints it is waiting for. A test that declares no remote endpoint starts at once.</p>
 
-<p>Note that endpoint contention is already handled: an endpoint is held for the duration of a run, and
+<p>Endpoint contention is therefore handled for you: an endpoint is held for the duration of a run, and
   another run wanting it waits, unless the endpoint field is declared
-  <a class="text-accent" href="/framework/endpoints/#endpoint-options"><code>shared</code></a>. Turning
-  off parallelism is for the contention Orcraft does not know about.</p>
+  <a class="text-accent" href="/framework/endpoints/#endpoint-options"><code>shared</code></a>.</p>
 
 <h2 id="defer">Policy inheritance</h2>
 <p><code>update_endpoint_app</code> is the one field where a group deliberately does not decide by
@@ -379,6 +373,6 @@ if __name__ == "__main__":
 if __name__ == "__main__":
 	main()') }}
 
-<p>This runs every test in the group, in order or in parallel according to <code>parallel</code>, and
-  logs a group summary after the individual test results. Once a group is doing what you want, add it to
+<p>This runs every test in the group as concurrent subprocesses, and logs a group summary after the
+  individual test results. Once a group is doing what you want, add it to
   a <a class="text-accent" href="/framework/suites/">suite</a>.</p>

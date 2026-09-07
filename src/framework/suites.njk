@@ -5,8 +5,9 @@ description: "OrcraftTestSuite: the top-level component, and the thing the contr
 ---
 {% import "partials/code-block.njk" as codeblock %}
 <h1>Orcraft Test Suite</h1>
-<p>A suite is the top of the hierarchy - the thing the controller loads, the thing a CI pipeline runs. It
-  holds groups and nothing else, and like a group it is declared rather than coded.</p>
+<p>A suite is the top of the test hierarchy - the thing the controller loads and a CI pipeline runs, on
+  its own or as an item of a <a class="text-accent" href="/framework/batches/">batch</a>. It holds groups
+  and nothing else, and like a group it is declared rather than coded.</p>
 
 {{ codeblock.block('from __future__ import annotations
 
@@ -93,11 +94,6 @@ if __name__ == "__main__":
       <td><code>groups</code></td>
       <td><code>[]</code></td>
       <td>The groups this suite runs.</td>
-    </tr>
-    <tr>
-      <td><code>parallel</code></td>
-      <td><code>True</code></td>
-      <td>Whether the suite's groups may run concurrently.</td>
     </tr>
     <tr>
       <td><code>log_orientation</code></td>
@@ -373,7 +369,7 @@ if __name__ == "__main__":
     </tr>
     <tr>
       <td>CI</td>
-      <td>Run the controller in CLI mode against a CI snapshot exported from the GUI.</td>
+      <td>Run the batch of a CI snapshot exported from the GUI, on a machine with the controller installed and no GUI.</td>
     </tr>
   </tbody>
 </table>

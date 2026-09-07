@@ -24,6 +24,12 @@ description: "The Orcraft test framework: suites, groups, tests, cases, flows an
   </thead>
   <tbody>
     <tr>
+      <td><a class="text-accent" href="/framework/batches/">Orcraft Test Batch</a></td>
+      <td><code>OrcraftTestBatch</code></td>
+      <td>Suites, groups and tests</td>
+      <td>Nothing - a batch is declared, not coded</td>
+    </tr>
+    <tr>
       <td><a class="text-accent" href="/framework/suites/">Orcraft Test Suite</a></td>
       <td><code>OrcraftTestSuite</code></td>
       <td>Groups</td>
@@ -62,8 +68,8 @@ description: "The Orcraft test framework: suites, groups, tests, cases, flows an
   </tbody>
 </table>
 
-<p>The first four levels are the <em>structural</em> hierarchy: a suite holds groups, a group holds tests,
-  and a test expands into cases. Flows and steps are the <em>procedural</em> hierarchy: they are what a
+<p>The first five levels are the <em>structural</em> hierarchy: a batch gathers suites, groups and tests
+  to run as one, a suite holds groups, a group holds tests, and a test expands into cases. Flows and steps are the <em>procedural</em> hierarchy: they are what a
   case body actually does. A case may call flows, a flow calls steps, and a step is the unit that can be
   dispatched to a remote endpoint.</p>
 
@@ -172,6 +178,10 @@ class MyTest(OrcraftTest):
     <tr>
       <td><a class="text-accent" href="/framework/suites/"><code>OrcraftTestSuite</code>, <code>OrcraftTestSuiteConfig</code>, <code>OrcraftTestSuiteResult</code></a></td>
       <td>Orcraft Test Suite - the top-level collection of groups.</td>
+    </tr>
+    <tr>
+      <td><a class="text-accent" href="/framework/batches/"><code>OrcraftTestBatch</code>, <code>OrcraftTestBatchConfig</code>, <code>OrcraftTestBatchResult</code>, <code>OrcraftBatchItem</code></a></td>
+      <td>Orcraft Test Batch - any mix of suites, groups and tests run as one; what a CI snapshot is.</td>
     </tr>
     <tr>
       <td><a class="text-accent" href="/framework/logging/"><code>OrcraftLogger</code></a></td>

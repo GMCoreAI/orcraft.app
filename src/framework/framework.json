@@ -15,6 +15,7 @@
     { "label": "Orcraft Lifecycle Hooks", "slug": "lifecycle-hooks/" },
     { "label": "Orcraft Test Group", "slug": "groups/" },
     { "label": "Orcraft Test Suite", "slug": "suites/" },
+    { "label": "Orcraft Test Batch", "slug": "batches/" },
     { "label": "Orcraft Logger", "slug": "logging/" }
   ]
 }

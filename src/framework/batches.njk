@@ -1,0 +1,370 @@
+---
+title: Framework · Orcraft Test Batch
+key: framework
+description: "OrcraftTestBatch: the container above suites - any mix of suites, groups and tests run as one, and what a CI snapshot is."
+---
+{% import "partials/code-block.njk" as codeblock %}
+<h1>Orcraft Test Batch</h1>
+<p>A batch sits above suites. It holds any mix of suites, groups and tests, runs them as one and
+  summarizes them as one. It is what a CI snapshot exported from the controller puts on top of its
+  mirrors, and what you write yourself to run several suites, possibly from several repositories, with
+  a single command. Like a suite it is declared rather than coded.</p>
+
+{{ codeblock.block('from __future__ import annotations
+
+from orcraft import (
+	OrcraftBatchItem,
+	OrcraftConfigField,
+	OrcraftTestBatch,
+	OrcraftTestBatchConfig,
+	OrcraftTestBatchResult,
+)
+
+from my_suite import MySuite
+from smoke.smoke_group import SmokeGroup
+
+
+class NightlyBatchConfig(OrcraftTestBatchConfig):
+	name = OrcraftConfigField.Text(default="Nightly")
+	description = OrcraftConfigField.Text(
+		default="Everything that must be green before a release."
+	)
+	items = OrcraftConfigField.Items(
+		default_factory=lambda: [
+			MySuite(),
+			SmokeGroup(),
+			OrcraftBatchItem(
+				name="Test Suite: Network",
+				kind="suite",
+				source_path="../orcraft-test-suite-network/test_suite_network.py",
+				class_name="TestSuiteNetwork",
+				import_roots=("../orcraft-test-suite-network",),
+			),
+		]
+	)
+
+
+class NightlyBatchResult(OrcraftTestBatchResult):
+	pass
+
+
+class NightlyBatch(OrcraftTestBatch):
+	def __init__(self) -> None:
+		super().__init__(config=NightlyBatchConfig())
+		self.result = NightlyBatchResult()
+
+
+def main() -> None:
+	NightlyBatch().run()
+
+
+if __name__ == "__main__":
+	main()') }}
+
+<h2 id="items-field">Items field</h2>
+<p><code>items</code> uses <code>default_factory</code> for the same reason
+  <a class="text-accent" href="/framework/suites/#groups-field"><code>groups</code></a> does. An item is
+  one of two things:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Item</th>
+      <th>What it is</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>An instance</td>
+      <td>A suite, group or test object, imported and constructed in the batch file like a group's tests.
+        Its repository is on the batch file's import path already.</td>
+    </tr>
+    <tr>
+      <td><code>OrcraftBatchItem</code></td>
+      <td>A reference to a suite, group or test by source file and class name. The class is imported
+        only inside the subprocess that runs it, with the roots listed in <code>import_roots</code> put
+        first on that subprocess's import path.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>References exist for one reason: two repositories may both define a top-level package with the same
+  name - a <code>common</code> package, say - and importing both suites into one interpreter would let
+  one shadow the other. A reference keeps each item in its own interpreter all the way down, which is
+  why a CI snapshot lists its items this way.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th><code>OrcraftBatchItem</code> field</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>source_path</code></td>
+      <td>The <code>.py</code> file that defines the class.</td>
+    </tr>
+    <tr>
+      <td><code>class_name</code></td>
+      <td>The class to instantiate from that file.</td>
+    </tr>
+    <tr>
+      <td><code>name</code></td>
+      <td>How the item is listed before it runs - normally the component's own name, such as
+        <code>"Test Suite: Network"</code>.</td>
+    </tr>
+    <tr>
+      <td><code>kind</code></td>
+      <td><code>"suite"</code>, <code>"group"</code> or <code>"test"</code>.</td>
+    </tr>
+    <tr>
+      <td><code>import_roots</code></td>
+      <td>Directories put first on the subprocess's import path, in this order. A CI mirror lists the
+        snapshot folder and the live suite repository.</td>
+    </tr>
+    <tr>
+      <td><code>package_source_path</code></td>
+      <td>The repository whose code endpoint uploads ship, when it is not the folder the class was loaded
+        from. A CI mirror points it at the live repository it mirrors.</td>
+    </tr>
+    <tr>
+      <td><code>label</code></td>
+      <td>A display label, kept so the controller can show it again when it opens the batch.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Relative paths in a reference are relative to the batch file, so a folder holding a batch and its
+  mirrors can be copied as a whole.</p>
+
+<h2 id="config-fields">Config fields</h2>
+<h3 id="config-code">Overridable in code</h3>
+<p>Set in your config class, fixed for the run. A batch has no run configuration panel: the controller
+  shows a batch's items, never the batch itself.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Default</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>name</code></td>
+      <td><code>"Test Batch"</code></td>
+      <td>Display name in the CLI and logs.</td>
+    </tr>
+    <tr>
+      <td><code>description</code></td>
+      <td><code>""</code></td>
+      <td>Free text describing what the batch covers.</td>
+    </tr>
+    <tr>
+      <td><code>version</code></td>
+      <td><code>""</code></td>
+      <td>Batch version, recorded with the results.</td>
+    </tr>
+    <tr>
+      <td><code>items</code></td>
+      <td><code>[]</code></td>
+      <td>The suites, groups, tests and references this batch runs.</td>
+    </tr>
+    <tr>
+      <td><code>upload_test_package</code></td>
+      <td><code>"if_missing"</code></td>
+      <td>Whether each item's test package is uploaded to the endpoint before the run.</td>
+    </tr>
+    <tr>
+      <td><code>update_endpoint_app</code></td>
+      <td><code>"defer"</code></td>
+      <td>Whether the endpoint application is updated before the run. <code>defer</code> leaves the decision to the items.</td>
+    </tr>
+    <tr>
+      <td><code>log_orientation</code></td>
+      <td><code>HORIZONTAL</code></td>
+      <td>Orientation of the logged config table, or <code>OFF</code> to leave it out of the log.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="docs-callout docs-callout--warning">
+  <span class="docs-callout__label">Override carefully</span>
+  <p>Redeclare a field with the same <code>OrcraftConfigField</code> type and a new default -
+    <code>name = OrcraftConfigField.Text(default="Nightly")</code>. A bare assignment such as
+    <code>name = "Nightly"</code> is not an override: it shadows the field with a plain attribute, and the
+    log table no longer sees it.</p>
+</div>
+
+<h3 id="config-reserved">Reserved</h3>
+<p>Written by the framework while a run is in progress.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>start_time</code></td>
+      <td>When the run started. Stamped by the framework at run time - leave it alone.</td>
+    </tr>
+    <tr>
+      <td><code>log_tab</code></td>
+      <td>Log indentation. Assigned by the framework at every level - it cannot be overridden, only collided with.</td>
+    </tr>
+    <tr>
+      <td><code>log_title_color</code>, <code>log_title_bg_color</code></td>
+      <td>Palette plumbing for the log banners. Not user-facing.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="docs-callout docs-callout--caution">
+  <span class="docs-callout__label">Do not redeclare</span>
+  <p>A field of your own under one of these names replaces the framework's. The framework keeps writing
+    to the name, but through your definition - and the log indentation and the run timestamps silently
+    stop meaning what the controller expects.</p>
+</div>
+
+<h2 id="policies">Policy inheritance</h2>
+<p><code>upload_test_package</code> and <code>update_endpoint_app</code> work as they do on a
+  <a class="text-accent" href="/framework/suites/#policies">suite</a>: a concrete value at batch level
+  overrides every item beneath it, and <code>defer</code>, the default for
+  <code>update_endpoint_app</code>, lets each item decide for itself.</p>
+
+<h2 id="execution">Execution</h2>
+<p>A batch always runs its items concurrently, each in its own subprocess. Items are not held back for one
+  another: a suite item starts its groups, a group item starts its tests, and every test waits only for
+  the endpoints it needs, exactly as it would under the controller. When an item finishes, its whole log
+  is appended to the batch log as one block, so the batch log reads as nested blocks: the batch header,
+  then each item's complete log as it finishes, then the batch summary.</p>
+
+<p>A batch cannot contain another batch.</p>
+
+<h2 id="results">Result fields</h2>
+<p>A batch has no body: its result is written entirely by the framework as its items complete, and an
+  empty <code>OrcraftTestBatchResult</code> subclass reports everything below. Items may be of different
+  kinds, so the batch counts what every kind has, tests and cases, plus the items themselves.</p>
+
+<p class="docs-legend"><span class="mark mark--user">{% icon "check" %}</span> overridable by user (optional)
+  &nbsp;&middot;&nbsp; <span class="mark mark--framework">{% icon "cpu" %}</span> written by the framework, may still be set directly
+  &nbsp;&middot;&nbsp; <span class="mark mark--reserved">{% icon "shield-lock" %}</span> reserved</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Inherited field</th>
+      <th class="mark-head">Overridden by user (optional)</th>
+      <th class="mark-head">Reserved</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>status</code></td>
+      <td class="docs-table__number mark mark--none">&ndash;</td>
+      <td class="docs-table__number mark mark--reserved">{% icon "shield-lock" %}</td>
+      <td><code class="status-pass">PASS</code>, <code class="status-fail">FAIL</code> or <code class="status-error">ERROR</code>, derived from the items.</td>
+    </tr>
+    <tr>
+      <td><code class="status-fail">failure_description</code>, <code class="status-error">error_description</code>, <code class="status-warning">warning_description</code></td>
+      <td class="docs-table__number mark mark--none">&ndash;</td>
+      <td class="docs-table__number mark mark--reserved">{% icon "shield-lock" %}</td>
+      <td>The first such description reported by an item.</td>
+    </tr>
+    <tr>
+      <td><code>finish_time</code>, <code>elapsed_time</code></td>
+      <td class="docs-table__number mark mark--none">&ndash;</td>
+      <td class="docs-table__number mark mark--reserved">{% icon "shield-lock" %}</td>
+      <td>When the batch finished and how long it took.</td>
+    </tr>
+    <tr>
+      <td><code>log_orientation</code></td>
+      <td class="docs-table__number mark mark--user">{% icon "check" %}</td>
+      <td class="docs-table__number mark mark--none">&ndash;</td>
+      <td>Whether the result table is logged horizontally, vertically or not at all (<code>OFF</code>). Defaults to vertical.</td>
+    </tr>
+    <tr>
+      <td><code>log_title_color</code>, <code>log_title_bg_color</code></td>
+      <td class="docs-table__number mark mark--none">&ndash;</td>
+      <td class="docs-table__number mark mark--reserved">{% icon "shield-lock" %}</td>
+      <td>Palette plumbing for the log banners. Not user-facing.</td>
+    </tr>
+    <tr>
+      <td><code>total_items</code>, <code class="status-pass">passed_items</code>, <code class="status-fail">failed_items</code>, <code class="status-error">error_items</code>, <code class="status-warning">warning_items</code></td>
+      <td class="docs-table__number mark mark--none">&ndash;</td>
+      <td class="docs-table__number mark mark--reserved">{% icon "shield-lock" %}</td>
+      <td>Item counters, one per suite, group or test in the batch.</td>
+    </tr>
+    <tr>
+      <td><code>total_tests</code>, <code class="status-pass">passed_tests</code>, <code class="status-fail">failed_tests</code>, <code class="status-error">error_tests</code>, <code class="status-warning">warning_tests</code></td>
+      <td class="docs-table__number mark mark--none">&ndash;</td>
+      <td class="docs-table__number mark mark--reserved">{% icon "shield-lock" %}</td>
+      <td>Test counters, summed across every item; a test item counts as one test.</td>
+    </tr>
+    <tr>
+      <td><code>total_cases</code>, <code class="status-pass">passed_cases</code>, <code class="status-fail">failed_cases</code>, <code class="status-error">error_cases</code>, <code class="status-warning">warning_cases</code></td>
+      <td class="docs-table__number mark mark--none">&ndash;</td>
+      <td class="docs-table__number mark mark--reserved">{% icon "shield-lock" %}</td>
+      <td>Case counters, summed across every test of every item.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="docs-callout docs-callout--warning">
+  <span class="docs-callout__label">Override carefully</span>
+  <p>The only field that is yours here is <code>log_orientation</code>, and only its default: redeclare it
+    with the same <code>OrcraftResultField</code> type -
+    <code>log_orientation = OrcraftResultField.Format(default=OrcraftResultField.LogTableOrientation.VERTICAL)</code>
+    - never as a bare value, which shadows the field so the log table no longer sees it.</p>
+</div>
+
+<div class="docs-callout docs-callout--caution">
+  <span class="docs-callout__label">Do not redeclare</span>
+  <p>A field of your own under any of these names replaces the framework's. The framework keeps writing
+    to the name, but through your definition - and status comparisons, the three levels of counters and
+    the Items table silently break. Only <code>log_orientation</code> is meant to be overridden, and only
+    to change its default.</p>
+</div>
+
+<p>After its result table the batch logs an <em>Items</em> table, one row per item with that item's status,
+  descriptions, times and counters, and then its warnings, failures and errors tables with an
+  <em>Item</em> column in front, so a failing case can be traced to the item, group and test it belongs
+  to.</p>
+
+<h2 id="running">Running</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Where</th>
+      <th>How</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Standalone</td>
+      <td>Execute the batch file directly, via its <code>main()</code>.</td>
+    </tr>
+    <tr>
+      <td>Controller GUI</td>
+      <td>Add the batch file like any other item. The controller flattens it: its items land at the top of
+        the session tree and the batch itself never becomes a node. An item written by the CI export shows
+        the original suite, group or test with the exported values as its plan and the CI tag on each test.
+        The session itself is untouched.</td>
+    </tr>
+    <tr>
+      <td>CI</td>
+      <td>A CI snapshot exported from the controller is a batch: <code>batch.py</code> lists the exported
+        items as references to the mirrors beside it, and <code>ci_run.py</code> runs it on a CI machine,
+        resolving each item's repository from <code>--suites-root</code>, from an
+        <code>ORCRAFT_SUITE_ROOT_&lt;REPO&gt;</code> variable or from the paths baked in at export time,
+        and exiting with <code>0</code>, <code>10</code> or <code>20</code> for pass, fail or error.</td>
+    </tr>
+  </tbody>
+</table>
