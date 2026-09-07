@@ -24,14 +24,14 @@ description: "Compatibility, runtime behavior and troubleshooting notes for mana
   <tbody>
     <tr>
       <td>Windows</td>
-      <td>10</td>
-      <td>build 19045</td>
+      <td>11</td>
+      <td>build 26200</td>
       <td>x86_64</td>
     </tr>
     <tr>
       <td>Windows</td>
-      <td>11</td>
-      <td>build 26200</td>
+      <td>10</td>
+      <td>build 19045</td>
       <td>x86_64</td>
     </tr>
     <tr>
@@ -80,7 +80,14 @@ description: "Compatibility, runtime behavior and troubleshooting notes for mana
   </tbody>
 </table>
 
-<h2 id="network-reference">Network behavior</h2>
+<h2 id="endpoint-connectivity">Endpoint connectivity</h2>
+<p>What Orcraft opens on the network and how the controller finds an endpoint. Use it to plan
+  firewall rules, choose ports and addresses on machines with several interfaces, and decide whether
+  endpoints are added by name or by IP address. The endpoint's <code>-port</code> and
+  <code>-ip</code> options are given on its command line, in the same way as on
+  <a class="text-accent" href="/setup/endpoints/#run-endpoint">Adding endpoints/Run the endpoint</a>.
+  The subsections that follow the table cover host-name resolution: where a name is resolved, hosts
+  with more than one address, stale lookups and IPv6 link-local answers.</p>
 <table>
   <tbody>
     <tr>
@@ -90,7 +97,10 @@ description: "Compatibility, runtime behavior and troubleshooting notes for mana
     </tr>
     <tr>
       <th>Address families</th>
-      <td>Dual-stack IPv4 and IPv6; restrict the interface with <code>-bind</code></td>
+      <td>The endpoint listens dual-stack, IPv4 and IPv6; restrict it to one address with
+        <code>-ip</code> (<code>-bind</code> is an alias). The controller's reachability ping is
+        IPv4-only on Windows and Linux, so an endpoint reachable only over IPv6 shows as Offline from
+        those controllers</td>
     </tr>
     <tr>
       <th>Controller</th>
@@ -98,17 +108,112 @@ description: "Compatibility, runtime behavior and troubleshooting notes for mana
     </tr>
     <tr>
       <th>Discovery</th>
-      <td>No broadcast, multicast or discovery ports</td>
+      <td>No broadcast, multicast or discovery ports of its own. Host-name lookups go through the
+        operating system's resolver, including its mDNS (<code>.local</code>) fallback</td>
     </tr>
     <tr>
       <th>Host names</th>
       <td>Optional - endpoints can be added by IP address. A DNS record or local
-        <code>hosts</code> entry works when names are preferred</td>
+        <code>hosts</code> entry works when names are preferred; a name absent from DNS is also tried
+        as <code>name.local</code> - see
+        <a class="text-accent" href="#hosts-with-several-addresses">Hosts with more than one address</a> and
+        <a class="text-accent" href="#stale-name-lookups">Stale name lookups</a> below</td>
+    </tr>
+  </tbody>
+</table>
+<p>Commands that follow from the table:</p>
+<table>
+  <tbody>
+    <tr>
+      <th>Show every option</th>
+      <td>{{ cmd.copyCell("orcraft-endpoint") }} - run without a subcommand, the endpoint prints its help
+        and exits</td>
+    </tr>
+    <tr>
+      <th>Listen on another port</th>
+      <td>{{ cmd.copyCell("orcraft-endpoint run -port 50052") }}</td>
+    </tr>
+    <tr>
+      <th>Listen on one address only</th>
+      <td>{{ cmd.copyCell("orcraft-endpoint run -ip 10.100.102.73") }}</td>
+    </tr>
+    <tr>
+      <th>Name without a DNS record (Windows)</th>
+      <td>Add a line to {{ cmd.copyCell("C:\\Windows\\System32\\drivers\\etc\\hosts") }}</td>
+    </tr>
+    <tr>
+      <th>Name without a DNS record (macOS, Linux)</th>
+      <td>Add a line to {{ cmd.copyCell("/etc/hosts") }}</td>
     </tr>
   </tbody>
 </table>
 <p>For the firewall steps needed by remote endpoints, see
   <a class="text-accent" href="/setup/prerequisites/#remote-endpoints">Prerequisites/Remote endpoints</a>.</p>
+
+<h3 id="where-names-are-resolved">Where a host name is resolved</h3>
+<p>An endpoint added by host name is resolved on the machine that runs the controller, by that
+  machine's own resolver: its DNS server, its <code>hosts</code> file and, on most systems, mDNS
+  (<code>name.local</code>) as a fallback. The controller pings the name, then <code>name.local</code>,
+  then the last address it knew. A name that works from one PC can therefore fail from another, and
+  the place to check is always the controller's machine. Ping the name there; the first line of the
+  output shows which address the name resolved to:</p>
+<table>
+  <tbody>
+    <tr>
+      <th>Windows</th>
+      <td>{{ cmd.copyCell("ping -4 ENDPOINT-HOST") }}</td>
+    </tr>
+    <tr>
+      <th>macOS</th>
+      <td>{{ cmd.copyCell("ping -c 1 ENDPOINT-HOST") }}</td>
+    </tr>
+    <tr>
+      <th>Linux</th>
+      <td>{{ cmd.copyCell("ping -4 -c 1 ENDPOINT-HOST") }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="hosts-with-several-addresses">Hosts with more than one address</h3>
+<p>A machine connected by both Ethernet and Wi-Fi has two IPv4 addresses, and a name lookup can
+  return either of them. The controller and the endpoint talk over whichever address answers, but the
+  address shown on the card is the one the controller's last lookup returned, so it can differ from one
+  lookup to the next. When one of the interfaces is disconnected, the name can keep resolving to that
+  interface's address until the cached answer expires, and the card shows Offline while the machine is
+  reachable on its other address. To hold a host to one address, add the endpoint by IP address instead
+  of by name, or keep only one of its interfaces on the network the controller uses.</p>
+
+<h3 id="stale-name-lookups">Stale name lookups</h3>
+<p>Resolvers cache their answers. After an endpoint machine changes address, disconnects an
+  interface or is renamed, the controller's machine can keep pinging the old address for minutes.
+  Flush the cache on the controller's machine, then wait for the card's next poll:</p>
+<table>
+  <tbody>
+    <tr>
+      <th>Windows</th>
+      <td>{{ cmd.copyCell("ipconfig /flushdns") }}</td>
+    </tr>
+    <tr>
+      <th>macOS</th>
+      <td>{{ cmd.copyCell("sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder") }}</td>
+    </tr>
+    <tr>
+      <th>Linux (systemd-resolved)</th>
+      <td>{{ cmd.copyCell("resolvectl flush-caches") }}</td>
+    </tr>
+  </tbody>
+</table>
+<p>On Windows, ping counts a "Destination host unreachable" reply from the controller's own machine
+  as an answer, so a stale address can show the card as
+  <strong class="text-warning">Online</strong> rather than Offline. The flush applies in the same way.</p>
+
+<h3 id="ipv6-link-local-answers">IPv6 link-local answers</h3>
+<p>Some resolvers return an IPv6 link-local address (<code>fe80::…</code>) ahead of the IPv4 one;
+  a plain ping of the name shows it in the first line. Such an address is tied to one network interface
+  of the controller's machine and stops working when that machine moves between Wi-Fi and Ethernet.
+  If connections to an endpoint are unstable while its name resolves that way, add the endpoint by its
+  IPv4 address.</p>
+
 
 <h2 id="permissions">Permissions and storage</h2>
 <p>Orcraft itself does not require administrator or root access.</p>
@@ -141,7 +246,7 @@ description: "Compatibility, runtime behavior and troubleshooting notes for mana
   </tbody>
 </table>
 
-<h2 id="commands-and-output">Commands and output</h2>
+<h2 id="shells-and-terminals">Shells and terminals</h2>
 
 <h3 id="command-shell">Command shell</h3>
 <p>Every supported OS already includes the shell Orcraft uses. CLI commands in test steps run in:</p>
@@ -235,7 +340,7 @@ bash -c "for i in {1..3}; do ping -c 1 10.0.0.5; done"', 'bash') }}
 </table>
 
 <h2 id="python-libraries">Python libraries</h2>
-<p>These libraries are installed automatically by pip.</p>
+<p>pip installs these libraries automatically along with the <code>orcraft</code> package.</p>
 <table>
   <thead>
     <tr>

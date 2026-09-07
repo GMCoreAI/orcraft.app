@@ -140,6 +140,9 @@ orcraft-endpoint startup --remove', 'bash') }}
     <a class="text-accent" href="/setup/prerequisites/#tcp-port">Prerequisites/TCP port</a>.</li>
   <li>The port configured in the controller doesn't match the port the endpoint is listening on.</li>
   <li>The endpoint process was stopped or restarted after the ping succeeded.</li>
+  <li>On Windows, the controller's machine still holds an address the endpoint machine no longer
+    uses - see <a class="text-accent" href="/setup/system-reference/#stale-name-lookups">System
+    reference/Stale name lookups</a>.</li>
 </ul>
 
 <h3 id="endpoint-status-offline">Endpoint status: Offline</h3>
@@ -153,5 +156,9 @@ orcraft-endpoint startup --remove', 'bash') }}
     across an unconfigured VPN or subnet).</li>
   <li>A firewall or network policy is blocking ICMP/ping traffic between the machines - see
     <a class="text-accent" href="/setup/prerequisites/#icmp-ping">Prerequisites/ICMP (Ping)</a>.</li>
+  <li>The host name resolves to an address the endpoint machine no longer uses, for example after it
+    switched between Wi-Fi and Ethernet - see
+    <a class="text-accent" href="/setup/system-reference/#hosts-with-several-addresses">System
+    reference/Hosts with more than one address</a>.</li>
 </ul>
 
