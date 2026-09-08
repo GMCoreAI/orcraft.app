@@ -238,11 +238,12 @@ if __name__ == "__main__":
   <code>update_endpoint_app</code>, lets each item decide for itself.</p>
 
 <h2 id="execution">Execution</h2>
-<p>A batch always runs its items concurrently, each in its own subprocess. Items are not held back for one
-  another: a suite item starts its groups, a group item starts its tests, and every test waits only for
-  the endpoints it needs, exactly as it would under the controller. When an item finishes, its whole log
-  is appended to the batch log as one block, so the batch log reads as nested blocks: the batch header,
-  then each item's complete log as it finishes, then the batch summary.</p>
+<p>A batch always runs its items concurrently, each in its own subprocess. Suite and group items start at
+  once and start their own children; the tests of the whole batch, test items included, take their turn
+  in one queue kept for the run, in the order the items list them, and a test starts when every endpoint
+  it needs is free of the batch's other tests, exactly as it would under the controller. When an item
+  finishes, its whole log is appended to the batch log as one block, so the batch log reads as nested
+  blocks: the batch header, then each item's complete log as it finishes, then the batch summary.</p>
 
 <p>A batch cannot contain another batch.</p>
 

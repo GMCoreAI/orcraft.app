@@ -290,10 +290,13 @@ if __name__ == "__main__":
 </div>
 
 <h2 id="concurrency">Concurrent execution</h2>
-<p>A group runs its tests as concurrent subprocesses, considered in declaration order, which is what
-  makes a suite spread across several endpoints finish in a useful amount of time. A test starts as soon
-  as every endpoint it needs is free; until then it waits without holding a process, and the group log
-  notes which endpoints it is waiting for. A test that declares no remote endpoint starts at once.</p>
+<p>A group runs its tests as concurrent subprocesses, which is what makes a suite spread across several
+  endpoints finish in a useful amount of time. The order in which tests start belongs to the run as a
+  whole, not to the group: the run keeps one queue over every test of every group, in declaration order,
+  the way the controller keeps one queue for a session. A test starts as soon as every endpoint it needs
+  is free of the run's other tests; until then it waits without holding a process, and the group log
+  notes which endpoints it is waiting for. A waiting test does not hold back the tests after it. A test
+  that declares no remote endpoint starts at once.</p>
 
 <p>Endpoint contention is therefore handled for you: an endpoint is held for the duration of a run, and
   another run wanting it waits, unless the endpoint field is declared
