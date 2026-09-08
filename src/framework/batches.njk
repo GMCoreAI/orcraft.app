@@ -173,16 +173,6 @@ if __name__ == "__main__":
       <td>The suites, groups, tests and references this batch runs.</td>
     </tr>
     <tr>
-      <td><code>upload_test_package</code></td>
-      <td><code>"if_missing"</code></td>
-      <td>Whether each item's test package is uploaded to the endpoint before the run.</td>
-    </tr>
-    <tr>
-      <td><code>update_endpoint_app</code></td>
-      <td><code>"defer"</code></td>
-      <td>Whether the endpoint application is updated before the run. <code>defer</code> leaves the decision to the items.</td>
-    </tr>
-    <tr>
       <td><code>log_orientation</code></td>
       <td><code>HORIZONTAL</code></td>
       <td>Orientation of the logged config table, or <code>OFF</code> to leave it out of the log.</td>
@@ -230,12 +220,6 @@ if __name__ == "__main__":
     to the name, but through your definition - and the log indentation and the run timestamps silently
     stop meaning what the controller expects.</p>
 </div>
-
-<h2 id="policies">Policy inheritance</h2>
-<p><code>upload_test_package</code> and <code>update_endpoint_app</code> work as they do on a
-  <a class="text-accent" href="/framework/suites/#policies">suite</a>: a concrete value at batch level
-  overrides every item beneath it, and <code>defer</code>, the default for
-  <code>update_endpoint_app</code>, lets each item decide for itself.</p>
 
 <h2 id="execution">Execution</h2>
 <p>A batch always runs its items concurrently, each in its own subprocess. Suite and group items start at

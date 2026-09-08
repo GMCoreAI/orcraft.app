@@ -111,39 +111,6 @@ if __name__ == "__main__":
     GUI, the log table and <code>required</code> validation no longer see it.</p>
 </div>
 
-<h3 id="config-gui">Overridable in code or GUI</h3>
-<p>Set in your config class, and changeable again from the run configuration panel before a run.</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>Field</th>
-      <th>Default</th>
-      <th>Meaning</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>upload_test_package</code></td>
-      <td><code>"if_missing"</code></td>
-      <td>Whether the test package is uploaded to the endpoint before the run.</td>
-    </tr>
-    <tr>
-      <td><code>update_endpoint_app</code></td>
-      <td><code>"defer"</code></td>
-      <td>Whether the endpoint application is updated before the run. <code>defer</code> leaves the decision to the level below.</td>
-    </tr>
-  </tbody>
-</table>
-
-<div class="docs-callout docs-callout--warning">
-  <span class="docs-callout__label">Override carefully</span>
-  <p>Same rule as above: redeclare with the same <code>OrcraftConfigField</code> type and a new default,
-    never a bare value. The default you set here is what the run configuration panel shows until someone
-    changes it there.</p>
-</div>
-
-
 <h3 id="config-reserved">Reserved</h3>
 <p>Written by the framework while a run is in progress.</p>
 
@@ -176,71 +143,6 @@ if __name__ == "__main__":
     to the name, but through your definition - and the log indentation, the run timestamps and the
     endpoint a step is dispatched to silently stop meaning what the controller expects.</p>
 </div>
-
-<h2 id="policies">Policy inheritance</h2>
-<p><code>upload_test_package</code> and <code>update_endpoint_app</code> exist on suites, groups and
-  tests, and the level that speaks last does not win - the level that speaks <em>first</em> does. A
-  concrete value at suite level overrides every group and test beneath it, which is what makes a
-  one-off run reproducible: set <code>always</code> at the suite and nothing below can quietly skip the
-  upload.</p>
-
-<p><code>defer</code> is the opposite instruction: express no opinion and let the level below decide. It
-  is the default for suites and groups precisely because a suite is a collection of tests with different
-  needs, and overriding them all should be a deliberate act.</p>
-
-<p><code>update_endpoint_app</code> takes one of four values at suite level:</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>Value</th>
-      <th>Meaning</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>always</code></td>
-      <td>Update the endpoint application before every run.</td>
-    </tr>
-    <tr>
-      <td><code>on_mismatch</code></td>
-      <td>Update only when the endpoint application does not match the controller. The default for a test.</td>
-    </tr>
-    <tr>
-      <td><code>never</code></td>
-      <td>Leave the endpoint application as it is.</td>
-    </tr>
-    <tr>
-      <td><code>defer</code></td>
-      <td>Express no opinion and leave the decision to the level below. The default for a suite.</td>
-    </tr>
-  </tbody>
-</table>
-
-<p><code>upload_test_package</code> has no <code>defer</code>:</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>Value</th>
-      <th>Meaning</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>always</code></td>
-      <td>Upload on every run. The safe choice while the suite is changing.</td>
-    </tr>
-    <tr>
-      <td><code>if_missing</code></td>
-      <td>Upload only when the endpoint does not already have the package. The default.</td>
-    </tr>
-    <tr>
-      <td><code>never</code></td>
-      <td>Never upload - the endpoint is expected to have the package already.</td>
-    </tr>
-  </tbody>
-</table>
 
 <h2 id="results">Result fields</h2>
 <p>Like a group, a suite has no body: its result is written entirely by the framework as its groups

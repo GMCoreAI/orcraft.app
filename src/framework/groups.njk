@@ -126,39 +126,6 @@ if __name__ == "__main__":
     GUI, the log table and <code>required</code> validation no longer see it.</p>
 </div>
 
-<h3 id="config-gui">Overridable in code or GUI</h3>
-<p>Set in your config class, and changeable again from the run configuration panel before a run.</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>Field</th>
-      <th>Default</th>
-      <th>Meaning</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>upload_test_package</code></td>
-      <td><code>"if_missing"</code></td>
-      <td>Whether the test package is uploaded to the endpoint before the run.</td>
-    </tr>
-    <tr>
-      <td><code>update_endpoint_app</code></td>
-      <td><code>"defer"</code></td>
-      <td>Whether the endpoint application is updated before the run. <code>defer</code> leaves the decision to the level below.</td>
-    </tr>
-  </tbody>
-</table>
-
-<div class="docs-callout docs-callout--warning">
-  <span class="docs-callout__label">Override carefully</span>
-  <p>Same rule as above: redeclare with the same <code>OrcraftConfigField</code> type and a new default,
-    never a bare value. The default you set here is what the run configuration panel shows until someone
-    changes it there.</p>
-</div>
-
-
 <h3 id="config-reserved">Reserved</h3>
 <p>Written by the framework while a run is in progress.</p>
 
@@ -301,70 +268,6 @@ if __name__ == "__main__":
 <p>Endpoint contention is therefore handled for you: an endpoint is held for the duration of a run, and
   another run wanting it waits, unless the endpoint field is declared
   <a class="text-accent" href="/framework/endpoints/#endpoint-options"><code>shared</code></a>.</p>
-
-<h2 id="defer">Policy inheritance</h2>
-<p><code>update_endpoint_app</code> is the one field where a group deliberately does not decide by
-  default. <code>defer</code> means the group expresses no opinion and each test keeps its own choice;
-  any other value overrides every test beneath it.</p>
-
-<p>That distinction matters when a suite mixes tests that must run against a pinned endpoint version with
-  tests that always want the latest. Leaving the group at <code>defer</code> preserves both intents;
-  setting a concrete value is an explicit decision to override them.</p>
-
-<p><code>update_endpoint_app</code> takes one of four values at group level:</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>Value</th>
-      <th>Meaning</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>always</code></td>
-      <td>Update the endpoint application before every run.</td>
-    </tr>
-    <tr>
-      <td><code>on_mismatch</code></td>
-      <td>Update only when the endpoint application does not match the controller. The default for a test.</td>
-    </tr>
-    <tr>
-      <td><code>never</code></td>
-      <td>Leave the endpoint application as it is.</td>
-    </tr>
-    <tr>
-      <td><code>defer</code></td>
-      <td>Express no opinion and leave the decision to the level below. The default for a group.</td>
-    </tr>
-  </tbody>
-</table>
-
-<p><code>upload_test_package</code> has no <code>defer</code>: a group always states a policy, and it
-  applies to every test beneath it.</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>Value</th>
-      <th>Meaning</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>always</code></td>
-      <td>Upload on every run. The safe choice while the suite is changing.</td>
-    </tr>
-    <tr>
-      <td><code>if_missing</code></td>
-      <td>Upload only when the endpoint does not already have the package. The default.</td>
-    </tr>
-    <tr>
-      <td><code>never</code></td>
-      <td>Never upload - the endpoint is expected to have the package already.</td>
-    </tr>
-  </tbody>
-</table>
 
 <h2 id="standalone">Standalone execution</h2>
 <p>Like a test, a group runs on its own:</p>
