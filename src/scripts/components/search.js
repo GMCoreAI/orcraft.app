@@ -77,9 +77,17 @@ function renderSection(page, section) {
     </li>`;
 }
 
+/* Pagefind lists a page's matching sections in document order; rank them by
+   match strength so the best sections make the cut, not the earliest. */
+function sectionScore(section) {
+  return (section.weighted_locations ?? []).reduce((sum, hit) => sum + (hit.balanced_score ?? hit.weight ?? 1), 0);
+}
+
 function render(pages, query) {
   const rows = pages.flatMap((page) => {
-    const sections = page.sub_results?.length ? page.sub_results : [{ url: page.url, excerpt: page.excerpt }];
+    const sections = page.sub_results?.length
+      ? [...page.sub_results].sort((a, b) => sectionScore(b) - sectionScore(a))
+      : [{ url: page.url, excerpt: page.excerpt }];
     return sections.slice(0, MAX_SECTIONS_PER_PAGE).map((section) => renderSection(page, section));
   });
 

@@ -1,12 +1,17 @@
 ---
-layout: layouts/base.njk
+layout: layouts/docs.njk
 title: FAQ
 key: faq
+docsTitle: FAQ
+docsBase: /faq/
+docsItems:
+  - { label: FAQ, slug: "" }
 description: "Frequently asked questions about Orcraft: what it is, how it compares to other test tools, and why teams choose it."
 ---
 
-{# Search body: questions and answers are indexed so they are findable from the docs search. #}
-<section class="section container container--narrow" data-pagefind-body data-pagefind-meta="title:FAQ">
+{# Docs layout: the sidebar tree is built from the h2 sections and h3 questions below,
+   and the article body is indexed by the site search. #}
+<div class="faq-page">
   <h1>FAQ</h1>
   <p class="text-muted">Answers to the questions we hear most often. Something missing?
     <a class="text-accent" href="/contact/">Ask us</a>.</p>
@@ -15,8 +20,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
 
     <h2 id="general">General</h2>
 
-    <details class="faq__item" id="what-is-orcraft">
-      <summary class="faq__question">What is Orcraft?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="what-is-orcraft">What is Orcraft?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>Orcraft is a platform for developing and orchestrating tests. It has two halves: a plain-Python
           <a class="text-accent" href="/framework/">test framework</a> that gives suites a defined structure, and
@@ -25,8 +30,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
-    <details class="faq__item" id="who-is-it-for">
-      <summary class="faq__question">Who is Orcraft for?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="who-is-it-for">Who is Orcraft for?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>Validation and engineering teams that test software, firmware or hardware on real machines: lab
           setups, devices under test, cross-platform automation and CI execution. If your tests need to run on
@@ -35,8 +40,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
-    <details class="faq__item" id="code-first">
-      <summary class="faq__question">What does "code-first" mean in practice?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="code-first">What does "code-first" mean in practice?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>The code comes first and everything else follows from it. Suites, groups, tests, flows and steps are
           written directly in Python, and the controller reads that code to derive the configuration widgets in
@@ -45,8 +50,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
-    <details class="faq__item" id="code-once">
-      <summary class="faq__question">What does "code-once" mean in practice?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="code-once">What does "code-once" mean in practice?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>You write a test suite once and re-run it under different settings without touching the code. A
           suite developed against localhost runs on remote endpoints by selecting them in the run panel. A
@@ -56,8 +61,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
-    <details class="faq__item" id="code-only">
-      <summary class="faq__question">What does "code-only" mean in practice?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="code-only">What does "code-only" mean in practice?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>There is no second layer beside the code. No JSON, no YAML, no configuration files, no plugins and no
           scripts to keep in sync with the tests. Test configuration, including the widgets shown in the GUI, is
@@ -69,8 +74,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
-    <details class="faq__item" id="new-language">
-      <summary class="faq__question">Do I need to learn a new language or DSL?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="new-language">Do I need to learn a new language or DSL?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>No. Tests are ordinary Python classes with a few base classes and field types imported from the
           <code>orcraft</code> package. Anything Python can do, a test step can do, including calling the
@@ -78,8 +83,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
-    <details class="faq__item" id="only-python">
-      <summary class="faq__question">Does Orcraft only support Python?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="only-python">Does Orcraft only support Python?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>Python is the native language of Orcraft: the framework is a Python library and tests are written as
           Python classes. That is where Python ends. A step is ordinary Python code, so it can launch an
@@ -89,8 +94,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
-    <details class="faq__item" id="only-software">
-      <summary class="faq__question">Does Orcraft only test software?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="only-software">Does Orcraft only test software?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>No. Orcraft is built for validation labs, where the thing under test is as often a device, a board, an
           instrument or a complete system as it is a program. An endpoint is any machine that can reach the
@@ -101,8 +106,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
-    <details class="faq__item" id="is-ai-required">
-      <summary class="faq__question">Is AI required to use Orcraft?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="is-ai-required">Is AI required to use Orcraft?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>No. AI-assisted generation and analysis are optional and stay dormant until you configure a provider.
           When enabled, the controller can generate a complete or partial suite from the documentation of the
@@ -111,8 +116,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
-    <details class="faq__item" id="ai-providers">
-      <summary class="faq__question">Which AI providers are supported?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="ai-providers">Which AI providers are supported?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>OpenAI, Anthropic, Google Gemini, and any OpenAI-compatible gateway, including private ones inside your
           own network. Only the controller talks to the provider, and only when you ask it to. Endpoints never
@@ -122,8 +127,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
-    <details class="faq__item" id="platforms">
-      <summary class="faq__question">Which operating systems are supported?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="platforms">Which operating systems are supported?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>Windows, Linux and macOS, for both the controller and the endpoints, and they can be mixed freely in
           one session. The controller GUI needs a desktop session. Endpoints have no GUI and run headless, on a
@@ -132,8 +137,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
-    <details class="faq__item" id="need-endpoints">
-      <summary class="faq__question">Do I need remote endpoints to get started?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="need-endpoints">Do I need remote endpoints to get started?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>No. The controller runs suites on localhost out of the box, so you can develop and run everything on
           one machine. Endpoints are configuration, not code: a suite developed against localhost becomes a
@@ -141,8 +146,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
-    <details class="faq__item" id="data-leaves-network">
-      <summary class="faq__question">Does any of my data leave my network?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="data-leaves-network">Does any of my data leave my network?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>Test traffic, logs and results stay between your controller and your endpoints. The controller makes
           two optional outbound calls, a version check against PyPI at startup and a status check for suites kept
@@ -151,8 +156,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
-    <details class="faq__item" id="licensing">
-      <summary class="faq__question">Is Orcraft open source? How is it licensed?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="licensing">Is Orcraft open source? How is it licensed?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>Orcraft™ is a commercial product of GM Core Ltd. and its source code is proprietary. It installs from
           PyPI with <code>pip install orcraft</code>. For licensing and pricing details,
@@ -162,8 +167,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
 
     <h2 id="why-orcraft">Why teams choose Orcraft</h2>
 
-    <details class="faq__item" id="ai-from-documentation">
-      <summary class="faq__question">From documentation to a running suite, with AI<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="ai-from-documentation">From documentation to a running suite, with AI</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>Point the controller at the existing documentation of the system under test and it generates a
           complete or partial suite in the same plain-Python structure you would write by hand, ready to review
@@ -172,8 +177,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
-    <details class="faq__item" id="single-source">
-      <summary class="faq__question">One suite for GUI, CLI and CI<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="single-source">One suite for GUI, CLI and CI</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>The same Python suite runs from the controller GUI, from the command line and from a CI pipeline.
           A run confirmed in the GUI is exported as a snapshot that reproduces it exactly elsewhere, so there is
@@ -181,8 +186,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
-    <details class="faq__item" id="team-runs">
-      <summary class="faq__question">The developer writes, the whole team runs<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="team-runs">The developer writes, the whole team runs</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>Because the GUI is generated from the code, a lab technician or a tester who never opens the Python
           can select endpoints, set parameters, filter a matrix and run the suite. The developer decides what is
@@ -190,8 +195,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
-    <details class="faq__item" id="nothing-to-copy">
-      <summary class="faq__question">Nothing to copy to lab machines<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="nothing-to-copy">Nothing to copy to lab machines</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>The controller uploads the test package to each endpoint at run time and updates the endpoint software
           whenever versions differ. Endpoints are registered once and can be shared between controllers and
@@ -199,8 +204,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
-    <details class="faq__item" id="matrix">
-      <summary class="faq__question">Case matrices instead of hand-written combinations<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="matrix">Case matrices instead of hand-written combinations</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p><a class="text-accent" href="/tutorial/matrix-and-cases/">Dimensions</a> expand one test into a
           planned matrix of cases, filtered from the GUI and executed in defined or randomized order over
@@ -209,8 +214,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
-    <details class="faq__item" id="results-in-one-place">
-      <summary class="faq__question">Logs and results in one place<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="results-in-one-place">Logs and results in one place</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>Live logs from every endpoint, step-level statuses, statistics that roll up automatically from case
           to suite, spreadsheet export and portable session files. Sessions are saved, reopened later and
@@ -219,8 +224,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
-    <details class="faq__item" id="start-small">
-      <summary class="faq__question">Start with one file, grow to a lab<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="start-small">Start with one file, grow to a lab</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>Every level of the hierarchy is optional. A single test file with a <code>main()</code> runs on its
           own, on localhost, with no group, suite or endpoint around it. The same file later joins a suite that
@@ -229,8 +234,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
-    <details class="faq__item" id="mixed-platforms">
-      <summary class="faq__question">Mixed platforms in one session<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="mixed-platforms">Mixed platforms in one session</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>Windows, Linux and macOS, as controller or endpoint, in any combination within one session. Endpoints
           have no GUI and run headless on a server or over SSH. Everything installs with pip, so the toolchain is
@@ -238,8 +243,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
-    <details class="faq__item" id="security">
-      <summary class="faq__question">Secure by design<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="security">Secure by design</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>Controller-to-endpoint communication can be secured with mutual TLS and token-based access control,
           so endpoints in remote labs or across an external network can join a session safely. The controller
@@ -247,8 +252,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
-    <details class="faq__item" id="suites-in-git">
-      <summary class="faq__question">Suites live where your code lives<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="suites-in-git">Suites live where your code lives</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>A suite can be kept in a Git repository or supplied as an archive. For Git-backed suites the
           controller checks the remote in the background and offers a fast-forward pull, without ever blocking
@@ -258,8 +263,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
 
     <h2 id="comparison">How Orcraft compares</h2>
 
-    <details class="faq__item" id="vs-pytest">
-      <summary class="faq__question">How is Orcraft different from pytest or unittest?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="vs-pytest">How is Orcraft different from pytest or unittest?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>pytest and unittest run test functions on one machine and report pass or fail. Orcraft covers what
           happens around that: a structured hierarchy of suites, groups, tests, cases, flows and steps, a GUI
@@ -269,8 +274,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
-    <details class="faq__item" id="vs-robot">
-      <summary class="faq__question">How is Orcraft different from Robot Framework?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="vs-robot">How is Orcraft different from Robot Framework?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>Robot Framework describes tests in a keyword language backed by Python libraries, so a team maintains
           both the keyword files and the code behind them. In Orcraft the test is the Python code, and the
@@ -279,8 +284,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
-    <details class="faq__item" id="vs-test-management">
-      <summary class="faq__question">Does Orcraft replace a test management tool such as TestRail, Xray or Zephyr?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="vs-test-management">Does Orcraft replace a test management tool such as TestRail, Xray or Zephyr?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>Not directly. Those tools track test cases, plans and results that are executed elsewhere. Orcraft is
           the execution side: it runs the tests, keeps every session with its live logs and step-level results,
@@ -289,8 +294,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
-    <details class="faq__item" id="vs-ci">
-      <summary class="faq__question">Does Orcraft replace Jenkins, GitHub Actions or GitLab CI?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="vs-ci">Does Orcraft replace Jenkins, GitHub Actions or GitLab CI?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>No, it runs inside them. A CI runner is a controller installation running in CLI mode, using a snapshot
           exported from the controller where the run was configured and confirmed in the GUI. The pipeline
@@ -299,8 +304,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
-    <details class="faq__item" id="vs-sequencers">
-      <summary class="faq__question">How does Orcraft compare to hardware test sequencers such as NI TestStand?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="vs-sequencers">How does Orcraft compare to hardware test sequencers such as NI TestStand?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>These are the closest relatives: they also orchestrate sequences of steps against hardware and report
           on them. Orcraft differs in being Python-native and cross-platform, with the sequence living in code
@@ -309,8 +314,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
-    <details class="faq__item" id="vs-in-house">
-      <summary class="faq__question">We already have in-house scripts. Why switch?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="vs-in-house">We already have in-house scripts. Why switch?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>In-house frameworks tend to grow a config format, a copy-to-lab-machine procedure, a results
           spreadsheet and a way to run in CI, each maintained by hand. Orcraft supplies all of that from the
@@ -321,8 +326,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
 
     <h2 id="getting-started">Getting started</h2>
 
-    <details class="faq__item" id="how-long">
-      <summary class="faq__question">How long does it take to get a first test running?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="how-long">How long does it take to get a first test running?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>Minutes. Install Python, run <code>pip install orcraft</code>, start the controller and run the
           Hello World suite from the <a class="text-accent" href="/tutorial/">Tutorial</a> on localhost. Remote
@@ -330,8 +335,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
-    <details class="faq__item" id="endpoint-install-time">
-      <summary class="faq__question">How long does it take to install an endpoint?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="endpoint-install-time">How long does it take to install an endpoint?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>It depends on whether you want a secure connection. An
           <a class="text-accent" href="/setup/endpoints/#insecure-endpoint-connection">insecure endpoint</a>
@@ -346,8 +351,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
-    <details class="faq__item" id="see-it">
-      <summary class="faq__question">Can I see it before installing?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="see-it">Can I see it before installing?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>Yes. The <a class="text-accent" href="/demo/">Demo</a> page shows the controller in action, and the
           <a class="text-accent" href="/tutorial/">Tutorial</a> walks through developing, configuring, running and
@@ -355,8 +360,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
-    <details class="faq__item" id="more-questions">
-      <summary class="faq__question">I have a question that is not here<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="more-questions">I have a question that is not here</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>Write to <a class="text-accent" href="mailto:{{ site.email }}">{{ site.email }}</a> or use the
           <a class="text-accent" href="/contact/">Contact</a> page. We answer every message.</p>
@@ -367,4 +372,4 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
 
   <p class="faq__notice text-muted text-sm">All other product names are trademarks of their respective owners
     and are used for identification only.</p>
-</section>
+</div>

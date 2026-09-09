@@ -1,4 +1,13 @@
-/* FAQ page: grouped question/answer accordions. */
+/* FAQ page: grouped question/answer accordions, inside the docs layout. */
+
+/* The sidebar lists whole questions, so it gets a wider column than the docs default. */
+body[data-page="faq"] .docs {
+  --docs-sidebar-width: 380px;
+}
+
+.faq-page {
+  max-width: var(--docs-prose-width);
+}
 
 .faq h2 {
   margin-top: var(--space-12);
@@ -11,7 +20,6 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-surface);
-  scroll-margin-top: 90px;
   transition: border-color var(--transition-fast);
 }
 
@@ -34,6 +42,16 @@
   font-weight: 600;
   cursor: pointer;
   list-style: none;
+}
+
+/* The question is a heading so search and the sidebar treat it as a section; styled as
+   summary text, overriding the docs article heading rules. */
+.docs__article .faq__title {
+  margin: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  scroll-margin-top: 90px;
 }
 
 .faq__question::-webkit-details-marker {
