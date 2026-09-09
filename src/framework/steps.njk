@@ -306,6 +306,29 @@ second_result = self.run_step(
   local step, or to a different endpoint, raises. That keeps a long-lived resource usable across several
   steps without pretending it can be copied.</p>
 
+<h2 id="synchronous">Synchronous execution</h2>
+<p>A step runs to completion before the flow continues. <code>run_step</code> returns only after
+  <code>_run_step</code> has finished, on the controller or on the endpoint, and hands back the finished
+  result, so the next line of the flow can read it. The steps of one flow never overlap, and
+  <code>_run_step</code> is a plain method: an <code>async def</code> body is not awaited and is not
+  supported.</p>
+
+<p>Concurrency in Orcraft lives above the step. Cases run in parallel, and an
+  <a class="text-accent" href="/framework/endpoints/#declaring">endpoint fanout</a> runs the same test on
+  several machines at once, each with its own log and its own place in the tree. Inside a flow the order
+  of steps is the order in which things happen, which is what makes the log and the tree readable when a
+  step fails.</p>
+
+<h3 id="start-and-wait">Overlapping work</h3>
+<p>When a flow does need two things in flight at the same time, split the long-running side into two
+  steps: a <em>start</em> step that launches the work and returns, and a later <em>wait</em> step that
+  collects its outcome. Between them the flow runs whatever must overlap, on the same endpoint or on
+  another one. A process handle, thread or socket kept on the start step's result stays on the endpoint
+  and reaches the flow as a reference, as described under
+  <a class="text-accent" href="#remote-objects">Non-transferable values</a> above; the wait step hands it
+  back to the same endpoint and gets the live object. Each step stays one action with its own checkpoint,
+  and nothing in the flow's contract changes.</p>
+
 <h2 id="standalone">Direct execution</h2>
 <p>Steps are normally run by a flow through
   <a class="text-accent" href="/framework/flows/#run-step"><code>run_step</code></a>, which builds the
