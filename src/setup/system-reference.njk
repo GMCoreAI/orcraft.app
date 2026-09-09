@@ -86,14 +86,23 @@ description: "Compatibility, runtime behavior and troubleshooting notes for mana
   endpoints are added by name or by IP address. The endpoint's <code>-port</code> and
   <code>-ip</code> options are given on its command line, in the same way as on
   <a class="text-accent" href="/setup/endpoints/#run-endpoint">Adding endpoints/Run the endpoint</a>.
-  The subsections that follow the table cover host-name resolution: where a name is resolved, hosts
-  with more than one address, stale lookups and IPv6 link-local answers.</p>
+  The subsections that follow the table cover host-name resolution - where a name is resolved, hosts
+  with more than one address, stale lookups and IPv6 link-local answers - and running several
+  endpoint applications on one machine.</p>
+<h3 id="ports-addresses-and-names">Ports, addresses and names</h3>
 <table>
   <tbody>
     <tr>
       <th>Endpoint port</th>
       <td>TCP 50051 by default; configurable with <code>-port</code>. The controller must be given
         the same port when the endpoint is added</td>
+    </tr>
+    <tr>
+      <th>Endpoint applications per machine</th>
+      <td>A controller registers each machine once. A second copy of the endpoint application on
+        another port lets another controller use the same machine - see
+        <a class="text-accent" href="#several-endpoints-on-one-machine">Several endpoint
+        applications on one machine</a> below</td>
     </tr>
     <tr>
       <th>Address families</th>
@@ -121,6 +130,7 @@ description: "Compatibility, runtime behavior and troubleshooting notes for mana
     </tr>
   </tbody>
 </table>
+<h3 id="connectivity-commands">Commands</h3>
 <p>Commands that follow from the table:</p>
 <table>
   <tbody>
@@ -150,7 +160,7 @@ description: "Compatibility, runtime behavior and troubleshooting notes for mana
 <p>For the firewall steps needed by remote endpoints, see
   <a class="text-accent" href="/setup/prerequisites/#remote-endpoints">Prerequisites/Remote endpoints</a>.</p>
 
-<h3 id="where-names-are-resolved">Where a host name is resolved</h3>
+<h3 id="host-name-resolution">Host-name resolution</h3>
 <p>An endpoint added by host name is resolved on the machine that runs the controller, by that
   machine's own resolver: its DNS server, its <code>hosts</code> file and, on most systems, mDNS
   (<code>name.local</code>) as a fallback. The controller pings the name, then <code>name.local</code>,
@@ -214,6 +224,73 @@ description: "Compatibility, runtime behavior and troubleshooting notes for mana
   If connections to an endpoint are unstable while its name resolves that way, add the endpoint by its
   IPv4 address.</p>
 
+
+<h3 id="several-endpoints-on-one-machine">Several endpoint applications on one machine</h3>
+<p>The endpoint application is the program started with <code>orcraft-endpoint run</code>. One
+  running copy listens on one port. A machine normally runs one copy, and the controller registers
+  that machine as one endpoint.</p>
+<h4 id="each-machine-is-added-once">Each machine is added once</h4>
+<p>A controller registers a machine as one endpoint. If the machine is already in the Endpoints
+  frame, adding it again is refused, even with a different port.</p>
+<p>Several tests can still use the same machine. By default, runs wait for each other on that
+  endpoint. If tests may run on the machine at the same time, set the
+  <a class="text-accent" href="/framework/endpoints/#endpoint-options"><code>shared</code></a>
+  option on the endpoint field in the test.</p>
+<h4 id="a-second-endpoint-application-for-another-controller">A second endpoint application for another controller</h4>
+<p>A machine can run a second copy of the endpoint application on another port, so that another
+  controller can use the machine. Each controller then talks to its own endpoint application. The
+  two controllers work independently, and packages uploaded through one endpoint application do not
+  affect the other.</p>
+<p>Start the second copy with a port of its own, and register it in the second controller with that
+  port:</p>
+{{ cmd.copyCommand("orcraft-endpoint run -port 50052") }}
+<p>Use this only when the tests of the two controllers do not compete for the same resource on the
+  machine, such as a device, a port or a file. If they do, register the same endpoint application in
+  both controllers instead. Runs from both controllers then wait for each other, or run at the same
+  time when the test marks the endpoint <code>shared</code>.</p>
+<p>The endpoint application reports only its host name to the controller. The Info dialog of an
+  endpoint shows its <strong class="text-accent">Port</strong>, which tells the two copies apart.</p>
+<h4 id="requirements-for-a-second-instance">Requirements for a second endpoint application</h4>
+<p>The endpoint application keeps its files under the directory it was started from and in the
+  Python environment it was installed in. A second copy therefore needs the following:</p>
+<table>
+  <tbody>
+    <tr>
+      <th>Its own port</th>
+      <td>A port that is already in use is refused at startup</td>
+    </tr>
+    <tr>
+      <th>Its own launch directory</th>
+      <td>The endpoint application writes its <code>Logs</code> and unpacks received packages into
+        <code>orcraft-packages</code> under the directory it was started from. Start each copy from
+        a different directory. Otherwise both use the same package folder, and one copy can change
+        what the other one runs</td>
+    </tr>
+    <tr>
+      <th>Its own installation, to update independently</th>
+      <td>An update from the controller reinstalls the endpoint application into the Python
+        environment it runs from, and restarts only that copy. If two copies run from the same
+        installation, both receive the new version, but the second one keeps running the old code
+        until it is restarted. Install each copy in its own
+        <a class="text-accent" href="/setup/prerequisites/#virtual-environment">virtual environment</a>
+        to update them independently</td>
+    </tr>
+    <tr>
+      <th>Its own start</th>
+      <td><code>orcraft-endpoint startup</code> registers one auto-start entry. Running it again for
+        a second port replaces the first entry. Start the second copy by hand or with your own
+        scheduler</td>
+    </tr>
+    <tr>
+      <th>A machine other than the controller's</th>
+      <td>The controller refuses to add <code>localhost</code>, <code>127.0.0.1</code> or
+        <code>::1</code>, because it already has a built-in local endpoint</td>
+    </tr>
+  </tbody>
+</table>
+<h4 id="security-material">Security material</h4>
+<p>The authorization token and the certificates are stored once per machine. All copies of the
+  endpoint application on the machine use the same ones.</p>
 
 <h2 id="permissions">Permissions and storage</h2>
 <p>Orcraft itself does not require administrator or root access.</p>
