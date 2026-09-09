@@ -1,0 +1,281 @@
+---
+layout: layouts/base.njk
+title: FAQ
+key: faq
+description: "Frequently asked questions about Orcraft: what it is, how it compares to other test tools, and why teams choose it."
+---
+
+{# Search body: questions and answers are indexed so they are findable from the docs search. #}
+<section class="section container container--narrow" data-pagefind-body data-pagefind-meta="title:FAQ">
+  <h1>FAQ</h1>
+  <p class="text-muted">Answers to the questions we hear most often. Something missing?
+    <a class="text-accent" href="/contact/">Ask us</a>.</p>
+
+  <div class="faq">
+
+    <h2 id="general">General</h2>
+
+    <details class="faq__item" id="what-is-orcraft">
+      <summary class="faq__question">What is Orcraft?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>Orcraft is a platform for developing and orchestrating tests. It has two halves: a plain-Python
+          <a class="text-accent" href="/framework/">test framework</a> that gives suites a defined structure, and
+          a controller that runs those suites from a GUI, the command line or a CI pipeline, on the local machine
+          or across remote endpoints, and collects the logs and results in one place.</p>
+      </div>
+    </details>
+
+    <details class="faq__item" id="who-is-it-for">
+      <summary class="faq__question">Who is Orcraft for?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>Validation and engineering teams that test software, firmware or hardware on real machines: lab
+          setups, devices under test, cross-platform automation and CI execution. If your tests need to run on
+          more than one machine, be configured by people who did not write them, or produce results someone has
+          to report on, Orcraft is built for you.</p>
+      </div>
+    </details>
+
+    <details class="faq__item" id="code-first">
+      <summary class="faq__question">What does "code-first" mean in practice?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>The Python suite is the only thing you maintain. The controller reads it and derives everything else:
+          the configuration widgets in the GUI, the run plan, the CLI defaults and the CI snapshot. There are no
+          separate configuration files, scripts or plugins to keep in sync with the tests.</p>
+      </div>
+    </details>
+
+    <details class="faq__item" id="new-language">
+      <summary class="faq__question">Do I need to learn a new language or DSL?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>No. Tests are ordinary Python classes with a few base classes and field types imported from the
+          <code>orcraft</code> package. Anything Python can do, a test step can do, including calling the
+          libraries and tools your team already uses. Orcraft requires Python 3.14 or later.</p>
+      </div>
+    </details>
+
+    <details class="faq__item" id="is-ai-required">
+      <summary class="faq__question">Is AI required to use Orcraft?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>No. AI-assisted generation and analysis are optional and stay dormant until you configure a provider.
+          When enabled, the controller can generate a complete or partial suite from the documentation of the
+          system under test, and analyze a run for failures, recurring patterns and recommended actions. Everything
+          else works exactly the same without it.</p>
+      </div>
+    </details>
+
+    <details class="faq__item" id="ai-providers">
+      <summary class="faq__question">Which AI providers are supported?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>OpenAI, Anthropic, Google Gemini, and any OpenAI-compatible gateway, including private ones inside your
+          own network. Only the controller talks to the provider, and only when you ask it to. Endpoints never
+          contact AI providers. See the
+          <a class="text-accent" href="/setup/system-reference/#ai-providers">System reference</a> for what each
+          provider needs.</p>
+      </div>
+    </details>
+
+    <details class="faq__item" id="platforms">
+      <summary class="faq__question">Which operating systems are supported?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>Windows, Linux and macOS, for both the controller and the endpoints, and they can be mixed freely in
+          one session. The controller GUI needs a desktop session. Endpoints have no GUI and run headless, on a
+          server or over SSH. The validated versions are listed in the
+          <a class="text-accent" href="/setup/system-reference/#operating-systems">System reference</a>.</p>
+      </div>
+    </details>
+
+    <details class="faq__item" id="need-endpoints">
+      <summary class="faq__question">Do I need remote endpoints to get started?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>No. The controller runs suites on localhost out of the box, so you can develop and run everything on
+          one machine. Endpoints are configuration, not code: a suite developed against localhost becomes a
+          distributed suite by selecting endpoints in the run panel, with no change to the test body.</p>
+      </div>
+    </details>
+
+    <details class="faq__item" id="data-leaves-network">
+      <summary class="faq__question">Does any of my data leave my network?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>Test traffic, logs and results stay between your controller and your endpoints. The controller makes
+          two optional outbound calls, a version check against PyPI at startup and a status check for suites kept
+          in Git, and both fail quietly when the network is unavailable. AI providers are contacted only if you
+          configure one. Isolated machines can install from a copied wheel file.</p>
+      </div>
+    </details>
+
+    <details class="faq__item" id="licensing">
+      <summary class="faq__question">Is Orcraft open source? How is it licensed?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>Orcraft is a commercial product of GM Core Ltd. and its source code is proprietary. It installs from
+          PyPI with <code>pip install orcraft</code>. For licensing and pricing details,
+          <a class="text-accent" href="/contact/">contact us</a>.</p>
+      </div>
+    </details>
+
+    <h2 id="comparison">How Orcraft compares</h2>
+
+    <details class="faq__item" id="vs-pytest">
+      <summary class="faq__question">How is Orcraft different from pytest or unittest?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>pytest and unittest run test functions on one machine and report pass or fail. Orcraft covers what
+          happens around that: a structured hierarchy of suites, groups, tests, cases, flows and steps, a GUI
+          generated from the code so anyone can configure a run, dispatch of individual steps to remote
+          endpoints, parametrized case matrices, and results that roll up from step to suite. Existing Python
+          test logic can be called from an Orcraft step, so you do not have to throw anything away.</p>
+      </div>
+    </details>
+
+    <details class="faq__item" id="vs-robot">
+      <summary class="faq__question">How is Orcraft different from Robot Framework?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>Robot Framework describes tests in a keyword language backed by Python libraries, so a team maintains
+          both the keyword files and the code behind them. In Orcraft the test is the Python code, and the
+          controller derives the configuration GUI, the run plan and the reports from it. There is no second
+          layer to keep aligned, and no resource files to distribute to the machines that run the tests.</p>
+      </div>
+    </details>
+
+    <details class="faq__item" id="vs-test-management">
+      <summary class="faq__question">Does Orcraft replace a test management tool such as TestRail, Xray or Zephyr?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>Not directly. Those tools track test cases, plans and results that are executed elsewhere. Orcraft is
+          the execution side: it runs the tests, keeps every session with its live logs and step-level results,
+          and exports structured spreadsheets and portable session files. Many teams find the saved sessions and
+          exports cover their reporting needs; others keep their management tool and feed it from the exports.</p>
+      </div>
+    </details>
+
+    <details class="faq__item" id="vs-ci">
+      <summary class="faq__question">Does Orcraft replace Jenkins, GitHub Actions or GitLab CI?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>No, it runs inside them. A CI runner is a controller installation running in CLI mode, using a snapshot
+          exported from the controller where the run was configured and confirmed in the GUI. The pipeline
+          triggers the run; Orcraft handles distributing the package to endpoints, executing the plan and
+          collecting results. You write no per-test pipeline glue.</p>
+      </div>
+    </details>
+
+    <details class="faq__item" id="vs-sequencers">
+      <summary class="faq__question">How does Orcraft compare to hardware test sequencers such as NI TestStand?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>These are the closest relatives: they also orchestrate sequences of steps against hardware and report
+          on them. Orcraft differs in being Python-native and cross-platform, with the sequence living in code
+          rather than in a proprietary editor and file format. It runs on Windows, Linux and macOS, dispatches
+          steps to remote machines over the network, and installs with pip.</p>
+      </div>
+    </details>
+
+    <details class="faq__item" id="vs-in-house">
+      <summary class="faq__question">We already have in-house scripts. Why switch?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>In-house frameworks tend to grow a config format, a copy-to-lab-machine procedure, a results
+          spreadsheet and a way to run in CI, each maintained by hand. Orcraft supplies all of that from the
+          Python suite itself, so the team's effort goes into the tests. Because steps are plain Python, the
+          scripts you have can usually be wrapped rather than rewritten.</p>
+      </div>
+    </details>
+
+    <h2 id="why-orcraft">Why teams choose Orcraft</h2>
+
+    <details class="faq__item" id="single-source">
+      <summary class="faq__question">One suite for GUI, CLI and CI<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>The same Python suite runs from the controller GUI, from the command line and from a CI pipeline.
+          A run confirmed in the GUI is exported as a snapshot that reproduces it exactly elsewhere, so there is
+          no "works in the GUI but not in CI".</p>
+      </div>
+    </details>
+
+    <details class="faq__item" id="nothing-to-copy">
+      <summary class="faq__question">Nothing to copy to lab machines<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>The controller uploads the test package to each endpoint at run time and updates the endpoint software
+          whenever versions differ. Endpoints are registered once and can be shared between controllers and
+          across the team.</p>
+      </div>
+    </details>
+
+    <details class="faq__item" id="matrix">
+      <summary class="faq__question">Case matrices instead of hand-written combinations<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p><a class="text-accent" href="/tutorial/matrix-and-cases/">Dimensions</a> expand one test into a
+          planned matrix of cases, filtered from the GUI and executed in defined or randomized order over
+          configurable cycles. The same test can also fan out to several endpoints, one independent run each,
+          in parallel.</p>
+      </div>
+    </details>
+
+    <details class="faq__item" id="results-in-one-place">
+      <summary class="faq__question">Logs and results in one place<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>Live logs from every endpoint, step-level statuses, statistics that roll up automatically from case
+          to suite, spreadsheet export and portable session files. Sessions are saved, reopened later and
+          re-executed with the same plan. With an AI provider configured, a run can be analyzed for failures,
+          recurring patterns across endpoints and versions, and recommended actions.</p>
+      </div>
+    </details>
+
+    <details class="faq__item" id="security">
+      <summary class="faq__question">Secure by design<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>Controller-to-endpoint communication can be secured with mutual TLS and token-based access control,
+          so endpoints in remote labs or across an external network can join a session safely. The controller
+          makes outbound connections only and needs no inbound firewall rule.</p>
+      </div>
+    </details>
+
+    <details class="faq__item" id="suites-in-git">
+      <summary class="faq__question">Suites live where your code lives<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>A suite can be kept in a Git repository or supplied as an archive. For Git-backed suites the
+          controller checks the remote in the background and offers a fast-forward pull, without ever blocking
+          a run.</p>
+      </div>
+    </details>
+
+    <h2 id="getting-started">Getting started</h2>
+
+    <details class="faq__item" id="how-long">
+      <summary class="faq__question">How long does it take to get a first test running?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>Minutes. Install Python, run <code>pip install orcraft</code>, start the controller and run the
+          Hello World suite from the <a class="text-accent" href="/tutorial/">Tutorial</a> on localhost. Remote
+          endpoints, matrices and CI come later, one chapter at a time.</p>
+      </div>
+    </details>
+
+    <details class="faq__item" id="endpoint-install-time">
+      <summary class="faq__question">How long does it take to install an endpoint?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>It depends on whether you want a secure connection. An
+          <a class="text-accent" href="/setup/endpoints/#insecure-endpoint-connection">insecure endpoint</a>
+          takes a few minutes: install Python, run <code>pip install orcraft</code>, start the endpoint with
+          security disabled and add it in the controller by name or IP address. It is the fastest way to try
+          remote execution on a trusted network.</p>
+        <p>A <a class="text-accent" href="/setup/endpoints/#secure-endpoint-connection">secure endpoint</a> adds
+          the security setup procedure in the controller's Security tab, which generates the authorization token
+          and the certificates for mutual TLS, and a firewall rule on the endpoint. Plan on about 15 minutes for
+          the first one. An endpoint added without security can be switched to secure later by editing it in the
+          controller, so you can start fast and harden afterwards.</p>
+      </div>
+    </details>
+
+    <details class="faq__item" id="see-it">
+      <summary class="faq__question">Can I see it before installing?<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>Yes. The <a class="text-accent" href="/demo/">Demo</a> page shows the controller in action, and the
+          <a class="text-accent" href="/tutorial/">Tutorial</a> walks through developing, configuring, running and
+          analyzing a suite with screenshots.</p>
+      </div>
+    </details>
+
+    <details class="faq__item" id="more-questions">
+      <summary class="faq__question">I have a question that is not here<span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>Write to <a class="text-accent" href="mailto:{{ site.email }}">{{ site.email }}</a> or use the
+          <a class="text-accent" href="/contact/">Contact</a> page. We answer every message.</p>
+      </div>
+    </details>
+
+  </div>
+</section>
