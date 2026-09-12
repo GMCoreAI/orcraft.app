@@ -62,6 +62,10 @@ small,
   color: var(--color-cyan);
 }
 
+.text-brown {
+  color: var(--color-brown);
+}
+
 .text-ai {
   font-weight: 700;
   background: linear-gradient(90deg, var(--color-cyan), var(--color-accent-strong));
