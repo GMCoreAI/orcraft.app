@@ -21,24 +21,35 @@ description: "The endpoints file the controller saves from its Endpoints panel, 
       "resolved_hostname": "lab-linux-1",
       "port": 50051,
       "secure_enabled": true,
+      "os_name": "Linux 6.8.0-45-generic",
+      "version": "0.1.0",
       "accepted_duplicates": []
     },
     {
-      "type": "Host Name",
-      "host_name": "lab-win-1",
+      "type": "IP",
+      "host_name": "",
       "ip": "10.0.0.31",
       "resolved_hostname": "lab-win-1",
       "port": 50051,
       "secure_enabled": true,
+      "os_name": "Windows 11",
+      "version": "0.1.0",
       "accepted_duplicates": []
     }
   ]
 }', "json") }}
 
 <p>Each entry is one registered machine. <code>type</code> is <code>"Host Name"</code> or
-  <code>"IP"</code>, depending on how the machine was added. <code>host_name</code>, <code>ip</code>
-  and <code>port</code> are what the AI agent puts in an endpoint field: the host name or the address,
-  followed by <code>:port</code> when the port is not the default <code>50051</code>.</p>
+  <code>"IP"</code>, depending on how the machine was added. A machine added by IP address has an empty
+  <code>host_name</code>, and <code>resolved_hostname</code> carries the name the controller found for
+  the address. <code>os_name</code> is the operating system the machine reported the last time it
+  answered, such as <code>Windows 11</code>, <code>Linux 6.8.0-45-generic</code> or
+  <code>macOS 15.1</code>, and <code>version</code> is the Orcraft version installed on it. Both are
+  empty for a machine that has not answered yet.</p>
+<p>The value the AI agent puts in an endpoint field is the <code>host_name</code>, or the
+  <code>ip</code> for a machine added by address, followed by <code>:port</code> when the port is not
+  the default <code>50051</code>. A request that names a machine by host name, by address or by
+  operating system resolves through these fields.</p>
 
 <h2 id="loading">Loading into a controller</h2>
 <p>The same file loads back into any controller through the panel's <strong>Load</strong> button. One

@@ -47,10 +47,11 @@ description: "Running and extending Orcraft suites from an AI agent: the request
 {{ cmd.copyPath("Add a TCP retransmit test, run it on lab-linux-1, and when it passes commit and push.") }}
 
 <h2 id="machines">Machines and roles</h2>
-<p>A machine in a request can be named by host name, by address, by operating system or by role. All
-  of these resolve to the entries of the controller's
+<p>A machine in a request can be named by host name, by address or by operating system. All of
+  these resolve to the entries of the controller's
   <a class="text-accent" href="/ai-agents/endpoints/">endpoints file</a>, the one list of machines
-  the AI agent has.</p>
+  the AI agent has: each entry carries the host name, the address and the operating system the machine
+  reported.</p>
 <p>When a test has several endpoint fields, the request also says which machine plays which part.
   In the examples above, "as fan-out" and "as link partners" name the two endpoint fields of the
   traffic tests: the machine under test, with one run per machine, and the set of partners that every
