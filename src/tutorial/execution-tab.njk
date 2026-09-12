@@ -94,7 +94,10 @@ description: "The Execution tab is where a session is composed, planned and run:
 	run supports:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/action-frame-run.png", "Action frame of a Test Run row with the Configure, Details and Remove buttons", "large") }}
 <p>A run cannot be unplanned, because it is not part of the plan; it is a record. Configure shows the
-	configuration it ran with, Details opens its results, and <strong class="text-danger">Remove</strong> deletes
+	configuration it ran with, whose buttons are <strong class="text-purple">Rerun</strong> and
+	<strong>Reset To Run Settings</strong> rather than Run and Update Plan, as
+	<a class="text-accent" href="/tutorial/editing-run-configuration/#rerunning-test-runs">Editing run
+	configuration</a> showed. Details opens its results, and <strong class="text-danger">Remove</strong> deletes
 	this one run.</p>
 
 <h3 id="group-and-suite-rows">Group and suite rows</h3>
@@ -111,8 +114,22 @@ description: "The Execution tab is where a session is composed, planned and run:
 <p>When several rows are selected with <strong>Ctrl</strong> and a click, the frame represents the selection as a
 	whole:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/action-frame-selection.png", "Action frame titled Multi-Test Selection with the Configure and Unplan buttons", "large") }}
-<p>Configure opens the Multi-Test Selection panel for the picked rows, the layout used to configure the CI set on
-	the previous page, and Unplan takes all of them out of the plan at once.</p>
+<p>Configure opens the Multi-Test Selection panel for the picked rows, and Unplan takes all of them out of the
+	plan at once.</p>
+
+<h3 id="the-multi-test-selection-panel">The Multi-Test Selection panel</h3>
+<p>Every scope wider than one test, a group, a suite, the session or a Ctrl+click set, is configured through
+	the same panel, the one the CI page used to prepare its regression set:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/exporting-test-batch-for-ci/selection-panel.png", "Multi-Test Selection panel with Total Cases 100, a grid of the selected tests grouped under their suites and groups with one column per configuration field, the run panel of the first test beneath, and the Update Plan, Reset To Defaults, Export for CI and Run buttons", "large") }}
+<p>Its upper part is a grid with one row per test in the scope, nested under their suites and groups, and one
+	column per configuration field any of them declares; a test that lacks a field shows a dash there. A cell is
+	edited in place, and a right-click on it offers <strong>Apply this value to all tests</strong>, which fills
+	the column for every test that has the field, the way one Maze Executable Folder was set for a dozen tests
+	at once. The lower part is the ordinary run panel of the test whose row is chosen in the grid, for the
+	fields a grid cell cannot hold, such as case selection. The buttons act on the whole scope:
+	<strong class="text-accent">Update Plan</strong> commits every edited cell, <strong>Reset To Defaults</strong>
+	clears them, <strong class="text-purple">Run</strong> runs every planned test of the scope, and
+	<strong class="text-brown">Export for CI</strong> writes the scope as a snapshot.</p>
 
 <h3 id="the-right-click-menu">The right-click menu</h3>
 <p>Every action of the frame is also in the row's context menu, so a right-click on a row does without the trip
