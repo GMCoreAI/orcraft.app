@@ -22,6 +22,7 @@
     { "label": "Checkpoints", "slug": "checkpoints/" },
     { "label": "Result Fields", "slug": "result-fields/" },
     { "label": "Structure and Lifecycle", "slug": "structure-and-lifecycle/" },
-    { "label": "Endpoints Management", "slug": "endpoints-management/" }
+    { "label": "Endpoints Management", "slug": "endpoints-management/" },
+    { "label": "Endpoints Config Types", "slug": "endpoints-config-types/" }
   ]
 }
