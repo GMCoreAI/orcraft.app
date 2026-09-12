@@ -1,0 +1,15 @@
+[00m                [97;48;5;236m                                  Step: Trigger Reboot | Configuration                                 [00m
+
+                Start Time               | Target Endpoint                           | Enable Reboot | Reboot Delay Sec
+                -------------------------------------------------------------------------------------------------------
+                2026-09-12  22:43:30.061 | GMG-TEST-3:50051 [92m[Secure][00m [93m(v0.1.0.dev197)[00m | False         | 0
+
+                Reboot skipped (enable_reboot=False). Endpoint will not be rebooted.
+
+[00m                [97;48;5;236m                     Step: Trigger Reboot | Result                     [00m
+
+                Name                 | Status | Finish Time              | Elapsed Time
+                -----------------------------------------------------------------------
+                Step: Trigger Reboot | [92mPASS[00m   | 2026-09-12  22:43:30.062 | 0.000 s
+
+[00m            [93m[FlowEndpointLifecycle] Waiting for endpoint to go Online (GMG-TEST-3:50051), timeout 1 m...[00m

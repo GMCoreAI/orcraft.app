@@ -63,25 +63,38 @@ description: "Tests that take an endpoint down on purpose: restarting the endpoi
 	its security setting. Only the process changed.</p>
 
 <h2 id="controlled-endpoint-disconnection">Controlled Endpoint Disconnection</h2>
-<p>The <strong>Controlled Endpoint Disconnection</strong> test goes further and reboots the machine. Its panel
-	adds the reboot's own controls to the same fields:</p>
+<p>The <strong>Controlled Endpoint Disconnection</strong> test covers the disruptions the framework does not
+	trigger itself: a reboot of the machine, or anything done to the endpoint by hand. Its panel adds the
+	disruption's own controls to the same fields:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/controlled-endpoints-disconnection/disconnection-config.png", "Run panel of the Controlled Endpoint Disconnection test with Test Endpoint GMG-TEST-3, the Maze Executable Folder, Width 5, Height 8, an unchecked Enable Reboot box, Reboot Delay Sec 0, Disconnect Timeout Sec 60 and Connect Timeout Sec 300", "large") }}
 <ul>
-	<li><strong>Enable Reboot</strong> is off by default, so that a group or suite run does not reboot a machine
-		by accident. With it on, the Trigger Reboot step runs the operating system's restart command on the
-		endpoint, after <strong>Reboot Delay Sec</strong>.</li>
-	<li><strong>Disconnect Timeout Sec</strong> bounds the wait for the endpoint to go Offline. A machine that is
-		still answering after that long did not reboot, and the flow fails rather than wait forever.</li>
+	<li><strong>Enable Reboot</strong> chooses who disrupts the endpoint. Off, the default, the test waits for
+		you to do it; on, the Trigger Reboot step runs the operating system's restart command on the machine,
+		after <strong>Reboot Delay Sec</strong>.</li>
+	<li><strong>Disconnect Timeout Sec</strong> bounds the first wait: for the endpoint to go Offline when it
+		reboots, or to come back Online when you restart it by hand.</li>
 	<li><strong>Connect Timeout Sec</strong> bounds the wait for Ready. It has to cover the whole boot, the
-		endpoint application's start, and the time it takes to become reachable again; five minutes is the
+		endpoint application's start and the time it takes to become reachable again; five minutes is the
 		default.</li>
 </ul>
-<p>What makes the round trip possible is the endpoint's
-	<a class="text-accent" href="/setup/endpoints/#auto-start">auto-start</a> registration from the setup guide:
-	the endpoint application comes back by itself after the machine's logon, so nobody has to start anything for
-	the endpoint to return. When it does, the flow re-acquires it and runs Load / Solve on the maze saved before
-	the reboot, exactly as the restart test does. This page leaves the box unchecked. Run the test with
-	<strong>Enable Reboot</strong> on a machine of your own that is free to reboot and set to log on
+
+<h3 id="the-manual-exercise">The manual exercise</h3>
+<p>Run the test with the box unchecked, on GMG-TEST-3 here. The flow saves its maze, the Trigger Reboot step
+	reports that it did nothing, and the flow starts waiting for the endpoint to come back Online:</p>
+{% ansiOutput "disconnection-manual-run.ansi" %}
+<p>This is your cue. Go to the machine, close the endpoint application and start it again, within the minute
+	the Disconnect Timeout allows. The card in the Endpoints panel goes Offline, in grey, while the application
+	is down, Online while it starts, and Ready when it is serving again, and the flow follows the same states:
+	it sees Online, waits for Ready, takes its lock on the endpoint again and runs Load / Solve on the saved
+	maze. Leave the application closed for longer than the timeout and the run ends in an error naming the state
+	that never came, which is the same message a machine that failed to come back would produce.</p>
+
+<h3 id="the-reboot">The reboot</h3>
+<p>With <strong>Enable Reboot</strong> on, nothing is left to you. The Trigger Reboot step issues the restart
+	command, the flow waits for Offline and then for Ready, and the rest is as above. What makes the round trip
+	possible is the endpoint's <a class="text-accent" href="/setup/endpoints/#auto-start">auto-start</a>
+	registration from the setup guide: the endpoint application comes back by itself after the machine's logon,
+	so nobody has to start anything. Run it on a machine of your own that is free to reboot and set to log on
 	automatically, and watch the card go Offline, in grey, and return through Online to Ready.</p>
 
 <p>The next page, <a class="text-accent" href="/tutorial/asynchronous-steps/">Handling Asynchronous Steps</a>,
