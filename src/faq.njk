@@ -146,7 +146,12 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
     <details class="faq__item">
       <summary class="faq__question"><h3 class="faq__title" id="agent-edits-tests">Can an AI agent change my tests when it runs them?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
-        <p>No. To run a test the AI agent writes a separate file that subclasses it and redeclares the fields it needs, the same mechanism a CI snapshot uses, and keeps that file outside the suite repository. The test itself is not edited. When the request is to change a test, the AI agent edits the repository like a developer would, and the change is reviewed in the GUI or in the commit.</p>
+        <p>It could, as it can edit any file, so the
+          <a class="text-accent" href="/ai-agents/inputs/#instructions">instructions file</a> forbids it. Its
+          rules say: never edit a test to run it. To run a test the AI agent writes a separate file that
+          subclasses it and redeclares the fields it needs, the same mechanism a CI snapshot uses, and keeps
+          that file outside the suite repository. When the request is to change a test, the AI agent edits the
+          repository like a developer would, and the change is reviewed in the GUI or in the commit.</p>
       </div>
     </details>
 
