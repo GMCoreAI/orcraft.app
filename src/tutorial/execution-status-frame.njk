@@ -1,7 +1,7 @@
 ---
 title: Tutorial · Execution Status Frame
 key: tutorial
-description: "The Execution Status frame shows where a run stands while it runs: the nested stages, their progress bars, and the estimated time to finish."
+description: "The Execution Status frame shows where a run stands while it runs: every level from the test down to the step on its endpoint, their progress bars, and the estimated time to finish."
 ---
 {% import "partials/copy-command.njk" as cmd %}
 {% import "partials/code-block.njk" as codeblock %}
@@ -12,30 +12,57 @@ description: "The Execution Status frame shows where a run stands while it runs:
 	reports what happens inside them. The <strong>Execution Status</strong> frame, below the log in the right
 	pane, reports where in the structure the run is right now: which stage is active at each level, how far along
 	it is, and how long the whole run is expected to take. It is the frame to watch during a long run.</p>
+<p>To see every level at once, the run has to have every level. The <strong>Remote Thread Example</strong> test
+	from the Endpoints group, met in <a class="text-accent" href="/tutorial/asynchronous-steps/">Handling
+	Asynchronous Steps</a>, is a good choice: its case runs one flow of three steps, and the middle step waits for
+	a configurable number of seconds, long enough to watch. Select it, set <strong>Wait Sec</strong> to 20 and
+	<strong>Cycles</strong> to 2, so that the test cycle level has something to count as well, and keep the
+	endpoint at localhost:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-status-frame/remote-thread-config.png", "Run panel of the Remote Thread Example test with Cycles set to 2, the Maze Executable Folder filled, Test Endpoint localhost and Wait Sec set to 20", "large") }}
 
 <h2 id="stages-and-progress">Stages and progress</h2>
-<p>Run <strong>Status: Fail</strong> and look at the frame while the run is under way:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-status-frame/status-frame-during-run.png", "Execution Status frame during the Status: Fail run with an ETA of 6 seconds and a spinner, and four stage rows: the test at 5 of 16 with a purple 25 percent bar, Test Cycle 1 at 1 of 1, Case 5 at 5 of 16, and Case Cycle 1 at 1 of 1", "large") }}
-<p>Each row is one level of the run, nested like the results tree. <strong>Stage Name</strong> names the stage
-	that is active at that level: the test, its cycle, the case with its parameters, the case cycle. When a flow
-	or a step is running, rows for them appear below, the step's row naming the endpoint it runs on.
-	<strong>Current</strong> and <strong>Total</strong> count that level's items, five of sixteen cases here, and
-	the <strong>Progress</strong> bar shows the completed share. The test's bar is purple, the colour of a running
-	status, and it fills as cases complete.</p>
-<p>The header carries the <strong>ETA</strong>, the estimated time to the end of the run, computed from how long
-	the completed items took, and the spinner that turns while the status is running. The estimate settles after
-	the first few items and is the figure to glance at when deciding whether to wait.</p>
+<p>Click <strong>Update Plan</strong>, then <strong>Run</strong>, and look at the frame while the wait step is
+	under way:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-status-frame/status-frame-during-run.png", "Execution Status frame during the first cycle of the Remote Thread Example run, with a spinner and six stage rows: Test: Remote Thread Example at 1 of 2, Test Cycle 1 at 1 of 2, Case 1 at 1 of 1, Case Cycle 1 at 1 of 1, Flow: Remote Thread, and Step: Wait @ localhost", "large") }}
+<p>Each row is one level of the run, nested like the results tree, and <strong>Stage Name</strong> names the
+	stage that is active at that level:</p>
+<ul>
+	<li>the <strong>test</strong>, counting its cycles: the first of two;</li>
+	<li>the <strong>test cycle</strong>, counting the same;</li>
+	<li>the <strong>case</strong> with its parameters, the only case this test has;</li>
+	<li>the <strong>case cycle</strong>, one per case here;</li>
+	<li>the <strong>flow</strong> the case cycle is running, Remote Thread;</li>
+	<li>the <strong>step</strong> the flow is running, Wait, with the endpoint it runs on after the
+		<strong>@</strong>. A step is the unit that executes on an endpoint, which is why the endpoint is named on
+		this row and no other.</li>
+</ul>
+<p><strong>Current</strong> and <strong>Total</strong> count that level's items, and the <strong>Progress</strong>
+	bar shows the completed share. The flow and step rows have no counters: they are what is running, not a
+	count of something. The header carries the <strong>ETA</strong>, the estimated time to the end of the run,
+	computed from how long the completed items took, and a spinner that turns while the status is running. On a
+	first cycle there is nothing to compute from yet, so the ETA shows a dash.</p>
+<p>The frame follows the run as it moves. When the second cycle reaches its wait step, the test and cycle rows
+	have advanced to two of two with their bars at half, the case rows have started over, and the ETA has a figure,
+	taken from the first cycle:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-status-frame/status-frame-second-cycle.png", "Execution Status frame during the second cycle, with an ETA of 19 seconds, the test and Test Cycle 2 rows at 2 of 2 with purple and grey bars at 50 percent, Case 1 and Case Cycle 1 back at 0 percent, and the same Flow and Step rows", "large") }}
+<p>The test's bar is purple, the colour of a running status, and it fills as cycles complete. The estimate
+	settles after the first few items and is the figure to glance at when deciding whether to wait.</p>
+<p>The frame reads together with the log above it. While the step row says <strong>Wait</strong>, the log's last
+	line is the step's own message about waiting, and the endpoint card at the bottom left shows the endpoint as
+	<strong>Busy</strong>:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-status-frame/status-frame-window.png", "Controller during the run: the tree with the Remote Thread Example run row and the Running chip, the localhost card reading Busy, the log ending with Waiting 20.0s while the background thread continues to run, and the Execution Status frame below it showing the six stage rows down to Step: Wait @ localhost", "large") }}
 
 <h2 id="the-finished-run">The finished run</h2>
 <p>When the run ends, the frame keeps the last state of every level and takes the final status colour:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-status-frame/status-frame-after-run.png", "Execution Status frame after the Status: Fail run with an ETA of 0 seconds, the test bar full and red, and the cycle, the last case and its case cycle at 100 percent", "large") }}
-<p>The test's bar is full and red, the frame's outline matches, and the rows show the last case that ran. The
-	frame belongs to the selected run: selecting another run in the tree shows that run's state, and starting a
-	new run resets it.</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-status-frame/status-frame-after-run.png", "Execution Status frame after the run with an ETA of 0 seconds, the test bar full and green, Test Cycle 2, Case 1 and Case Cycle 1 at 100 percent, and the rows Flow: Remote Thread and Step: Read Maze Thread @ localhost", "large") }}
+<p>The test's bar is full and green, the frame's outline matches, and the rows show the last stage that ran at
+	each level: the second cycle, its case, and the flow's last step, Read Maze Thread. A failed run leaves the
+	same picture in red, with the rows pointing at where it stopped. The frame belongs to the selected run:
+	selecting another run in the tree shows that run's state, and starting a new run resets it.</p>
 
 <h2 id="the-collapsed-frame">The collapsed frame</h2>
 <p>Click the arrow before the <strong>Execution Status</strong> title to fold the frame into one line:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-status-frame/status-frame-collapsed.png", "Collapsed Execution Status frame showing the title, the name Test: Status: Fail and a single red bar at 100 percent", "large") }}
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-status-frame/status-frame-collapsed.png", "Collapsed Execution Status frame showing the title, the name Test: Remote Thread Example and a single green bar at 100 percent", "large") }}
 <p>The collapsed frame keeps the name of the running test and a single progress bar for it, so the run can still
 	be followed while the log takes the rest of the pane:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-status-frame/status-frame-collapsed-window.png", "Controller with the Execution Status frame collapsed to a single line at the bottom of the right pane and the log filling the space above it", "large") }}

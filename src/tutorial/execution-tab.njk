@@ -28,48 +28,73 @@ description: "The Execution tab is where a session is composed, planned and run:
 <p>A session is the unit the controller saves and loads. Its action frame gathers the operations that concern it
 	as a whole, arranged in small groups from top to bottom:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/session-frame.png", "The Session action frame with the New, Save and Load buttons, then Add Item, then Configure, then Unplan and Details, then Reload and Remove in red", "small") }}
-<ul>
-	<li><strong>New</strong>, <strong>Save</strong> and <strong>Load</strong> manage the session file. Save writes
-		the loaded items with their plans and endpoint selections; Load brings such a file back, and New starts
-		an empty tree. The session's name sits on the top row of the tree, with a star while it has unsaved
-		changes.</li>
-	<li><strong>Add Item</strong> browses for a file to load: a batch, a suite, a group or a single test. Each
-		becomes a top-level row, which is how the mixed session of
-		<a class="text-accent" href="/tutorial/exporting-test-batch-for-ci/">Exporting Test Batch for CI</a> was
-		built.</li>
-	<li><strong class="text-accent">Configure</strong> opens the run panel of the session row, the
-		<strong>Multi-Test Selection</strong> layout with every planned test in its grid, from which the whole
-		session is run or exported.</li>
-	<li><strong>Unplan</strong> takes every planned item out of the plan, and turns into <strong>Plan</strong>
-		when nothing is planned. <strong>Details</strong> opens the
-		<a class="text-accent" href="/tutorial/details-dialog/">Details dialog</a> at session level.</li>
-	<li><strong class="text-danger">Reload</strong> reads every suite and top-level group again from its files,
-		which is what to click after a pull in the Git Status frame or an edit in the editor.
-		<strong class="text-danger">Remove</strong> empties the tree: items and runs alike.</li>
-</ul>
-<p>The frame shows only what applies to the session's state. Once runs exist, a <strong class="text-danger">Clear</strong>
-	button appears among the red ones: it removes every run instance, finished or not, and keeps the items. While
-	tests are queued or running, <strong>Dequeue</strong> and <strong>Stop</strong> appear under Configure, the
-	first taking queued tests out of the queue and the second also stopping the running ones. When several runs of
-	the same test have piled up, <strong>Clean Up</strong> removes all but the latest of each.</p>
+
+<h3 id="new-save-and-load">New, Save and Load</h3>
+<p>These manage the session file. <strong>Save</strong> writes the loaded items with their plans and endpoint
+	selections; <strong>Load</strong> brings such a file back, and <strong>New</strong> starts an empty tree. The
+	session's name sits on the top row of the tree, with a star while it has unsaved changes.</p>
+
+<h3 id="add-item">Add Item</h3>
+<p><strong>Add Item</strong> browses for a file to load: a batch, a suite, a group or a single test. Each becomes a
+	top-level row, which is how the mixed session of
+	<a class="text-accent" href="/tutorial/exporting-test-batch-for-ci/">Exporting Test Batch for CI</a> was built.</p>
+
+<h3 id="configure">Configure</h3>
+<p><strong class="text-accent">Configure</strong> opens the run panel of the session row, the
+	<strong>Multi-Test Selection</strong> layout with every planned test in its grid, from which the whole session
+	is run or exported.</p>
+
+<h3 id="dequeue-and-stop">Dequeue and Stop</h3>
+<p>While tests are queued or running, <strong>Dequeue</strong> and <strong>Stop</strong> appear under Configure.
+	Dequeue takes every queued test out of the queue and leaves the running ones to finish; Stop does the same and
+	stops the running ones as well.</p>
+
+<h3 id="unplan-plan-and-details">Unplan, Plan and Details</h3>
+<p><strong>Unplan</strong> takes every planned item out of the plan, and turns into <strong>Plan</strong> when
+	nothing is planned. <strong>Details</strong> opens the
+	<a class="text-accent" href="/tutorial/details-dialog/">Details dialog</a> at session level.</p>
+
+<h3 id="clean-up-and-clear">Clean Up and Clear</h3>
+<p>Both appear once runs exist and both keep the items. <strong>Clean Up</strong> removes the older runs of every
+	test and keeps the latest one, running or finished, which tidies a tree after a day of reruns.
+	<strong class="text-danger">Clear</strong> removes every run instance, finished or not, and leaves the items
+	as if nothing had run.</p>
+
+<h3 id="reload-and-remove">Reload and Remove</h3>
+<p><strong class="text-danger">Reload</strong> reads every suite and top-level group again from its files, which
+	is what to click after a pull in the Git Status frame or an edit in the editor.
+	<strong class="text-danger">Remove</strong> empties the tree: items and runs alike.</p>
+<p>The frame shows only what applies to the session's state: the run and clean-up buttons are absent while the
+	tree holds no runs, and appear as soon as one starts.</p>
+
+<h3 id="the-collapsed-session-frame">The collapsed frame</h3>
 <p>Click the arrow before the <strong>Session</strong> title and the frame folds into a strip of icons, leaving the
 	room to the tree. Every button keeps working from the strip, with its name in the tooltip:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/session-frame-collapsed.png", "The collapsed Session action frame: a narrow vertical strip with the rotated Session title and the icons of the buttons", "small") }}
 
 <h2 id="the-action-frame-of-the-selected-row">The action frame of the selected row</h2>
 <p>Below the tree sits a second action frame. It belongs to whatever row is selected and names it with its badge,
-	so the buttons change with the kind of row. For a test:</p>
+	so the buttons change with the kind of row.</p>
+
+<h3 id="a-test-row">A test row</h3>
+<p>For a test:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/action-frame-test.png", "Action frame of the Status: Fail test with the Configure, Unplan, Details and Clear buttons", "large") }}
 <p><strong class="text-accent">Configure</strong> opens the test's run panel in the right pane, which is also what
 	a click on the row does. <strong>Unplan</strong> takes the test out of the plan, <strong>Details</strong> opens
 	its Details dialog, and <strong class="text-danger">Clear</strong>, present once the test has run, removes its
-	run rows. Select a run row instead, the italic <strong>Test Run</strong> line under the test, and the frame
-	offers what a run supports:</p>
+	run rows.</p>
+
+<h3 id="a-run-row">A run row</h3>
+<p>Select a run row instead, the italic <strong>Test Run</strong> line under the test, and the frame offers what a
+	run supports:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/action-frame-run.png", "Action frame of a Test Run row with the Configure, Details and Remove buttons", "large") }}
 <p>A run cannot be unplanned, because it is not part of the plan; it is a record. Configure shows the
 	configuration it ran with, Details opens its results, and <strong class="text-danger">Remove</strong> deletes
-	this one run. A group's frame reads like a test's, acting on every test under it. A suite's frame adds the
-	operations that make sense for a top-level item:</p>
+	this one run.</p>
+
+<h3 id="group-and-suite-rows">Group and suite rows</h3>
+<p>A group's frame reads like a test's, acting on every test under it. A suite's frame adds the operations that
+	make sense for a top-level item:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/action-frame-suite.png", "Action frame of the Orcraft Tutorial suite with Configure, Unplan, Details, Label, Move Down, Clear, Reload and Remove", "large") }}
 <p><strong>Label</strong> asks for a short text and shows it next to the suite's name in the tree, useful when
 	the same suite is loaded twice from different checkouts:</p>
@@ -77,6 +102,7 @@ description: "The Execution tab is where a session is composed, planned and run:
 <p><strong>Move Up</strong> and <strong>Move Down</strong> reorder the top-level rows, and with them the order
 	in which the session is exported. <strong class="text-danger">Reload</strong> reads this one suite again from
 	its files, and <strong class="text-danger">Remove</strong> takes it out of the tree.</p>
+<h3 id="a-multi-selection">A multi-selection</h3>
 <p>When several rows are selected with <strong>Ctrl</strong> and a click, the frame represents the selection as a
 	whole:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/action-frame-selection.png", "Action frame titled Multi-Test Selection with the Configure and Unplan buttons", "large") }}

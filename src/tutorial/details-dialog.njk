@@ -62,6 +62,20 @@ description: "Open the Details dialog at any level of the tree to see the config
 	is still going, the <strong>&minus;</strong> and <strong>+</strong> buttons collapse and expand every row, and
 	the tree's own arrows fold single branches.</p>
 
+<h2 id="the-test-run-level">The test run level</h2>
+<p>A test keeps every run it has made as a <strong>Test Run</strong> row beneath it, the older ones greyed as
+	superseded. The test level gathers all of them; a run row scopes the dialog to one. Run
+	<strong>Status: Fail</strong> a second time, select the newer run row and open Details on it:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/details-dialog/two-runs-tree.png", "Execution tree with two Test Run rows under the Status: Fail test, the older one greyed and the newer one selected, both reading Fail with 2 passed and 14 failed cases", "large") }}
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/details-dialog/details-run.png", "Details dialog titled Test Run: Status: Fail: Details, with the test's description, its configuration with the run values, the dimension and case tables, and a results tree of a single Test Run row with its cycle and sixteen cases", "large") }}
+<p>The title says <strong>Test Run</strong>, and the results tree starts at that one run rather than at the test,
+	so its counts and its Items Filter cover this run alone. The <strong>Run Value</strong> column on the left
+	holds what this run actually used, which matters when the plan has changed since: a run keeps its own
+	configuration, and its dialog shows that one. The run row also carries a <strong>Planned</strong> column
+	saying whether the run was made with the planned configuration or with values edited on the run itself. This
+	is the level to open, and to export, when one run is to be reported or handed to an
+	<a class="text-accent" href="/ai-agents/results/">AI agent</a> for a look at a failure.</p>
+
 <h2 id="exporting-the-scope">Exporting the scope</h2>
 <p>The two buttons at the bottom left take the dialog's scope out of the controller.</p>
 <h3 id="export-to-xlsx">Export to XLSX</h3>
