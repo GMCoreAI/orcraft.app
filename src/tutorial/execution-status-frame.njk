@@ -1,0 +1,47 @@
+---
+title: Tutorial · Execution Status Frame
+key: tutorial
+description: "The Execution Status frame shows where a run stands while it runs: the nested stages, their progress bars, and the estimated time to finish."
+---
+{% import "partials/copy-command.njk" as cmd %}
+{% import "partials/code-block.njk" as codeblock %}
+{% import "partials/zoomable-image.njk" as media %}
+<h1>Execution Status Frame</h1>
+<p>A run has a structure: a test runs its cycles, a cycle runs its cases, a case runs its case cycles, and a case
+	cycle runs flows and steps. The tree reports the outcome of that structure once the pieces finish, and the log
+	reports what happens inside them. The <strong>Execution Status</strong> frame, below the log in the right
+	pane, reports where in the structure the run is right now: which stage is active at each level, how far along
+	it is, and how long the whole run is expected to take. It is the frame to watch during a long run.</p>
+
+<h2 id="stages-and-progress">Stages and progress</h2>
+<p>Run <strong>Status: Fail</strong> and look at the frame while the run is under way:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-status-frame/status-frame-during-run.png", "Execution Status frame during the Status: Fail run with an ETA of 6 seconds and a spinner, and four stage rows: the test at 5 of 16 with a purple 25 percent bar, Test Cycle 1 at 1 of 1, Case 5 at 5 of 16, and Case Cycle 1 at 1 of 1", "large") }}
+<p>Each row is one level of the run, nested like the results tree. <strong>Stage Name</strong> names the stage
+	that is active at that level: the test, its cycle, the case with its parameters, the case cycle. When a flow
+	or a step is running, rows for them appear below, the step's row naming the endpoint it runs on.
+	<strong>Current</strong> and <strong>Total</strong> count that level's items, five of sixteen cases here, and
+	the <strong>Progress</strong> bar shows the completed share. The test's bar is purple, the colour of a running
+	status, and it fills as cases complete.</p>
+<p>The header carries the <strong>ETA</strong>, the estimated time to the end of the run, computed from how long
+	the completed items took, and the spinner that turns while the status is running. The estimate settles after
+	the first few items and is the figure to glance at when deciding whether to wait.</p>
+
+<h2 id="the-finished-run">The finished run</h2>
+<p>When the run ends, the frame keeps the last state of every level and takes the final status colour:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-status-frame/status-frame-after-run.png", "Execution Status frame after the Status: Fail run with an ETA of 0 seconds, the test bar full and red, and the cycle, the last case and its case cycle at 100 percent", "large") }}
+<p>The test's bar is full and red, the frame's outline matches, and the rows show the last case that ran. The
+	frame belongs to the selected run: selecting another run in the tree shows that run's state, and starting a
+	new run resets it.</p>
+
+<h2 id="the-collapsed-frame">The collapsed frame</h2>
+<p>Click the arrow before the <strong>Execution Status</strong> title to fold the frame into one line:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-status-frame/status-frame-collapsed.png", "Collapsed Execution Status frame showing the title, the name Test: Status: Fail and a single red bar at 100 percent", "large") }}
+<p>The collapsed frame keeps the name of the running test and a single progress bar for it, so the run can still
+	be followed while the log takes the rest of the pane:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-status-frame/status-frame-collapsed-window.png", "Controller with the Execution Status frame collapsed to a single line at the bottom of the right pane and the log filling the space above it", "large") }}
+<p>Click the arrow again to expand the stages.</p>
+
+<p>This completes the tutorial's tour of the controller's frames. The tree, the run panel, the log, the status
+	frame and the Details dialog are the same views an <a class="text-accent" href="/ai-agents/">AI agent</a> works
+	from when it runs the suites for you, through the files the controller exports rather than through the window;
+	the <a class="text-accent" href="/ai-agents/">AI Agents</a> section picks the story up from there.</p>

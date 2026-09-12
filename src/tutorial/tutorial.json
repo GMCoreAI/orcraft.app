@@ -30,6 +30,7 @@
     { "label": "Exporting Test Batch for CI", "slug": "exporting-test-batch-for-ci/" },
     { "label": "Git Status Frame", "slug": "git-status-frame/" },
     { "label": "Details Dialog", "slug": "details-dialog/" },
-    { "label": "Log Frame", "slug": "log-frame/" }
+    { "label": "Log Frame", "slug": "log-frame/" },
+    { "label": "Execution Status Frame", "slug": "execution-status-frame/" }
   ]
 }
