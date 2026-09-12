@@ -1,0 +1,88 @@
+---
+title: Tutorial · Controlled Endpoints Disconnection
+key: tutorial
+description: "Tests that take an endpoint down on purpose: restarting the endpoint application or rebooting the machine from inside a flow, waiting for it to come back, and proving it recovered."
+---
+{% import "partials/copy-command.njk" as cmd %}
+{% import "partials/code-block.njk" as codeblock %}
+{% import "partials/zoomable-image.njk" as media %}
+<h1>Controlled Endpoints Disconnection</h1>
+<p>Some tests have to take the machine they run on out of service. A driver installation needs a reboot before
+	it takes effect, a service under test has to be restarted with a new configuration, a resilience test wants to
+	see what a device does after a power cycle. On an ordinary test runner that is the end of the run: the process
+	that was executing the test is gone with the machine. Orcraft separates the two. The test runs on the
+	controller, and the endpoint application on the machine only executes the steps sent to it, so an endpoint can
+	go away in the middle of a flow and the flow simply waits for it to come back.</p>
+<p>The framework gives a flow two calls for this. <code>restart_endpoint</code> asks the endpoint application to
+	restart itself and waits until it is serving again. <code>wait_for_endpoint_state</code> waits until the
+	endpoint reaches a given <a class="text-accent" href="/framework/endpoints/#state">state</a>: <strong>Offline</strong>
+	when it no longer answers, <strong>Online</strong> when it answers but cannot take work yet, <strong>Ready</strong>
+	when it can. With them a flow can trigger whatever disruption the test needs, wait for the endpoint to go down
+	and come back, and then run more steps on it to prove it recovered. The Endpoints group has two tests built
+	this way, sharing one flow: <strong>Endpoint Restart</strong> restarts the endpoint application, and
+	<strong>Controlled Endpoint Disconnection</strong> reboots the whole machine.</p>
+
+<h2 id="the-endpoint-lifecycle-flow">The Endpoint Lifecycle flow</h2>
+<p>Both tests hand their case to <strong>Flow: Endpoint Lifecycle</strong>. The flow reads like any other flow
+	from <a class="text-accent" href="/tutorial/structure-and-lifecycle/">Structure and Lifecycle</a>, with the
+	disruption in the middle:</p>
+<ol>
+	<li><strong>Delete Existing Maze File</strong> and <strong>Generate / Save</strong> run on the endpoint and leave
+		a maze file on its disk. This is the state that has to survive.</li>
+	<li>The disruption. In <strong>restart</strong> mode the flow calls <code>restart_endpoint</code>. In
+		<strong>disconnect</strong> mode it runs a <strong>Trigger Reboot</strong> step that issues the operating
+		system's shutdown command, then waits for the endpoint to go Offline and then Ready again.</li>
+	<li><strong>Load / Solve</strong> runs on the endpoint again, opens the maze saved before the disruption and
+		solves it. A checkpoint reports whether the endpoint recovered.</li>
+</ol>
+<p>The flow does not know or care what happened to the machine in between. It waits for a state, with the
+	timeouts the test exposes, and either continues or fails with a message naming the state that never came.</p>
+
+<h2 id="endpoint-restart">Endpoint Restart</h2>
+<p>The <strong>Endpoint Restart</strong> test refreshes the endpoint application on a machine without rebooting
+	it, which is what a test wants after installing a new version of something the application loads at start.
+	Its endpoint field is a <a class="text-accent" href="/tutorial/endpoints-config-types/">fan-out</a>, so one run
+	restarts several machines at once. Select the test, pick GMG-TEST-1 and GMG-TEST-3, set the Maze
+	Executable Folder and leave the timeouts at their defaults:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/controlled-endpoints-disconnection/restart-config.png", "Run panel of the Endpoint Restart test with Test Endpoint (Fanout) listing GMG-TEST-1 and GMG-TEST-3, Update Endpoint App set to Never, the Maze Executable Folder, Width 5, Height 8, Disconnect Timeout Sec 120 and Connect Timeout Sec 300", "large") }}
+<p>Click <strong>Update Plan</strong> and <strong>Run</strong>, and watch the Endpoints panel. A card is
+	<strong>Busy</strong>, in purple, while the test holds its endpoint and runs the first steps on it:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/controlled-endpoints-disconnection/endpoints-busy.png", "Endpoints panel with localhost Ready, GMG-TEST-1 Ready and GMG-TEST-3 Busy in purple", "large") }}
+<p>Then the restart comes. The endpoint application stops answering for a moment, starts again and reports
+	itself before it is able to take work, which the card shows as <strong>Online</strong>, in yellow:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/controlled-endpoints-disconnection/endpoints-online.png", "Endpoints panel with GMG-TEST-1 Online in yellow while GMG-TEST-3 is already back to Ready", "large") }}
+<p>The log of the GMG-TEST-1 run tells the same story from the flow's side. The restart request itself is
+	answered by a disconnection, which is the expected outcome of asking a process to restart, and the flow then
+	waits for Ready, takes its lock on the endpoint again and carries on:</p>
+{% ansiOutput "endpoint-restart-run.ansi" %}
+<p>Both runs pass, one per machine, with the checkpoint confirming that the maze saved before the restart was
+	solved after it:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/controlled-endpoints-disconnection/restart-runs-tree.png", "Execution tree with the Endpoint Restart test at 2 of 2 passed and two Test Run rows, one for GMG-TEST-1 and one for GMG-TEST-3, each with the FO fan-out badge and a green Pass status", "large") }}
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/controlled-endpoints-disconnection/endpoints-after-restart.png", "Endpoints panel after the run with all three cards Ready", "large") }}
+<p>A restarted endpoint application comes back as the same endpoint: the card keeps its place, its version and
+	its security setting. Only the process changed.</p>
+
+<h2 id="controlled-endpoint-disconnection">Controlled Endpoint Disconnection</h2>
+<p>The <strong>Controlled Endpoint Disconnection</strong> test goes further and reboots the machine. Its panel
+	adds the reboot's own controls to the same fields:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/controlled-endpoints-disconnection/disconnection-config.png", "Run panel of the Controlled Endpoint Disconnection test with Test Endpoint GMG-TEST-3, the Maze Executable Folder, Width 5, Height 8, an unchecked Enable Reboot box, Reboot Delay Sec 0, Disconnect Timeout Sec 60 and Connect Timeout Sec 300", "large") }}
+<ul>
+	<li><strong>Enable Reboot</strong> is off by default, so that a group or suite run does not reboot a machine
+		by accident. With it on, the Trigger Reboot step runs the operating system's restart command on the
+		endpoint, after <strong>Reboot Delay Sec</strong>.</li>
+	<li><strong>Disconnect Timeout Sec</strong> bounds the wait for the endpoint to go Offline. A machine that is
+		still answering after that long did not reboot, and the flow fails rather than wait forever.</li>
+	<li><strong>Connect Timeout Sec</strong> bounds the wait for Ready. It has to cover the whole boot, the
+		endpoint application's start, and the time it takes to become reachable again; five minutes is the
+		default.</li>
+</ul>
+<p>What makes the round trip possible is the endpoint's
+	<a class="text-accent" href="/setup/endpoints/#auto-start">auto-start</a> registration from the setup guide:
+	the endpoint application comes back by itself after the machine's logon, so nobody has to start anything for
+	the endpoint to return. When it does, the flow re-acquires it and runs Load / Solve on the maze saved before
+	the reboot, exactly as the restart test does. This page leaves the box unchecked. Run the test with
+	<strong>Enable Reboot</strong> on a machine of your own that is free to reboot and set to log on
+	automatically, and watch the card go Offline, in grey, and return through Online to Ready.</p>
+
+<p>The next page, <a class="text-accent" href="/tutorial/asynchronous-steps/">Handling Asynchronous Steps</a>,
+	stays on the endpoint but keeps it running: it starts work there and comes back for the result later.</p>

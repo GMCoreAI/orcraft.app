@@ -25,6 +25,7 @@
     { "label": "Endpoints Management", "slug": "endpoints-management/" },
     { "label": "Endpoints Config Types", "slug": "endpoints-config-types/" },
     { "label": "Packages Uploading", "slug": "packages-uploading/" },
+    { "label": "Controlled Endpoints Disconnection", "slug": "controlled-endpoints-disconnection/" },
     { "label": "Handling Asynchronous Steps", "slug": "asynchronous-steps/" },
     { "label": "Remote Type Fidelity", "slug": "remote-type-fidelity/" },
     { "label": "Exporting Test Batch for CI", "slug": "exporting-test-batch-for-ci/" },

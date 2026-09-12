@@ -1,0 +1,11 @@
+[00m            [93m[FlowEndpointLifecycle] Requesting endpoint restart (GMG-TEST-1:50051)...[00m
+[00m            [93m[FlowEndpointLifecycle] Endpoint disconnected while sending restart command; treating as expected restart behavior.[00m
+
+[00m            [93m[FlowEndpointLifecycle] Waiting for endpoint to go Ready (GMG-TEST-1:50051), timeout 5 m...[00m
+[00m            [96m[FlowEndpointLifecycle] Endpoint is Ready (GMG-TEST-1:50051), re-acquiring lock...[00m
+[00m            [96m[FlowEndpointLifecycle] Lock re-acquired for GMG-TEST-1:50051[00m
+[00m            [96m[FlowEndpointLifecycle] Endpoint restarted successfully (GMG-TEST-1:50051)[00m
+                Path Found   | True
+                Path Length  | 24
+
+                [30;102m Checkpoint Pass [00m[92m  Endpoint recovered — maze solved in 24 step(s).[00m

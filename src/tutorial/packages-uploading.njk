@@ -175,6 +175,6 @@ maze_folders = OrcraftConfigField.PackageFolderList(
 <p>Each of the three steps ran on the machine its package field was bound to, and the configuration table keeps
 	the browsed paths of every package field next to the endpoints they were sent to.</p>
 
-<p>Every step so far ran to completion before the next one started. The next page,
-	<a class="text-accent" href="/tutorial/asynchronous-steps/">Handling Asynchronous Steps</a>, starts work on an
-	endpoint and comes back for its result later.</p>
+<p>Every step so far found its endpoint waiting. The next page,
+	<a class="text-accent" href="/tutorial/controlled-endpoints-disconnection/">Controlled Endpoints
+	Disconnection</a>, takes the endpoint down in the middle of a flow and waits for it to come back.</p>
