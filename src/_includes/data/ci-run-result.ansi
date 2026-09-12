@@ -1,0 +1,22 @@
+[30;48;5;248m                   Test Batch: regression | Result                    [00m
+
+Parameter           | Value
+----------------------------------------------------------------------
+Name                | Test Batch: regression
+Status              | [33mERROR[00m
+Error Description   | [33mIntentional Exception for demonstration purposes[00m
+Failure Description | [91mIntentional Failure for demonstration purposes[00m
+Warning Description | [93mIntentional Warning for demonstration purposes[00m
+Finish Time         | 2026-09-12  19:53:28.674
+Elapsed Time        | 13.762 s
+Total Items         | 4
+Passed Items        | [92m2[00m
+Failed Items        | [91m0[00m
+Error Items         | [33m2[00m
+Items With Warnings | [93m2[00m
+Total Tests         | 19
+Passed Tests        | [92m14[00m
+Failed Tests        | [91m3[00m
+Error Tests         | [33m2[00m
+Tests With Warnings | [93m3[00m
+Total Cases         | 95

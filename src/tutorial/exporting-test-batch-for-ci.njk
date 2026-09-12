@@ -1,89 +1,143 @@
 ---
 title: Tutorial · Exporting Test Batch for CI
 key: tutorial
-description: "Export what is configured in the controller as a CI snapshot, run it from the command line with ci_run.py, and load the batch back into the tree."
+description: "Compose a session from suites, groups and tests, export it as a named CI snapshot, run it from the command line with ci_run.py, and load the batch back into the tree."
 ---
 {% import "partials/copy-command.njk" as cmd %}
 {% import "partials/code-block.njk" as codeblock %}
 {% import "partials/zoomable-image.njk" as media %}
 <h1>Exporting Test Batch for CI</h1>
-<p>Everything configured in the controller so far lives in its session: the values in the run panels, the
-	selected cases, the endpoints. A CI pipeline has no controller window, so it needs the same configuration in a
-	form it can run on its own. <strong>Export for CI</strong> writes that form: a <strong>snapshot</strong> folder
-	holding a <a class="text-accent" href="/framework/batches/">batch</a>, which is a framework file that lists the
-	exported items with their configured values baked in, together with a launcher that runs the batch without any
-	GUI and exits with a code a pipeline can gate on.</p>
-<p>The export mirrors what the panel shows rather than copying the suite. For every exported suite, group and
-	test it writes a small <strong>mirror</strong> class that subclasses the original and overrides only what was
-	configured: which groups a suite runs, which tests a group runs, and the field values of each test. The suite's
-	own code stays in its repository and is imported from there, so an export never edits or duplicates the tests.
-	This is also the way an <a class="text-accent" href="/ai-agents/running/">AI agent</a> runs tests: it writes the
-	same kind of file by hand.</p>
+<p>Everything configured in the controller so far lives in its session: which items are loaded and planned, the
+	values in their run panels, the selected cases, the endpoints. A CI pipeline has no controller window, so it
+	needs the same configuration in a form it can run on its own. <strong>Export for CI</strong> writes that form:
+	a <strong>snapshot</strong> folder holding a <a class="text-accent" href="/framework/batches/">batch</a>, a
+	framework file that lists the exported items with their configured values baked in, together with a launcher
+	that runs the batch without any GUI and exits with a code a pipeline can gate on.</p>
+<p>The export mirrors what is configured rather than copying the suites. For every exported suite, group and test
+	it writes a small <strong>mirror</strong> class that subclasses the original and overrides only what was
+	configured: which groups a suite runs, which tests a group runs, and the field values of each test. The suites'
+	own code stays in their repositories and is imported from there, so an export never edits or duplicates a
+	test. This is also the way an <a class="text-accent" href="/ai-agents/running/">AI agent</a> runs tests: it
+	writes the same kind of file by hand.</p>
+<p>A snapshot is not tied to one suite. The session can hold any mix of items, a whole suite, a group file, a
+	single test file, suites from different repositories, and the export takes them all as they are planned. That
+	is what makes it possible to keep a few snapshots for different purposes, a quick gate, a nightly regression,
+	a full validation, each composed from whatever tests belong to it.</p>
 
-<h2 id="exporting-a-group">Exporting a group</h2>
-<p>The button lives at the bottom of every run panel, next to <strong>Update Plan</strong> and
-	<strong>Run</strong>, and it exports the scope the panel shows: one test from a test's panel, a group with its
-	tests from a group's panel, and the whole session from the session row. Select the
-	<strong>Statuses and Results</strong> group, whose five tests all have their folders set from the earlier
-	pages:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/exporting-test-batch-for-ci/group-panel-export-button.png", "Run panel of the Statuses and Results group listing its five tests with their Cycles, Case Cycles and folder values, the panel of the first test beneath, and the Update Plan, Reset To Defaults, Export for CI and Run buttons at the bottom", "large") }}
-<p>Click <strong class="text-accent">Export for CI</strong>. A folder dialog asks where to write the snapshot;
-	choose an empty folder, here <code>C:\orcraft\ci</code>. The export validates the configuration the way
-	<strong>Run</strong> does, so a missing required field stops it with the same message. When it is done, a
-	message names the folder and counts the exported items. The folder holds the batch, the launcher and the
-	mirrors:</p>
-{{ codeblock.block('C:\\orcraft\\ci\\
+<h2 id="composing-the-session">Composing the session</h2>
+<p>This page composes a regression set from three kinds of item and two repositories. Start with the tutorial
+	suite loaded, then use <strong>Add Item</strong> three more times:</p>
+<ul>
+	<li>the <strong>Demo</strong> suite from its own repository, the second suite of the
+		<a class="text-accent" href="/setup/getting-started/">Getting started</a> guide;</li>
+	<li>the <strong>Structure and Lifecycle</strong> group file from the tutorial suite, as a group item of its
+		own;</li>
+	<li>the <strong>Hello World</strong> test file from the tutorial suite, as a test item of its own.</li>
+</ul>
+<p>Each is a top-level row in the tree, and each will be an item of the batch. A suite need not go in whole.
+	Right-click a group and choose <strong>Unplan</strong> to leave it out; here every group of the tutorial suite
+	is unplanned except <strong>Intro</strong> and <strong>Statuses and Results</strong>, and every group of the
+	Demo suite except <strong>Basic</strong>. Then configure what remains as on the earlier pages: the
+	<strong>Maze Executable Folder</strong> of the status tests and of the four lifecycle tests, and
+	<strong>Update Plan</strong> on each.</p>
+<p>Select the <strong>Session</strong> row at the top of the tree. Its panel lists every planned test with the
+	configured values, and the <strong>Export for CI</strong> button at the bottom exports that whole scope:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/exporting-test-batch-for-ci/session-panel-export-button.png", "Session run panel reporting Total Cases 99, listing the planned tests of the Orcraft Tutorial and Demo suites with their configured values, the panel of the first test beneath, and the Export for CI button at the bottom", "large") }}
+<p>The button is on every run panel and exports the scope the panel shows: one test from a test's panel, a group
+	from a group's panel, and everything planned from the session row.</p>
+
+<h2 id="naming-the-snapshot">Naming the snapshot</h2>
+<p>Click <strong class="text-accent">Export for CI</strong>. The export validates the configuration the way
+	<strong>Run</strong> does, so a missing required field stops it with the same message, and then a dialog asks
+	where to write the snapshot. It opens in the controller's <code>ci</code> folder with a name of the form
+	<code>ci__snapshot__2026-09-12__19-42-31.996</code>, a timestamp that keeps every export apart.</p>
+<p>A snapshot that has a purpose deserves a name that says so. Replace the proposed name with the purpose of the
+	set, here <code>regression</code>; other snapshots might be called <code>gate</code>, <code>basic</code>,
+	<code>full-validation</code> or <code>nightly</code>. The batch takes the folder's name, and it is the name the
+	pipeline, the tree and the logs will show from now on. When a test is added to the set or a value is changed,
+	compose the session again and export to the same name: the snapshot is rewritten in place, and the pipeline
+	that runs it needs no change.</p>
+<p>When the export is done, a message counts the exported items. The folder holds the batch, the launcher and one
+	mirror package per item:</p>
+{{ codeblock.block('C:\\orcraft\\ci\\regression\\
   batch.py
   ci_run.py
   orcraft_test_suite_tutorial\\
-    __init__.py
-    test_suite_tutorial.py
-    test_group_statuses_and_results\\
-      __init__.py
-      test_group_statuses_and_results.py', "text") }}
-<p><code>batch.py</code> is the batch itself, a plain framework file with one item per exported top-level
-	object. The group was exported as part of its suite, so the item is the suite, and its mirror narrows the suite
-	to that one group:</p>
+  orcraft_test_suite_demo\\
+  orcraft_test_suite_tutorial_2\\
+  orcraft_test_suite_tutorial_3\\', "text") }}
+<p>Two of the packages come from the tutorial suite's repository as well, one for the group item and one for
+	the test item, so they are numbered to keep them apart.</p>
+
+<h2 id="the-batch">The batch</h2>
+<p><code>batch.py</code> is the batch itself, a plain framework file with one item per exported top-level row:</p>
 {{ codeblock.block('class BatchConfig(OrcraftTestBatchConfig):
-	name = OrcraftConfigField.Text(default=\'ci\', label="Name")
+	name = OrcraftConfigField.Text(default=\'regression\', label="Name")
 	items = OrcraftConfigField.Items(default_factory=lambda: [
 		OrcraftBatchItem(
 			name=\'Test Suite: Orcraft Tutorial\',
 			kind=\'suite\',
 			source_path=\'orcraft_test_suite_tutorial/test_suite_tutorial.py\',
 			class_name=\'TestSuiteTutorial\',
-			import_roots=(\'.\', \'../orcraft-test-suite-tutorial\'),
-			package_source_path=\'../orcraft-test-suite-tutorial\',
+			import_roots=(\'.\', \'../../orcraft-test-suite-tutorial\'),
+			package_source_path=\'../../orcraft-test-suite-tutorial\',
+		),
+		OrcraftBatchItem(
+			name=\'Test Suite: Demo\',
+			kind=\'suite\',
+			source_path=\'orcraft_test_suite_demo/test_suite_demo.py\',
+			class_name=\'TestSuiteDemo\',
+			import_roots=(\'.\', \'../../orcraft-test-suite-demo\'),
+			package_source_path=\'../../orcraft-test-suite-demo\',
+		),
+		OrcraftBatchItem(
+			name=\'Test Group: Structure and Lifecycle\',
+			kind=\'group\',
+			source_path=\'orcraft_test_suite_tutorial_2/test_group_structure_and_lifecycle/test_group_structure_and_lifecycle.py\',
+			class_name=\'TestGroupStructureAndLifecycle\',
+			import_roots=(\'.\', \'../../orcraft-test-suite-tutorial\'),
+			package_source_path=\'../../orcraft-test-suite-tutorial\',
+		),
+		OrcraftBatchItem(
+			name=\'Test: Hello World\',
+			kind=\'test\',
+			source_path=\'orcraft_test_suite_tutorial_3/test_group_intro/test_hello_world/test_hello_world.py\',
+			class_name=\'TestHelloWorld\',
+			import_roots=(\'.\', \'../../orcraft-test-suite-tutorial\'),
+			package_source_path=\'../../orcraft-test-suite-tutorial\',
 		),
 	])') }}
-<p><code>source_path</code> points at the mirror in the snapshot, <code>import_roots</code> puts the snapshot and
-	the suite's own folder on the import path, and <code>package_source_path</code> names the suite folder that is
-	<a class="text-accent" href="/tutorial/packages-uploading/">uploaded to the endpoints</a>. The paths are
-	relative to where the snapshot was written, which is why the suite has to stay where it was, or be pointed at
+<p>Each item names its kind, the mirror it starts from in <code>source_path</code>, the class to run, and where
+	its code lives. <code>import_roots</code> puts the snapshot and the suite's own folder on the import path, and
+	<code>package_source_path</code> names the suite folder that is
+	<a class="text-accent" href="/tutorial/packages-uploading/">uploaded to the endpoints</a>. The two suites point
+	at two different repositories, and the group and the test point back at the tutorial's. The paths are relative
+	to where the snapshot was written, which is why the suites have to stay where they were, or be pointed at
 	again, when the snapshot runs elsewhere.</p>
-<p>The suite mirror is a few lines. It imports the original config class, overrides its <code>groups</code> field
-	with the one exported group, and marks itself as a mirror:</p>
+<p>A suite's mirror is a few lines. It imports the original config class, overrides its <code>groups</code> field
+	with the groups that stayed planned, and marks itself as a mirror:</p>
 {{ codeblock.block('from orcraft import OrcraftConfigField
 from orcraft import OrcraftTestSuite
 from test_suite_tutorial import TestSuiteTutorialConfig
+from orcraft_test_suite_tutorial.test_group_intro.test_group_intro import TestGroupIntro
 from orcraft_test_suite_tutorial.test_group_statuses_and_results.test_group_statuses_and_results import TestGroupStatusesAndResults
 
 class TestSuiteTutorialConfig(TestSuiteTutorialConfig):
-	groups = OrcraftConfigField.Groups(default_factory=lambda: [TestGroupStatusesAndResults()])
+	groups = OrcraftConfigField.Groups(default_factory=lambda: [TestGroupIntro(), TestGroupStatusesAndResults()])
 
 class TestSuiteTutorial(OrcraftTestSuite):
 	orcraft_ci_mirror = True
 
 	def __init__(self):
 		super().__init__(config=TestSuiteTutorialConfig())') }}
-<p>The group mirror below it does the same for its five tests, and each test mirror redeclares the fields that
-	were configured, such as the <strong>Maze Executable Folder</strong>, with the values from the panel. The
+<p>The group mirrors below it do the same for their tests, and each test mirror redeclares the fields that were
+	configured, such as the <strong>Maze Executable Folder</strong>, with the values from the panel. The
 	<a class="text-accent" href="/framework/batches/#item-paths">framework reference</a> describes the item paths
 	and the mirrors in full.</p>
 
 <h2 id="running-the-snapshot">Running the snapshot</h2>
-<p><code>ci_run.py</code> is the launcher. It runs the batch with no GUI, resolves where the suites are, and
-	turns the outcome into an exit code. Its own header documents the command line:</p>
+<p><code>ci_run.py</code> is the launcher. It runs the batch with no GUI, resolves where each item's repository
+	is, and turns the outcome into an exit code. Its own header documents the command line:</p>
 {{ codeblock.block('Usage:
     python ci_run.py [--suites-root DIR]
 
@@ -94,60 +148,40 @@ Suite-root resolution (first match wins), per item:
        next to the original repos).
 
 Exit codes: 0 = all passed, 10 = a failure, 20 = an error.', "text") }}
-<p>Open a terminal in the snapshot folder and run it with the Python that has the <code>orcraft</code> package
-	installed:</p>
+<p>With two repositories in the batch, a pipeline that checks them out side by side under one folder passes that
+	folder as <code>--suites-root</code>, and each item finds its repository by name. Open a terminal in the
+	snapshot folder and run the launcher with the Python that has the <code>orcraft</code> package installed:</p>
 {{ cmd.copyCommand("python ci_run.py") }}
-<p>The batch starts its item in a subprocess, and the item's tests start together, exactly as they would under
-	the controller. The console shows one line per test as it starts and finishes:</p>
-{{ codeblock.block('Running 1 item in parallel subprocesses
-	Test Suite: Orcraft Tutorial
-
-[2026-09-12  19:35:44.414]  Started   Test Suite: Orcraft Tutorial  Test Group: Statuses and Results  Test: Status: Pass with Warning    localhost
-[2026-09-12  19:35:44.414]  Started   Test Suite: Orcraft Tutorial  Test Group: Statuses and Results  Test: Status: Fail                 localhost
-[2026-09-12  19:35:44.414]  Started   Test Suite: Orcraft Tutorial  Test Group: Statuses and Results  Test: Status: Error                localhost
-[2026-09-12  19:35:44.414]  Started   Test Suite: Orcraft Tutorial  Test Group: Statuses and Results  Test: Checkpoints                  localhost
-[2026-09-12  19:35:44.414]  Started   Test Suite: Orcraft Tutorial  Test Group: Statuses and Results  Test: Result Fields                localhost
-[2026-09-12  19:35:45.843]  Finished  Test Suite: Orcraft Tutorial  Test Group: Statuses and Results  Test: Status: Error                ERROR    1.145 s   1 of 5   localhost
-[2026-09-12  19:35:50.977]  Finished  Test Suite: Orcraft Tutorial  Test Group: Statuses and Results  Test: Result Fields                PASS     6.285 s   2 of 5   localhost
-[2026-09-12  19:35:52.798]  Finished  Test Suite: Orcraft Tutorial  Test Group: Statuses and Results  Test: Status: Pass with Warning    PASS     8.121 s   3 of 5   localhost', "text") }}
-<p>When the last test finishes, the item's whole log is appended and the batch prints its result:</p>
-{{ codeblock.block('Parameter           | Value
----------------------------------------------------------------------------------------------------------------------------
-Name                | Test Batch: ci
-Status              | ERROR
-Error Description   | [WinError 2] The system cannot find the file specified
-Failure Description | Error: Start (0,-2) is out of bounds for a 10x5 maze.
-Warning Description | Area/path ratio is 1.32, which is less than 1.8. The solution path is long relative to the maze area.
-Finish Time         | 2026-09-12  19:35:53.105
-Elapsed Time        | 9.151 s
-Total Items         | 1
-Passed Items        | 0
-Failed Items        | 0
-Error Items         | 1
-Items With Warnings | 1
-Total Tests         | 5
-Passed Tests        | 2
-Failed Tests        | 2
-Error Tests         | 1
-Tests With Warnings | 2
-Total Cases         | 60', "text") }}
-<p>The batch reports what the group's tests are built to produce: two passes, two failures and one error, from
-	the <strong>Status: Error</strong> test that looks for a Maze version that does not exist. An error anywhere
-	makes the batch an error, so the launcher exits with code 20; a run with failures and no errors exits with 10,
-	and a clean run with 0. A pipeline step that runs <code>python ci_run.py</code> therefore fails exactly when
-	the tests say it should, and the batch log written under the snapshot's <code>Logs</code> folder holds every
-	test's log for the investigation.</p>
+<p>The batch starts its four items in subprocesses, and each item's tests start together, exactly as they would
+	under the controller. The console shows one line per test as it starts and finishes, with the item it belongs
+	to:</p>
+{% ansiOutput "ci-run-progress.ansi" %}
+<p>When the last test finishes, the items' logs are appended and the batch prints its result:</p>
+{% ansiOutput "ci-run-result.ansi" %}
+<p>The batch reports what its items are built to produce: two items passed, two ended in an error, since both
+	suites carry a test that deliberately errors, and the failing and warning tests are counted alongside. An
+	error anywhere makes the batch an error, so the launcher exits with code 20; a run with failures and no errors
+	exits with 10, and a clean run with 0. A pipeline step that runs <code>python ci_run.py</code> therefore fails
+	exactly when the tests say it should, and the batch log written under the snapshot's <code>Logs</code> folder
+	holds every test's log for the investigation.</p>
 
 <h2 id="loading-the-batch-in-the-controller">Loading the batch in the controller</h2>
-<p>A snapshot is not only for pipelines. <strong>Add Item</strong> in the controller opens <code>batch.py</code>
-	like a suite file, and the batch appears in the tree with its items beneath it:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/exporting-test-batch-for-ci/batch-in-tree.png", "Execution tree with the original Orcraft Tutorial suite above and a Test Batch row named ci below it, holding a mirrored Test Suite Orcraft Tutorial row", "large") }}
-<p>The <strong>Test Batch</strong> row named after the snapshot folder holds the mirrored suite, which in turn holds
-	the exported group and its tests with the configured values already in place. It runs, plans and reports like
-	any other row, so a snapshot that failed in a pipeline can be opened here, run again, and inspected in the
+<p>A snapshot is not only for pipelines. <strong>Add Item</strong> opens <code>batch.py</code> like a suite file,
+	and the batch appears in the tree with its items beneath it:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/exporting-test-batch-for-ci/batch-in-tree.png", "Execution tree with a Test Batch row named regression holding the mirrored Orcraft Tutorial suite, whose Hello World test and five status tests carry a cyan CI badge while the tests of the unplanned groups carry none", "large") }}
+<p>The <strong>Test Batch</strong> row carries the snapshot's name, and beneath it the suite is shown in full, so
+	the batch can be read in the context of the suite it came from. A cyan <strong>CI</strong> badge marks the
+	tests that were configured and exported: <strong>Hello World</strong> and the five status tests here, and none
+	of the tests of the groups that were unplanned before the export. The badge is the sign that a test's values
+	come from the snapshot rather than from a panel.</p>
+<p>Click the <strong>CI</strong> chip beside the level chips above the tree to see only those tests:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/exporting-test-batch-for-ci/ci-filter-explorer.png", "Execution tree narrowed by the CI chip to the regression batch: the Orcraft Tutorial suite with its Intro and Statuses and Results groups, the Demo suite with its Basic group, the Structure and Lifecycle group item and the Hello World test item, every test carrying the CI badge", "large") }}
+<p>The tree now shows exactly the set that <code>ci_run.py</code> runs: the two suites narrowed to their planned
+	groups, the group item and the test item. The batch runs, plans and reports like any other row, so a snapshot
+	that failed in a pipeline can be opened here, run again, and inspected in the
 	<a class="text-accent" href="/tutorial/details-dialog/">Details dialog</a> with the same values the pipeline
 	used.</p>
 
-<p>The snapshot pointed back at the suite's folder, and the controller keeps an eye on where that folder stands
-	against its repository. The next page, <a class="text-accent" href="/tutorial/git-status-frame/">Git Status
-	Frame</a>, shows the panel that does so.</p>
+<p>The snapshot pointed back at two repositories, and the controller keeps an eye on where each of them stands.
+	The next page, <a class="text-accent" href="/tutorial/git-status-frame/">Git Status Frame</a>, shows the panel
+	that does so.</p>

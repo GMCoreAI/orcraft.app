@@ -1,0 +1,26 @@
+[96mRunning 4 items in parallel subprocesses[00m
+[96m	Test Suite: Orcraft Tutorial[00m
+[96m	Test Suite: Demo[00m
+[96m	Test Group: Structure and Lifecycle[00m
+[96m	Test: Hello World[00m
+
+[2026-09-12  19:53:15.373]  Started   [96mTest Suite: Orcraft Tutorial       [00m  [36mTest Group: Statuses and Results[00m  Test: Status: Pass with Warning                                                           localhost
+[2026-09-12  19:53:15.374]  Started   [96mTest Suite: Orcraft Tutorial       [00m  [36mTest Group: Statuses and Results[00m  Test: Status: Fail                                                                        localhost
+[2026-09-12  19:53:15.374]  Started   [96mTest Suite: Orcraft Tutorial       [00m  [36mTest Group: Statuses and Results[00m  Test: Status: Error                                                                       localhost
+[2026-09-12  19:53:15.374]  Started   [96mTest Suite: Orcraft Tutorial       [00m  [36mTest Group: Statuses and Results[00m  Test: Checkpoints                                                                         localhost
+[2026-09-12  19:53:15.374]  Started   [96mTest Suite: Orcraft Tutorial       [00m  [36mTest Group: Statuses and Results[00m  Test: Result Fields                                                                       localhost
+[2026-09-12  19:53:15.436]  Started   Test: Hello World                                                                             localhost
+[2026-09-12  19:53:15.443]  Started   [36mTest Group: Structure and Lifecycle[00m  Test: Steps and Flows                                                                      localhost
+[2026-09-12  19:53:15.443]  Started   [36mTest Group: Structure and Lifecycle[00m  Test: Setup and Teardown                                                                   localhost
+[2026-09-12  19:53:15.443]  Started   [36mTest Group: Structure and Lifecycle[00m  Test: Cycle Setup and Teardown                                                             localhost
+[2026-09-12  19:53:15.443]  Started   [36mTest Group: Structure and Lifecycle[00m  Test: Case Setup and Teardown                                                              localhost
+[2026-09-12  19:53:15.458]  Started   [96mTest Suite: Demo                   [00m  [36mTest Group: Basic               [00m  Test: Hello World                                                                         localhost
+[2026-09-12  19:53:15.458]  Started   [96mTest Suite: Demo                   [00m  [36mTest Group: Basic               [00m  Test: Basic Parameters                                                                    localhost
+[2026-09-12  19:53:15.458]  Started   [96mTest Suite: Demo                   [00m  [36mTest Group: Basic               [00m  Test: Run Dialog Layout                                                                   localhost
+[2026-09-12  19:53:15.458]  Started   [96mTest Suite: Demo                   [00m  [36mTest Group: Basic               [00m  Test: Status: Fail                                                                        localhost
+[2026-09-12  19:53:15.458]  Started   [96mTest Suite: Demo                   [00m  [36mTest Group: Basic               [00m  Test: Status: Error                                                                       localhost
+[2026-09-12  19:53:15.458]  Started   [96mTest Suite: Demo                   [00m  [36mTest Group: Basic               [00m  Test: Status: Pass with Warning                                                           localhost
+[2026-09-12  19:53:15.458]  Started   [96mTest Suite: Demo                   [00m  [36mTest Group: Basic               [00m  Test: Extended Results                                                                    localhost
+[2026-09-12  19:53:15.458]  Started   [96mTest Suite: Demo                   [00m  [36mTest Group: Basic               [00m  Test: Log Tables Layouts                                                                  localhost
+[2026-09-12  19:53:15.464]  Started   [96mTest Suite: Orcraft Tutorial       [00m  [36mTest Group: Intro               [00m  Test: Hello World                                                                         localhost
+[92m[2026-09-12  19:53:15.862]  Finished  Test: Hello World                      PASS     0.003 s                          1 of 19      localhost[00m
