@@ -17,6 +17,7 @@
     { "label": "Filtering Matrix Dimensions", "slug": "filtering-matrix-dimensions/" },
     { "label": "Matrix Cases Exclusion", "slug": "matrix-cases-exclusion/" },
     { "label": "Matrix Dimensions Randomization", "slug": "matrix-dimensions-randomization/" },
-    { "label": "Matrix Lambda Dimensions", "slug": "matrix-lambda-dimensions/" }
+    { "label": "Matrix Lambda Dimensions", "slug": "matrix-lambda-dimensions/" },
+    { "label": "Orcraft Statuses", "slug": "orcraft-statuses/" }
   ]
 }

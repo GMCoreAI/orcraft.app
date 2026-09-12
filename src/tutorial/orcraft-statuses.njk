@@ -1,0 +1,136 @@
+---
+title: Tutorial · Orcraft Statuses
+key: tutorial
+description: "How a case reports pass, pass with warning, fail or error, and how each status looks in the controller."
+---
+{% import "partials/copy-command.njk" as cmd %}
+{% import "partials/code-block.njk" as codeblock %}
+{% import "partials/zoomable-image.njk" as media %}
+<h1>Orcraft Statuses</h1>
+<p>Every result in Orcraft carries a <a class="text-accent" href="/framework/statuses/">status</a> that says how the
+	run went. A case starts at <strong class="status-pass">PASS</strong> and is moved from there by what the test
+	reports: a warning that leaves it passing, a failure, or an error that stops it. This page uses the three
+	<strong>Status</strong> tests of the tutorial suite's <strong>Statuses and Results</strong> group, one per
+	outcome, and shows how each one looks in the execution tree, the log and the Details dialog.</p>
+<p>The three tests share the same shape. Each runs the Maze application over a small matrix that mixes valid inputs
+	with invalid ones: a misspelt <code>slove</code> command and out-of-bounds start coordinates. The application
+	answers an invalid input with a message on its error output, and each test turns that message into a different
+	status. The application is behaving correctly in every case; the tests are about the reporting.</p>
+<p>Select <strong>Status: Pass with Warning</strong> and <strong>Status: Fail</strong> in turn and set their
+	<strong>Maze Executable Folder</strong>. <strong>Status: Error</strong> takes a <strong>Maze Bin Folder</strong>
+	instead, the folder that holds one subfolder per Maze version:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/orcraft-statuses/status-error-config.png", "Status: Error run panel with Maze Bin Folder set to the folder that holds the Maze versions, reporting Total Cases 4 across maze_version v3.0.0 and v4.0.0", "large") }}
+<p>Its matrix names two versions, <code>v3.0.0</code> and <code>v4.0.0</code>. Only the first exists on disk, which
+	is what the test needs to produce an error. Click <strong class="text-accent">Update Plan</strong> for each of the
+	three tests.</p>
+
+<h2 id="pass-with-warning">Pass with warning</h2>
+<p>Source directory:</p>
+{{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_statuses_and_results/test_status_pass_with_warning/") }}
+<p>The test runs the application and, when the run produced an error message, records it as a warning:</p>
+{{ codeblock.block('def _run_case(self, case: OrcraftTestCase):
+
+	maze_app = MazeApp(
+		self.config.maze_executable_folder,
+		case.params["command"],
+		width=case.params["width"],
+		height=case.params["height"],
+		start_row=case.params["start_row"],
+		start_col=case.params["start_col"],
+	)
+
+	result = maze_app.run()
+
+	if result.error:
+		case.result.warning_description = result.error
+
+	return case.result') }}
+<p>Assigning <a class="text-accent" href="/framework/statuses/#warnings"><code>warning_description</code></a> attaches
+	the message to the case without changing its status. Click <strong class="text-purple">Run</strong> on the test
+	and confirm:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/orcraft-statuses/running-pass-with-warning.png", "Completed Status: Pass with Warning run shown in yellow in the execution tree, with the log header reading Pass (+Warn), a Warn chip above the tree and a yellow progress bar in the Execution Status frame", "large") }}
+<p>The run's row is drawn in yellow and its status reads <strong class="status-warning">Pass (+Warn)</strong>. The
+	counters tell the rest: 16 planned, 16 done, 16 passed, none failed. A warning is information attached to a
+	passing case, and the tree counts it as a pass. What changes is where the run is surfaced: the
+	<strong>Warn</strong> chip above the tree counts one test with warnings, and the progress bar in the
+	<strong>Execution Status</strong> frame turns yellow.</p>
+<p>Click <strong>Details</strong> for the run to see which cases carried the warning:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/orcraft-statuses/pass-with-warning-details.png", "Status: Pass with Warning Details view with the two valid cases reading Pass and the fourteen invalid ones reading Pass (+Warn), and an Items Filter offering Pass and Warn chips", "large") }}
+<p>The two cases with a valid command and valid coordinates read <strong class="status-pass">Pass</strong>; the
+	other fourteen read <strong class="status-warning">Pass (+Warn)</strong>, and the message the application wrote
+	is in each one's <strong>Warning Description</strong> column further right. The <strong>Items Filter</strong> at
+	the bottom narrows the tree to either kind.</p>
+
+<h2 id="fail">Fail</h2>
+<p>Source directory:</p>
+{{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_statuses_and_results/test_status_fail/") }}
+<p>The only difference from the previous test is the field the message is assigned to:</p>
+{{ codeblock.block('	result = maze_app.run()
+
+	if result.error:
+		case.result.failure_description = result.error
+
+	return case.result') }}
+<p>Assigning <a class="text-accent" href="/framework/statuses/#setting-a-status"><code>failure_description</code></a>
+	moves the case to <strong class="status-fail">FAIL</strong> on its own; the test never sets the status by hand,
+	so the reason always travels with it. Run the test:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/orcraft-statuses/running-fail.png", "Completed Status: Fail run shown in red in the execution tree with 16 done, 2 passed and 14 failed, a Fail chip above the tree and a red progress bar in the Execution Status frame", "large") }}
+<p>The row turns red. The test reports 16 done, 2 passed and 14 failed, a pass rate of 12 %, and the
+	<strong>Fail</strong> chip appears next to <strong>Warn</strong>. A failure is a finding about the application:
+	the case ran to the end, compared what it saw with what it expected, and the two differed.</p>
+<p>The Details dialog lists the finding per case:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/orcraft-statuses/fail-details.png", "Status: Fail Details view with the two valid cases reading Pass and the fourteen invalid ones reading Fail, the summary showing Pass 2 and Fail 14, and an Items Filter offering Pass and Fail chips", "large") }}
+<p>The same two cases pass and the same fourteen are now failures, each with its message in the
+	<strong>Failure Description</strong> column. Whether an unexpected message is a warning or a failure is the
+	test's decision, and these two tests make opposite ones on purpose.</p>
+
+<h2 id="error">Error</h2>
+<p>Source directory:</p>
+{{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_statuses_and_results/test_status_error/") }}
+<p>This test sets no description at all. It builds the executable folder from the case's version and runs the
+	application from there:</p>
+{{ codeblock.block('def _run_case(self, case: OrcraftTestCase):
+
+	bin_folder = f"{self.config.maze_bin_folder.rstrip(\'/\\\\\')}/{case.params[\'maze_version\']}"
+
+	maze_app = MazeApp(
+		bin_folder,
+		case.params["command"],
+		width=case.params["width"],
+		height=case.params["height"],
+	)
+
+	maze_app.run()
+
+	return case.result') }}
+<p>For <code>v4.0.0</code> the folder does not exist, launching the executable raises an exception, and nothing in
+	the test catches it. An uncaught exception is what produces <strong class="status-error">ERROR</strong>: the case
+	could not reach a verdict, so there is no finding about the application, only about the run. Run the test:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/orcraft-statuses/running-error.png", "Completed Status: Error run shown in orange in the execution tree with 4 planned, 2 done and 2 passed, the log showing the exception traceback and the error description, and an Error chip above the tree", "large") }}
+<p>The row turns orange and an <strong>Error</strong> chip joins the others. The log shows the traceback, the
+	case's row in the result table marked <strong class="status-error">ERROR</strong>, and the message as the test's
+	<strong>Error Description</strong>. The counters read 4 planned, 2 done and 2 passed, with progress at 50 %: an
+	errored case does not count as done, because it produced no result to count.</p>
+<p>The exception also ends the test. Open the Details dialog:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/orcraft-statuses/error-details.png", "Status: Error Details view with the two v3.0.0 cases reading Pass, the first v4.0.0 case reading Error with its error description, and the last case reading Not Run", "large") }}
+<p>The two <code>v3.0.0</code> cases passed, the first <code>v4.0.0</code> case errored, and the last case reads
+	<strong>Not Run</strong>: the test stopped at the exception and never reached it. Both the errored and the
+	unreached case are missing from <strong>Done</strong>, which is why the progress stays at 50 % rather than
+	reporting the run as complete.</p>
+<p>The distinction between fail and error is the one to keep in mind when writing a test. A failure is expected
+	and means the application is wrong; an error is unexpected and means the test could not do its job. Orcraft
+	counts them separately so that a suite with an infrastructure problem does not look like a suite with a quality
+	problem.</p>
+
+<h2 id="statuses-in-the-tree">Statuses in the tree</h2>
+<p>Select the <strong>Statuses and Results</strong> group to see the three runs together:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/orcraft-statuses/statuses-tree.png", "Execution tree with the Statuses and Results group selected, showing the yellow Pass with Warning run, the red Fail run and the orange Error run beneath their tests, and the group aggregating 64 planned, 34 done, 20 passed and 14 failed", "large") }}
+<p>Each test run row is coloured by its status, and the group aggregates the counters of its tests: 64 planned, 34
+	done, 20 passed and 14 failed, a progress of 53 %. The <strong>Warn</strong>, <strong>Fail</strong>,
+	<strong>Error</strong> and <strong>Not Run</strong> chips above the tree count tests by their latest status,
+	and clicking one narrows the tree to those tests. The two remaining tests of the group, <strong>Checkpoints</strong>
+	and <strong>Result Fields</strong>, have not run yet and count as not run.</p>
+
+<p>These tests set a status with a single description. The next page,
+	<a class="text-accent" href="/tutorial/checkpoints/">Checkpoints</a>, checks several things in one case and
+	records the outcome of each check in the log.</p>
