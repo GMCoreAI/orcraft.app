@@ -29,38 +29,36 @@
             <h3 id="test-suite-standardization" class="pillar__title">Test suite standardization</h3>
           </div>
           <p class="pillar__text">Every suite has the
-            <a class="text-accent" href="/framework/#component-model">same structure</a>: suites, groups, tests,
-            cases, flows and steps in plain Python, with configuration declared as fields. An AI agent writes it
-            without an API to learn, and the controller derives the GUI from it.</p>
+            <a class="text-accent" href="/framework/#component-model">same structure</a> in plain Python. An AI
+            agent writes it with no API to learn; the controller derives the GUI from it.</p>
         </article>
         <article class="pillar reveal">
           <div class="pillar__head">
             <span class="pillar__icon">{% icon "code" %}</span>
             <h3 id="continuous-test-development" class="pillar__title">Continuous test development</h3>
           </div>
-          <p class="pillar__text">The suite is written from the documentation of the system under test and grows with
-            it. As the system changes, the AI agent finds the features the suite does not cover yet and
-            <a class="text-accent" href="/ai-agents/#continuous-expansion">adds the missing tests</a>; every fixed
-            bug <a class="text-accent" href="/ai-agents/#bug-coverage">becomes a test</a>.</p>
+          <p class="pillar__text">The suite grows with the system. On demand or on a schedule, the AI agent
+            <a class="text-accent" href="/ai-agents/#continuous-expansion">adds the missing tests</a>, and every
+            fixed bug <a class="text-accent" href="/ai-agents/#bug-coverage">becomes a test</a>.</p>
         </article>
         <article class="pillar reveal">
           <div class="pillar__head">
             <span class="pillar__icon">{% icon "hierarchy" %}</span>
             <h3 id="orchestration" class="pillar__title">Orchestration</h3>
           </div>
-          <p class="pillar__text">The AI agent picks the machines from the controller's
-            <a class="text-accent" href="/ai-agents/endpoints/">endpoints file</a>, configures the run in code and
-            <a class="text-accent" href="/ai-agents/running/">runs it across the lab</a>. The controller uploads the
-            package to every endpoint and collects the logs and results in one place.</p>
+          <p class="pillar__text">When asked or when scheduled, the AI agent picks the
+            <a class="text-accent" href="/ai-agents/endpoints/">machines</a> and
+            <a class="text-accent" href="/ai-agents/running/">runs across the lab</a>. The controller ships the
+            package and collects the results.</p>
         </article>
         <article class="pillar reveal">
           <div class="pillar__head">
             <span class="pillar__icon">{% icon "infinity" %}</span>
             <h3 id="continuous-integration" class="pillar__title">Continuous integration</h3>
           </div>
-          <p class="pillar__text">The same suite runs from the pipeline: a
-            <a class="text-accent" href="/framework/batches/">snapshot</a> exported from the GUI, or a batch the AI
-            agent writes on every merge. A run confirmed by hand and a run started by a pipeline are the same run.</p>
+          <p class="pillar__text">The same suite runs unattended in the pipeline, from a
+            <a class="text-accent" href="/framework/batches/">snapshot</a> exported from the GUI or a batch the AI
+            agent writes, with the same results.</p>
         </article>
       </div>
     </div>
