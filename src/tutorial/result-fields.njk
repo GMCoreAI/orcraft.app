@@ -1,0 +1,98 @@
+---
+title: Tutorial · Result Fields
+key: tutorial
+description: "Declare result fields so a case reports the values it measured, and see them in the log and the Details dialog."
+---
+{% import "partials/copy-command.njk" as cmd %}
+{% import "partials/code-block.njk" as codeblock %}
+{% import "partials/zoomable-image.njk" as media %}
+<h1>Result Fields</h1>
+<p>A status says whether a case was right. A <a class="text-accent" href="/framework/result-fields/">result
+	field</a> says what the case measured. Fields are declared on a result class the way configuration fields are
+	declared on a config class, and every value a case assigns to one is carried into the log, the execution tree and
+	the Details dialog. This page uses the <strong>Result Fields</strong> test of the
+	<strong>Statuses and Results</strong> group, which follows
+	<a class="text-accent" href="/tutorial/checkpoints/">Checkpoints</a>.</p>
+<p>Select the <strong>Result Fields</strong> test and set its <strong>Maze Executable Folder</strong>:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/result-fields/result-fields-config.png", "Result Fields run panel with the Maze Executable Folder set, reporting Total Cases 12 across the width, height and seed dimensions", "large") }}
+<p>The matrix combines two widths, two heights and three seeds into 12 valid <code>solve</code> cases. Nothing in
+	this test is expected to fail. What it adds is three values per case: the maze area, the length of the path the
+	application found, and the ratio between them.</p>
+
+<h2 id="declaring-result-fields">Declaring result fields</h2>
+<p>Source directory:</p>
+{{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_statuses_and_results/test_result_fields/") }}
+<p>The test declares a result class next to its config class. Each field comes from the
+	<code>OrcraftResultField</code> namespace and carries a default and a label:</p>
+{{ codeblock.block('class TestResultFieldsResult(OrcraftTestResult):
+	maze_area = OrcraftResultField.Numeric(default=None, label="Maze Area")
+	path_length = OrcraftResultField.Numeric(default=None, label="Path Length")
+	area_path_ratio = OrcraftResultField.Numeric(default=None, label="Area / Path Ratio")') }}
+<p>The label is what the log and the controller show. A field without a label stays internal, and the other
+	<a class="text-accent" href="/framework/result-fields/#result-fields">field types and options</a> are listed in
+	the framework reference.</p>
+
+<h3 id="assigning-values">Assigning values</h3>
+<p>The case body starts by giving the case an instance of that result class, then hands the case to the suite's
+	Maze helper:</p>
+{{ codeblock.block('def _run_case(self, case: OrcraftTestCase) -> TestResultFieldsResult:
+	case.result = TestResultFieldsResult()
+
+	maze_app = MazeApp(
+		self.config.maze_executable_folder,
+		"solve",
+		width=case.params["width"],
+		height=case.params["height"],
+		seed=case.params["seed"],
+	)
+
+	maze_app.run_and_validate(case)
+
+	return case.result') }}
+<p>The helper runs the application, reads the step count from its output and assigns the fields. It also raises a
+	warning when the path is long relative to the maze:</p>
+{{ codeblock.block('def run_and_validate(self, case: OrcraftTestCase) -> None:
+	result = self._execute()
+	maze_area = (self.width or 0) * (self.height or 0)
+	case.result.maze_area = maze_area
+	if result.solved:
+		path_length = result.steps
+		area_path_ratio = round(maze_area / path_length, 2)
+		case.result.path_length = path_length
+		case.result.area_path_ratio = area_path_ratio
+		if area_path_ratio < 1.8:
+			case.result.warning_description = (
+				f"Area/path ratio is {area_path_ratio}, which is less than 1.8. "
+				"The solution path is long relative to the maze area."
+			)') }}
+<p>A result field is assigned like any attribute. The warning uses the
+	<a class="text-accent" href="/tutorial/orcraft-statuses/#pass-with-warning"><code>warning_description</code></a>
+	seen earlier, so the ratio both appears as a value and, when it is low, flags the case.</p>
+
+<h2 id="values-in-the-log">Values in the log</h2>
+<p>Click <strong class="text-accent">Update Plan</strong>, then <strong class="text-purple">Run</strong> and
+	confirm. When the run finishes, search the log for <code>Area / Path Ratio</code> and click
+	<strong>Next</strong>:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/result-fields/case-result-in-log.png", "Log of the second Result Fields case showing the solved maze, the Path found line and the case result table with Maze Area 75, Path Length 47 and Area / Path Ratio 1.6 beneath the status and warning description", "large") }}
+<p>Every case ends with a result table, and the three declared fields appear in it under their labels, after the
+	case's dimensions, status and warning. Here a 5 by 15 maze solved in 47 steps gives a ratio of 1.6, low enough
+	for the warning line above the fields.</p>
+<p>Clear the search field to return to the end of the log:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/result-fields/running-result-fields-test.png", "Completed Result Fields run with 12 done and 12 passed, the log showing the test result with 6 cases with warnings and a Warnings table listing those cases", "large") }}
+<p>The test passes with all 12 cases and reports 6 cases with warnings. The <strong>Warnings</strong> table lists
+	them with their descriptions, so the low ratios can be found without opening each case.</p>
+
+<h2 id="values-in-the-details-dialog">Values in the Details dialog</h2>
+<p>Click <strong>Details</strong> for the run. The declared fields become columns of the results tree, after the
+	columns every result carries:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/result-fields/result-fields-details.png", "Result Fields Details view widened to show the Maze Area, Path Length and Area / Path Ratio columns at the right end of the results tree, with a value for every case and case cycle", "large") }}
+<p>Each case and case cycle row carries its own <strong>Maze Area</strong>, <strong>Path Length</strong> and
+	<strong>Area / Path Ratio</strong>. The larger mazes at the bottom of the tree have the higher ratios and no
+	warning, and the small ones at the top have the low ratios the warnings pointed at. The columns are part of the
+	dialog's <strong>Export to XLSX</strong> as well, which is how measured values leave the controller for further
+	analysis.</p>
+
+<p>This completes the <strong>Statuses and Results</strong> group. The next group,
+	<strong>Structure and Lifecycle</strong>, starts with
+	<a class="text-accent" href="/tutorial/structure-and-lifecycle/">Structure and Lifecycle</a>: composing a test
+	from steps and flows, and the setup and teardown hooks that run around a test, a cycle and a case.</p>
