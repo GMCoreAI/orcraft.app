@@ -7,52 +7,65 @@ description: "Declare where a test runs with a single endpoint field, a multi-se
 {% import "partials/code-block.njk" as codeblock %}
 {% import "partials/zoomable-image.njk" as media %}
 <h1>Endpoints Config Types</h1>
-<p>A test says which machines it needs through
-	<a class="text-accent" href="/framework/endpoints/#declaring">endpoint fields</a> on its config class. The
-	field is configuration like any other: the same test body runs on the local machine or across a lab depending
-	on the values chosen in the run panel. The <strong>Endpoints</strong> group of the tutorial suite declares one
-	test per way of choosing machines, and this page follows them with the endpoints registered on
-	<a class="text-accent" href="/tutorial/endpoints-management/">the previous page</a>.</p>
-<p>Every test in this group needs its <strong>Maze Executable Folder</strong>, and the flows and steps are the
-	ones from <a class="text-accent" href="/tutorial/structure-and-lifecycle/">Structure and Lifecycle</a>. Nothing
-	in them mentions a machine; where they run is decided by the fields described here.</p>
+<p>Up to this point every step of the tutorial ran on the controller's own machine. Orcraft can send a step to
+	any endpoint registered in the controller instead, and the test decides where its steps go through
+	<strong>endpoint fields</strong> on its config class. An endpoint field is a configuration field like the folder
+	and selector fields seen earlier, except that its value is a machine rather than a path or a number. The test
+	body never names a machine: the flows hand each step the endpoint field to run on, and the value of that field
+	is chosen in the run panel. The same suite therefore runs on the local machine while it is being written and
+	across a lab once it is done, with no change to its code.</p>
+<p>The framework offers a few <a class="text-accent" href="/framework/endpoints/#declaring">field types</a>, and
+	the difference between them is what happens when more than one machine is selected:</p>
+<ul>
+	<li><strong>Endpoint</strong> holds one machine. A test declares one such field per role it needs: a generator
+		and a solver, a server and a client, a host and a device.</li>
+	<li><strong>MultiSelectEndpoints</strong> holds a set of machines that take part together in one run. The
+		test loops over them and decides what each one does.</li>
+	<li><strong>EndpointFanout</strong> also holds a set of machines, but each machine gets a run of its own. The
+		same test is repeated once per selected endpoint, and the runs execute in parallel.</li>
+</ul>
+<p>In the run panel every endpoint field shows its chosen machines and an edit button that opens a dialog listing
+	the endpoints registered on <a class="text-accent" href="/tutorial/endpoints-management/">the previous
+	page</a>. Two rows accompany the endpoint fields. <strong>Upload Test Package</strong> decides whether the
+	suite's own code is sent to the endpoint before the run, and <strong>Update Endpoint App</strong> whether the
+	endpoint application on the machine is brought to the controller's version first; both default to doing so only
+	when needed, and both are explained on the next page. A package field such as
+	<strong>Maze Executable Folder</strong> additionally shows an <strong>Endpoints</strong> line and an
+	<strong>Upload</strong> choice, because its files travel to the machines where they are used.</p>
+<p>The <strong>Endpoints</strong> group of the tutorial suite declares one test per field type. All of them reuse
+	the flows and steps of <a class="text-accent" href="/tutorial/structure-and-lifecycle/">Structure and
+	Lifecycle</a> and all need their <strong>Maze Executable Folder</strong> set, and this page follows them with the
+	Windows, Linux and macOS machines registered earlier.</p>
 
 <h2 id="a-single-endpoint">A single endpoint</h2>
 <p>Source directory:</p>
 {{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_endpoints/test_default_endpoint_and_package_upload/") }}
-<p>Every test config inherits a <code>test_endpoint</code> field that defaults to <code>localhost</code>. It is
+<p>Every test config inherits a <code>test_endpoint</code> field that defaults to <code>localhost</code>. It stays
 	hidden in the run panel until a test declares it, which <strong>Default Endpoint and Package Upload</strong>
 	does with one line:</p>
 {{ codeblock.block('test_endpoint = OrcraftConfigField.Endpoint(default="localhost", label="Test Endpoint")') }}
-<p>Select the test and click the edit button at the right of <strong>Test Endpoint</strong>. The dialog lists
-	the registered endpoints; choose the Linux machine:</p>
+<p>A step that names no endpoint of its own runs on this one, so declaring the field is enough to move the whole
+	test to another machine. Select the test and click the edit button at the right of
+	<strong>Test Endpoint</strong>. Choose the Linux machine:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/endpoints-config-types/single-endpoint-config.png", "Default Endpoint and Package Upload run panel with Test Endpoint set to GMG-TEST-3, Upload Test Package set to If Missing, Update Endpoint App set to On Mismatch, and the Maze Executable Folder showing Endpoints All and Upload If Missing", "large") }}
-<p>Two rows sit under the endpoint field. <strong>Upload Test Package</strong> decides whether the suite's own
-	code is sent to the endpoint before the run, and <strong>Update Endpoint App</strong> whether the endpoint
-	application is brought to the controller's version first. Both default to doing so only when needed. The
-	<strong>Maze Executable Folder</strong> row has grown an <strong>Endpoints</strong> line and an
-	<strong>Upload</strong> choice of its own, because the field is a package folder that travels to the machine
-	where it is used; the next page, <a class="text-accent" href="/tutorial/packages-uploading/">Packages
-	Uploading</a>, is about that.</p>
 <p>Click <strong class="text-accent">Update Plan</strong>, then <strong class="text-purple">Run</strong> and
 	confirm. Open the run's Details when it finishes:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/endpoints-config-types/single-endpoint-details.png", "Default Endpoint and Package Upload Details view with every step row carrying GMG-TEST-3 in its Endpoints column and a passing status", "large") }}
-<p>Every step row now carries <strong>GMG-TEST-3</strong> in its <strong>Endpoints</strong> column. The steps
-	ran on the Linux machine, with the Windows build of the Maze application replaced by the Linux one the package
-	folder also holds, and their results came back to the controller exactly as they did from
-	<strong>localhost</strong>.</p>
+<p>Every step row carries <strong>GMG-TEST-3</strong> in its <strong>Endpoints</strong> column. The steps ran on
+	the Linux machine, with the Linux build of the Maze application that the package folder also holds, and their
+	results came back to the controller exactly as they did from <strong>localhost</strong>.</p>
 
 <h2 id="endpoints-with-roles">Endpoints with roles</h2>
 <p>Source directory:</p>
 {{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_endpoints/test_multiple_endpoints_and_files_transfer/") }}
-<p>A test that needs two machines with different jobs declares two fields.
+<p>A test that needs two machines with different jobs declares two fields, one per role.
 	<strong>Multiple Endpoints and Files Transfer</strong> generates mazes on the first and solves them on the
 	second, moving the files between them in the meantime:</p>
 {{ codeblock.block('endpoint_1 = OrcraftConfigField.Endpoint(default="localhost", label="Endpoint 1")
 endpoint_2 = OrcraftConfigField.Endpoint(default="localhost", label="Endpoint 2")') }}
 <p>The flows pass an <code>endpoint</code> argument to <code>run_step</code> so that each step goes to the machine
-	for its role, and the <a class="text-accent" href="/framework/endpoints/#transfer">file transfer</a> between
-	the two is a framework call the flow makes between the steps. Set <strong>Endpoint 1</strong> to the Windows
+	of its role, and the <a class="text-accent" href="/framework/endpoints/#transfer">file transfer</a> between the
+	two is a framework call the flow makes between the steps. Set <strong>Endpoint 1</strong> to the Windows
 	machine and <strong>Endpoint 2</strong> to the macOS machine, update the plan and run. The Details show the
 	split:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/endpoints-config-types/two-endpoints-details.png", "Multiple Endpoints and Files Transfer Details view with the Delete and Generate steps of every flow marked GMG-TEST-1 and the Load / Solve steps marked GMG-TEST-5", "large") }}
@@ -64,7 +77,8 @@ endpoint_2 = OrcraftConfigField.Endpoint(default="localhost", label="Endpoint 2"
 <h2 id="a-set-of-endpoints">A set of endpoints</h2>
 <p>Source directory:</p>
 {{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_endpoints/test_multi_select_endpoints/") }}
-<p><strong>Multi-Select Endpoints</strong> keeps one generator and takes any number of solvers:</p>
+<p>When the number of machines in a role is not fixed, the role becomes a set. <strong>Multi-Select
+	Endpoints</strong> keeps one generator and takes any number of solvers:</p>
 {{ codeblock.block('test_endpoint = OrcraftConfigField.Endpoint(default="localhost", label="Test Endpoint")
 aux_endpoints = OrcraftConfigField.MultiSelectEndpoints(default=("localhost",), label="Aux Endpoints")') }}
 <p>A <code>MultiSelectEndpoints</code> field holds a tuple of endpoints, and the test body loops over it, running
@@ -77,43 +91,50 @@ aux_endpoints = OrcraftConfigField.MultiSelectEndpoints(default=("localhost",), 
 <h2 id="fan-out">Fan-out</h2>
 <p>Source directory:</p>
 {{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_endpoints/test_endpoint_fanout/") }}
-<p><strong>Endpoint Fanout</strong> runs the flows of the first test, but redeclares the inherited field as a
-	fan-out:</p>
+<p>The opposite need is to run the same verification on every machine of a lab. That is a fan-out: one test,
+	one run per selected endpoint. <strong>Endpoint Fanout</strong> runs the flows of the first test, but
+	redeclares the inherited field:</p>
 {{ codeblock.block('test_endpoint = OrcraftConfigField.EndpointFanout(default=("localhost",), label="Test Endpoint")') }}
 <p>An <code>EndpointFanout</code> field also holds a tuple, but each selected endpoint gets a run of its own.
 	Select all three machines:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/endpoints-config-types/fanout-config.png", "Endpoint Fanout run panel with the Test Endpoint (Fanout) field listing GMG-TEST-1, GMG-TEST-3 and GMG-TEST-5 and the counter reporting Total Cases 12", "large") }}
 <p><strong>Total Cases</strong> reads 12 for a matrix of four cases: the four cases three times over, once per
 	machine. Update the plan and run:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/endpoints-config-types/fanout-runs-tree.png", "Execution tree with the Endpoint Fanout test planning 12 cases and holding three Test Run rows of four passed cases each, one per selected endpoint", "large") }}
-<p>The test row plans 12 and holds three <strong>Test Run</strong> rows, one per endpoint, that ran at the same
-	time. Fan-out is the way to run one verification everywhere; the multi-select field is the way to let several
-	machines take part in one run.</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/endpoints-config-types/fanout-runs-tree.png", "Execution tree with the Endpoint Fanout test planning 12 cases and holding three passing Test Run rows, whose Endpoints column reads GMG-TEST-1, GMG-TEST-3 and GMG-TEST-5 with a fan-out mark", "large") }}
+<p>The test row plans 12 and holds three <strong>Test Run</strong> rows that ran at the same time. Each row's
+	<strong>Endpoints</strong> column names its machine with a fan-out mark, and each has its own
+	<strong class="status-pass">Pass</strong> in the <strong>Status</strong> column. Fan-out is the way to run
+	one verification everywhere; the multi-select field is the way to let several machines take part in one
+	run.</p>
 
 <h3 id="queued-runs">Queued runs</h3>
 <p>Source directory:</p>
 {{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_endpoints/test_endpoint_fanout_queued/") }}
-<p><strong>Endpoint Fanout - Queued</strong> mixes the two kinds. <strong>Endpoint 1</strong>, the generator,
-	is a plain endpoint, and <strong>Endpoint 2</strong>, the solver, is a fan-out. Choose the Windows machine as
-	the generator and the Linux and macOS machines as solvers, then run:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/endpoints-config-types/fanout-queued-tree.png", "Execution tree during the Endpoint Fanout - Queued run, with one Test Run row running and the second row waiting behind it", "large") }}
-<p>Two runs are created, but they do not start together. Both need the generator, an endpoint is held by the run
-	that uses it, and so the second run waits until the first releases it. The panel's <strong>Shared</strong>
-	option on an endpoint field lifts that rule for machines that can serve several runs at once; the framework
-	reference describes it under
+<p>By default a run holds the endpoints it uses, and another run that needs one of them waits. This matters when
+	a fan-out and a fixed endpoint meet in one test. In <strong>Endpoint Fanout - Queued</strong> the generator,
+	<strong>Endpoint 1</strong>, is a plain endpoint, and the solver, <strong>Endpoint 2</strong>, is a fan-out.
+	Choose the Windows machine as the generator and the Linux and macOS machines as solvers, then run:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/endpoints-config-types/fanout-queued-tree.png", "Execution tree during the Endpoint Fanout - Queued run, with the first Test Run row running on GMG-TEST-1 and GMG-TEST-3 and the second row, for GMG-TEST-1 and GMG-TEST-5, showing Queued in its Status column", "large") }}
+<p>Two runs are created, one per solver, but they do not start together. Both need the generator, so the second
+	row shows <strong>Queued</strong> in its <strong>Status</strong> column until the first run releases
+	<strong>GMG-TEST-1</strong>, then runs in turn. Machines that can serve several runs at once are marked as
+	shared on their field, which lifts the queueing; the framework reference describes the option under
 	<a class="text-accent" href="/framework/endpoints/#endpoint-options">field options</a>.</p>
 
 <h3 id="permutations">Permutations</h3>
 <p>Source directory:</p>
 {{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_endpoints/test_endpoint_fanout_permutations/") }}
-<p>When both roles are fan-outs, the runs are the combinations of the two selections. Select the Windows and the
-	Linux machine for both <strong>Endpoint 1</strong> and <strong>Endpoint 2</strong> of
-	<strong>Endpoint Fanout - Permutations</strong>:</p>
+<p>When both roles are fan-outs, the runs are the combinations of the two selections, and the panel lets you
+	choose which combinations to keep. Select the Windows and the Linux machine for both
+	<strong>Endpoint 1</strong> and <strong>Endpoint 2</strong> of <strong>Endpoint Fanout - Permutations</strong>:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/endpoints-config-types/fanout-permutations-config.png", "Endpoint Fanout - Permutations run panel with GMG-TEST-1 and GMG-TEST-3 selected in both fan-out fields and a Fanout Endpoints Permutations table listing the four combinations, all ticked, with Total Cases 16", "large") }}
 <p>A <strong>Fanout Endpoints Permutations</strong> table appears with one row per combination, four here, each
 	with a check mark in <strong>Select</strong>. Clearing a row drops that combination from the plan, which is how
 	a machine can be excluded from solving its own mazes without touching either field. With all four selected, the
-	four cases run 16 times, and each combination is a run of its own.</p>
+	four cases run 16 times. Update the plan and run:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/endpoints-config-types/fanout-permutations-tree.png", "Execution tree after the Endpoint Fanout - Permutations run, with the test planning 16 cases and four passing Test Run rows whose Endpoints column shows each combination of GMG-TEST-1 and GMG-TEST-3", "large") }}
+<p>Four <strong>Test Run</strong> rows, one per combination, each naming its generator and solver in the
+	<strong>Endpoints</strong> column, and the test row sums them to 16 planned and 16 passed.</p>
 
 <p>The next page, <a class="text-accent" href="/tutorial/packages-uploading/">Packages Uploading</a>, follows the
 	package fields that carried the Maze application to these machines, and shows how a field is tied to the
