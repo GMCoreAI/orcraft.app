@@ -27,6 +27,7 @@
     { "label": "Packages Uploading", "slug": "packages-uploading/" },
     { "label": "Handling Asynchronous Steps", "slug": "asynchronous-steps/" },
     { "label": "Remote Type Fidelity", "slug": "remote-type-fidelity/" },
-    { "label": "Exporting Test Batch for CI", "slug": "exporting-test-batch-for-ci/" }
+    { "label": "Exporting Test Batch for CI", "slug": "exporting-test-batch-for-ci/" },
+    { "label": "Git Status Frame", "slug": "git-status-frame/" }
   ]
 }
