@@ -1,0 +1,127 @@
+---
+title: Tutorial · Matrix Cases Exclusion
+key: tutorial
+description: "Remove combinations that make no sense from a matrix with dict and lambda exclusion rules, before they become cases."
+---
+{% import "partials/copy-command.njk" as cmd %}
+{% import "partials/code-block.njk" as codeblock %}
+{% import "partials/zoomable-image.njk" as media %}
+<h1>Matrix Cases Exclusion</h1>
+<p>A full Cartesian product usually contains combinations that make no sense for the application under test.
+	<strong>Exclusion rules</strong> remove them in the test source, before they ever become cases. This page follows
+	<a class="text-accent" href="/tutorial/filtering-matrix-dimensions/">Filtering Matrix Dimensions</a>, which narrows a
+	matrix from the controller, and uses the <strong>Cases Exclusion</strong> test of the same
+	<strong>Advanced Configuration Parameters</strong> group.</p>
+<p>The difference between the two is where the decision lives. A dimension filter is made in the run panel for one
+	configuration and can be lifted again. An exclusion rule is part of the test's matrix declaration: every run of the
+	test, from the GUI, the CLI or a CI pipeline, leaves those combinations out.</p>
+<p>Select the <strong>Cases Exclusion</strong> test. It runs the Maze application with a command and a mix of
+	optional arguments, so it needs both the <strong>Maze Executable Folder</strong> and a
+	<strong>Maze Save/Load File</strong> for the commands that save or load a maze. Set both, for example to the
+	<code>v3.0.0</code> folder and its <code>maze.json</code>:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/matrix-cases-exclusion/cases-exclusion-config.png", "Cases Exclusion run panel with the Maze Executable Folder and Maze Save/Load File set, reporting Total Cases 61 and a Test Cases group header reading 61 of 61", "large") }}
+<p>The panel reports <strong>Total Cases: 61</strong> and the group header reads <strong>Test Cases (61/61)</strong>.
+	Six dimensions with <code>4 × 4 × 2 × 2 × 2 × 2</code> values would produce 256 combinations; the matrix produces
+	61 because the rest are excluded. Nothing marks that in the panel. Unlike a filtered dimension, whose column header
+	is flagged as changed, an excluded combination was never part of the matrix, so there is nothing to lift and nothing
+	to badge. The execution tree's <strong>Plan</strong> column shows the same 61.</p>
+
+<h2 id="defining-exclusion-rules">Defining exclusion rules</h2>
+<p>Source directory:</p>
+{{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_advanced_configuration_parameters/test_cases_exclusion/") }}
+<p>The <a class="text-accent" href="/framework/matrix/#matrix"><code>Matrix</code></a> declaration takes an
+	<a class="text-accent" href="/framework/matrix/#exclusion"><code>exclude</code></a> list next to its dimensions.
+	Each entry is either a dict of values to match or a lambda over the case:</p>
+{{ codeblock.block('matrix = OrcraftConfigField.Matrix(
+	OrcraftConfigField.Dimension("command", ("generate", "solve", "save", "load")),
+	OrcraftConfigField.Dimension("algorithm", (None, "BFS", "DFS", "ASTAR")),
+	OrcraftConfigField.Dimension("seed", (None, 42)),
+	OrcraftConfigField.Dimension("height", (None, 5)),
+	OrcraftConfigField.Dimension("width", (None, 10)),
+	OrcraftConfigField.Dimension("use_file", (False, True)),
+
+	exclude=[
+		{"command": "generate", "algorithm": "BFS"},
+		{"command": "generate", "algorithm": "DFS"},
+		{"command": "generate", "algorithm": "ASTAR"},
+		{"command": "generate", "use_file": True},
+		{"command": "load", "use_file": False},
+		lambda case: case.params["command"] in ("save", "load") and case.params["algorithm"] is not None,
+		lambda case: case.params["command"] == "load" and any(case.params[p] is not None for p in ("seed", "height", "width")),
+		lambda case: case.params["command"] == "solve" and case.params["use_file"] and any(case.params[p] is not None for p in ("seed", "height", "width")),
+	],
+)') }}
+<p>A value of <code>None</code> in a dimension means the argument is not passed to the Maze application at all.
+	The run panel shows such a value as an empty cell, the log table as <code>-</code>, and the Details dialog as
+	<code>None</code>.</p>
+
+<h3 id="dict-rules">Dict rules</h3>
+<p>A dict rule names one value per dimension it cares about and excludes every case that matches all of them.
+	<code>{"command": "generate", "use_file": True}</code> removes every <code>generate</code> case that would also
+	pass a file, whatever its algorithm, seed, height or width. A dict rule cannot express "any value but this one",
+	which is why <code>generate</code> needs three rules to exclude the three real algorithms while leaving
+	<code>None</code> in.</p>
+
+<h3 id="lambda-rules">Lambda rules</h3>
+<p>A lambda receives the candidate case and excludes it by returning <code>True</code>. It can compare several
+	dimensions, test for <code>None</code>, and use <code>in</code> or <code>any</code> over a set of keys. The rule
+	<code>case.params["command"] in ("save", "load") and case.params["algorithm"] is not None</code> replaces six
+	dict rules, one per command and algorithm pair, with a single line. The last rule keeps <code>solve</code> from
+	both loading a maze from a file and asking for a freshly generated one.</p>
+<p>Both kinds can be mixed in the same list, and a case is excluded as soon as any rule matches it. What survives is
+	the product of the values kept for each command:</p>
+<ul>
+	<li><strong>generate</strong> - no algorithm and no file, so only seed, height and width vary: 8 cases.</li>
+	<li><strong>solve</strong> - every algorithm with generation arguments and no file, plus every algorithm with a
+		file and no generation arguments: 36 cases.</li>
+	<li><strong>save</strong> - no algorithm, everything else free: 16 cases.</li>
+	<li><strong>load</strong> - a file and nothing else: 1 case.</li>
+</ul>
+<p>That is the 61 the panel reports. Excluded combinations are not skipped at run time. They are never planned, so
+	the case count the controller shows before a run is the case count that runs.</p>
+
+<h3 id="using-the-surviving-cases">Using the surviving cases</h3>
+<p>The test body is the same shape as in <a class="text-accent" href="/tutorial/matrix-and-cases/">Matrix and
+	Cases</a>. It receives only the cases that passed the rules, so it does not have to guard against the excluded
+	combinations itself:</p>
+{{ codeblock.block('def _run_case(self, case: OrcraftTestCase):
+
+	maze_app = MazeApp(
+		self.config.maze_executable_folder,
+		case.params["command"],
+		width=case.params["width"],
+		height=case.params["height"],
+		seed=case.params["seed"],
+		algorithm=case.params["algorithm"],
+		maze_file=self.config.maze_file if case.params["use_file"] else None,
+	)
+
+	maze_app.run()
+
+	return case.result') }}
+<p>The <code>use_file</code> dimension decides whether the configured <strong>Maze Save/Load File</strong> is
+	passed along. Because the rules already removed <code>load</code> without a file and <code>generate</code> with
+	one, the body can pass the file whenever the dimension says so.</p>
+
+<h2 id="running-the-surviving-cases">Running the surviving cases</h2>
+<p>Click <strong class="text-accent">Update Plan</strong> to commit the two configured paths, then
+	<strong class="text-purple">Run</strong> and confirm with <strong>Yes</strong>. The test row reports 61 planned,
+	done and passed cases, and the log's result table lists every surviving combination in matrix order:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/matrix-cases-exclusion/running-cases-exclusion-test.png", "Completed Cases Exclusion run with all 61 cases passing, the log listing the last save and load cases and the test result summary", "large") }}
+<p>The order of the table follows the dimensions as declared: all <code>generate</code> cases first, then
+	<code>solve</code>, then <code>save</code>, and the single <code>load</code> case last. Within a command the
+	later dimensions change fastest, exactly as they would without exclusion, only with the removed rows missing.</p>
+
+<h3 id="inspecting-the-run">Inspecting the run</h3>
+<p>Click <strong>Details</strong> for the completed run. The <strong>List Dimensions</strong> table on the left
+	still lists every value each dimension declares, including the ones no surviving case uses together, because the
+	rules act on combinations rather than on values. The case table below it and the results tree on the right hold
+	the 61 cases that exist:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/matrix-cases-exclusion/cases-exclusion-details.png", "Cases Exclusion Details view showing the declared dimension values, the 61 planned and run cases and a results tree with one passing case cycle under each case", "large") }}
+<p>An exclusion rule therefore changes what the matrix is, not how it is shown. Filters and case selection in the run
+	panel still apply on top of it, so a reader can narrow the 61 cases further for one configuration in the same way
+	as on any other matrix test.</p>
+
+<p>All the dimensions on this page list their values by hand. The next page,
+	<a class="text-accent" href="/tutorial/matrix-dimensions-randomization/">Matrix Dimensions Randomization</a>,
+	lets a dimension draw its values at random and shows how the controller keeps such a matrix plannable.</p>
