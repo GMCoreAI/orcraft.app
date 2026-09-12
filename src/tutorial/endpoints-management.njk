@@ -1,0 +1,80 @@
+---
+title: Tutorial · Endpoints Management
+key: tutorial
+description: "Read the endpoint cards, use the card actions and the Manage dialog, and save the registered endpoints to a file."
+---
+{% import "partials/copy-command.njk" as cmd %}
+{% import "partials/code-block.njk" as codeblock %}
+{% import "partials/zoomable-image.njk" as media %}
+<h1>Endpoints Management</h1>
+<p>An <strong>endpoint</strong> is a machine registered in the controller, running the
+	<a class="text-accent" href="/setup/endpoints/">endpoint application</a>, on which steps can run. The
+	<strong>Endpoints</strong> panel at the bottom left of the <strong>Execution</strong> tab holds one card per
+	registered machine, and every test that names an endpoint field picks its machines from those cards. This page
+	covers the panel itself; the pages that follow use the endpoints from tests.</p>
+<p>The <a class="text-accent" href="/setup/endpoints/">setup guide</a> shows how to install and run the endpoint
+	application and how to add the first endpoint. Here the panel holds the local machine and four others: three
+	added by host name, one Windows, one Linux and one macOS machine, and one added by its IP address:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/endpoints-management/endpoints-frame.png", "Endpoints panel with five cards: localhost, GMG-TEST-1 on Windows 11, GMG-TEST-3 on Linux, GMG-TEST-5 on macOS and 10.100.102.91 on Windows 11, all Secure and Ready, with Load, Save and Manage buttons in the header and an Add button after the cards", "large") }}
+
+<h2 id="endpoint-cards">Endpoint cards</h2>
+<p>Each card reads from top to bottom: the name it was added by, in a chip, then the other half of its identity,
+	the IP address for a machine added by host name or the host name for a machine added by IP. Below that come the
+	operating system with its icon, the version of the endpoint application, <strong>Secure</strong> when the
+	connection uses the controller's security material, and the status button.</p>
+<p>The <strong>localhost</strong> card is the controller's own machine. It is always present, it cannot be removed,
+	and it is where every step runs when a test names no endpoint at all.</p>
+<p>The status is the controller's live view of the machine. <strong class="text-success">Ready</strong> means the
+	endpoint application answers and can take work. <strong class="text-warning">Online</strong> means the machine
+	answers a ping but the application does not, and <strong>Offline</strong> means the machine does not answer at
+	all; the setup guide lists the
+	<a class="text-accent" href="/setup/endpoints/#troubleshooting">usual causes</a> of both. While a run holds an
+	endpoint the card reads <strong>Busy</strong>, and other runs that need the same machine wait for it.</p>
+
+<h2 id="card-actions">Card actions</h2>
+<p>Right-click a card to open its actions:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/endpoints-management/endpoint-card-menu.png", "Context menu of an endpoint card offering Info, Edit, Update, Refresh and Remove", "small") }}
+<ul>
+	<li><strong>Info</strong> asks the machine for its details and shows them in a dialog.</li>
+	<li><strong>Edit</strong> reopens the card in the Add Endpoint dialog to change its type, address, port or
+		security.</li>
+	<li><strong>Update</strong> installs the controller's own version of the endpoint application on the machine
+		and restarts it there, which is how a fleet is kept at one version after a controller upgrade.</li>
+	<li><strong>Refresh</strong> checks the status again at once instead of waiting for the next poll.</li>
+	<li><strong>Remove</strong> deletes the card after a confirmation.</li>
+</ul>
+<p>Click <strong>Info</strong> on a card:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/endpoints-management/endpoint-info-dialog.png", "Endpoint Info dialog for GMG-TEST-1 listing its type, host name, IP, port, Orcraft version, security and status, followed by the operating system, architecture, processor, Python version, CPU count, disk and memory figures", "large") }}
+<p>The first block is what the controller knows about the card. The second is what the machine reported when
+	asked: operating system and version, architecture, processor, the Python running the endpoint application, and
+	its CPU, disk and memory. It is the quickest way to confirm that a machine is the one you think it is.</p>
+
+<h2 id="the-manage-dialog">The Manage dialog</h2>
+<p>Click <strong>Manage</strong> in the panel's header to work on every endpoint at once:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/endpoints-management/manage-endpoints-dialog.png", "Manage Endpoints dialog listing the four remote endpoints in a table with editable name, type, IP and port cells, a Secure check, OS, version, status and per-row refresh and remove buttons, and Select All, Add Endpoint, Apply Changes, Update Selected and Remove Selected buttons below", "large") }}
+<p>Each remote endpoint is a row. The name, type, IP and port cells can be edited in place, and
+	<strong class="text-accent">Apply Changes</strong> commits every edit together. The handle at the left of a
+	row drags it to another position, which is the order the cards and the endpoint fields list the machines in.
+	The buttons at the right of a row are the card's <strong>Refresh</strong> and <strong>Remove</strong>, and the
+	icons beside the version and the status open <strong>Update</strong> and <strong>Info</strong> for that row.</p>
+<p>The check boxes select rows for the two bulk actions. <strong>Update Selected</strong> installs the
+	controller's version, shown on the button, on every selected machine, and <strong class="text-danger">Remove
+	Selected</strong> deletes them. <strong>Select All</strong> ticks every row, and <strong>Add Endpoint</strong>
+	opens the same dialog as the panel's <strong>Add</strong> button.</p>
+
+<h2 id="saving-and-loading-endpoints">Saving and loading endpoints</h2>
+<p><strong>Save</strong> in the panel's header writes the registered endpoints to a file, and
+	<strong>Load</strong> reads such a file back. The file records each endpoint's type, host name, IP address,
+	port and security setting, together with the operating system and version last seen. A team can keep one file
+	for its lab and load it on every controller, and it is also the list of machines an
+	<a class="text-accent" href="/ai-agents/endpoints/">AI agent</a> is given when it runs tests.</p>
+
+<h2 id="collapsing-the-panel">Collapsing the panel</h2>
+<p>Click the arrow before the <strong>Endpoints</strong> title to fold the panel into a single line:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/endpoints-management/endpoints-frame-collapsed.png", "Collapsed Endpoints panel showing one green chip per endpoint with its name and operating system icon", "large") }}
+<p>Each chip keeps the endpoint's name, its operating system icon and its status colour, so the state of the lab
+	stays visible while the execution tree takes the room. Click the arrow again to expand the cards.</p>
+
+<p>The next page, <a class="text-accent" href="/tutorial/endpoints-config-types/">Endpoints Config Types</a>,
+	shows how a test declares which of these machines it runs on: a single endpoint, a set of them, or a fan-out
+	that runs the test once per selected machine.</p>

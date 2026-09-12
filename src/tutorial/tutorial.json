@@ -21,6 +21,7 @@
     { "label": "Orcraft Statuses", "slug": "orcraft-statuses/" },
     { "label": "Checkpoints", "slug": "checkpoints/" },
     { "label": "Result Fields", "slug": "result-fields/" },
-    { "label": "Structure and Lifecycle", "slug": "structure-and-lifecycle/" }
+    { "label": "Structure and Lifecycle", "slug": "structure-and-lifecycle/" },
+    { "label": "Endpoints Management", "slug": "endpoints-management/" }
   ]
 }
