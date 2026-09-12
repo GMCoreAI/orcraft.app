@@ -1,7 +1,7 @@
 ---
 title: Tutorial · Git Status Frame
 key: tutorial
-description: "The Git Status panel shows whether each loaded suite matches its repository's remote main branch, and pulls it up to date from the controller."
+description: "The Git Status panel shows, for every repository a loaded suite comes from, whether its checkout matches the remote main branch, and pulls it up to date from the controller."
 ---
 {% import "partials/copy-command.njk" as cmd %}
 {% import "partials/code-block.njk" as codeblock %}
@@ -10,54 +10,57 @@ description: "The Git Status panel shows whether each loaded suite matches its r
 <p>A suite is code, and code lives in a repository. When several people work on the same suite, or when an
 	<a class="text-accent" href="/ai-agents/">AI agent</a> pushes new tests overnight, the copy a controller has
 	loaded can fall behind what the repository holds, and a run then exercises old tests without anyone noticing.
-	The <strong>Git Status</strong> panel, in the right pane below the configuration, answers that question for
-	every loaded suite: it compares the suite's checkout with the <code>main</code> branch of its remote and shows
-	the result as one line per repository.</p>
-<p>The panel appears when a loaded suite sits inside a git repository. The tutorial suite cloned in
-	<a class="text-accent" href="/setup/getting-started/">Getting started</a> does, so with the suite loaded the
-	panel shows its row:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/git-status-frame/git-status-up-to-date.png", "Git Status panel with one row: the orcraft-test-suite-tutorial repository, a green Up to date with remote origin/main chip, and the subject of the latest commit", "large") }}
-<p>The row reads from left to right: a coloured bar and the repository name, a refresh icon, the status chip
-	<strong>Up to date with remote origin/main.</strong> in green, and the subject of the commit both sides are on.
-	Green means the checkout is at the remote's <code>main</code>; a run now exercises the suite as the repository
-	holds it. The status is read when the suite is loaded and again when the refresh icon is clicked; it contacts
-	the remote to learn where <code>main</code> is, so it needs network access to the repository's host.</p>
-
-<h2 id="behind-the-remote">A checkout behind the remote</h2>
-<p>When someone has pushed to <code>main</code> since the suite was cloned, the row changes:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/git-status-frame/git-status-behind.png", "Git Status panel with the orcraft-test-suite-tutorial row in yellow, a Behind remote origin/main chip, a pull icon, and the remote and local commit hashes side by side", "large") }}
-<p>The bar and the chip turn yellow, the chip reads <strong>Behind remote origin/main.</strong>, and a pull icon
-	appears after the refresh icon. Instead of a commit subject the row now shows both sides:
-	<strong>Remote Hash</strong> is the commit <code>main</code> is at and <strong>Local Hash</strong> the one the
-	checkout is at. When the repository tags its releases, the tags take the place of the hashes.</p>
-<p>The opposite case, a checkout with commits that are not on <code>main</code> yet, reads
-	<strong>Ahead of remote origin/main.</strong> in the same yellow: the suite on this machine is not what the
-	repository publishes, which is worth knowing before a result is shared. A suite whose folder is not a git
+	The opposite happens too: a suite edited on the controller's machine and not yet pushed runs tests nobody else
+	has. The <strong>Git Status</strong> panel, in the right pane below the configuration, answers both questions
+	for every repository a loaded item comes from. It compares each checkout with the <code>main</code> branch of
+	its remote and shows the result as one row per repository.</p>
+<p>The panel appears when a loaded suite, group or test sits inside a git repository. Load the tutorial suite
+	together with the Demo suite and the Example suite, each cloned from its own repository, and the panel shows
+	three rows:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/git-status-frame/git-status-three-repos.png", "Git Status panel with three rows: orcraft-test-suite-tutorial in green reading Up to date with remote origin/main, orcraft-test-suite-demo in yellow reading Behind remote origin/main with a pull icon and the remote and local hashes, and orcraft-test-suite-example in yellow reading Ahead of remote origin/main with the two hashes", "large") }}
+<p>Each row reads from left to right: a coloured bar and the repository name, a refresh icon, the status chip,
+	and what the two sides are at. The status is read when the item is loaded and again when the refresh icon is
+	clicked; it contacts the remote to learn where <code>main</code> is, so it needs network access to the
+	repository's host.</p>
+<ul>
+	<li><strong>Up to date with remote origin/main.</strong>, in green, means the checkout is at the remote's
+		<code>main</code>. The row shows the subject of that commit. A run now exercises the suite as the repository
+		holds it.</li>
+	<li><strong>Behind remote origin/main.</strong>, in yellow, means someone has pushed to <code>main</code> since
+		the checkout was last updated. The row shows the <strong>Remote Hash</strong> the branch is at and the
+		<strong>Local Hash</strong> the checkout is at, and a pull icon appears after the refresh icon.</li>
+	<li><strong>Ahead of remote origin/main.</strong>, in the same yellow, means the checkout holds commits that are
+		not on <code>main</code>. The suite on this machine is not what the repository publishes, which is worth
+		knowing before a result is shared. There is nothing to pull, so the row has no pull icon.</li>
+</ul>
+<p>When a repository tags its releases, the tags take the place of the hashes. A folder that is not a git
 	checkout, or whose remote cannot be reached, shows <strong>Unable to access git repo.</strong> in grey.</p>
-
-<h2 id="pulling-from-the-controller">Pulling from the controller</h2>
-<p>Click the pull icon. The panel asks before touching the checkout:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/git-status-frame/confirm-pull-dialog.png", "Confirm Pull dialog asking whether to pull the latest changes from origin/main and fetch tags for orcraft-test-suite-tutorial, with Yes and No buttons", "small") }}
-<p>Confirm with <strong>Yes</strong>. The controller pulls <code>main</code> and fetches the tags, and the row
-	returns to green:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/git-status-frame/git-status-after-pull.png", "Git Status panel after the pull, with the row green again, the Up to date with remote origin/main chip and the latest commit subject", "large") }}
-<p>The pull updates the files on disk; the tests already loaded in the tree are the ones read at load time. Click
-	<strong class="text-danger">Reload</strong> in the tree's action bar to load the suite again from the updated
-	files.</p>
 
 <h2 id="the-collapsed-panel">The collapsed panel</h2>
 <p>Click the arrow before the <strong>Git Status</strong> title to fold the panel into one line:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/git-status-frame/git-status-collapsed.png", "Collapsed Git Status panel showing only its title and the green Up to date with remote origin/main chip", "large") }}
-<p>The chip keeps the state visible while the rest of the right pane takes the room. With several suites loaded
-	from different repositories the panel has one row per repository, and the collapsed chip summarizes them.</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/git-status-frame/git-status-collapsed.png", "Collapsed Git Status panel showing its title and a yellow chip reading 2 of 3 repos not up to date with remote", "large") }}
+<p>The collapsed chip summarizes the rows: green when every repository is up to date, and yellow with a count of
+	the ones that are not. It keeps the state of the lab's suites visible while the rest of the right pane takes
+	the room. Click the arrow again to expand the rows.</p>
+
+<h2 id="pulling-from-the-controller">Pulling from the controller</h2>
+<p>Click the pull icon on the Demo suite's row. The panel asks before touching the checkout:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/git-status-frame/confirm-pull-dialog.png", "Confirm Pull dialog asking whether to pull the latest changes from origin/main and fetch tags for orcraft-test-suite-demo, with Yes and No buttons", "small") }}
+<p>Confirm with <strong>Yes</strong>. The controller pulls <code>main</code> into the checkout and fetches its
+	tags, and the row turns green:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/git-status-frame/git-status-after-pull.png", "Git Status panel after the pull, with the tutorial and demo rows green and reading Up to date with remote origin/main, and the example row still yellow and ahead", "large") }}
+<p>The Example suite's row stays yellow, because being ahead is not something a pull resolves: the commits on
+	this machine have to be pushed, or discarded, by whoever made them.</p>
+<p>The pull updates the files on disk; the tests already loaded in the tree are the ones read at load time. Click
+	<strong class="text-danger">Reload</strong> in the tree's action bar to load the suite again from the updated
+	files.</p>
 
 <h2 id="the-repository-in-the-results">The repository in the results</h2>
 <p>The same information is recorded with every run. The results tree of the
 	<a class="text-accent" href="/tutorial/details-dialog/">Details dialog</a> carries <strong>Repo</strong>,
 	<strong>Branch</strong>, <strong>Commit</strong> and <strong>File Path In Repo</strong> columns for each run,
-	recorded from the suite's checkout. A result can therefore always be traced to the
-	exact commit of the test that produced it, which is what makes a failure reproducible after the suite has moved
-	on.</p>
+	recorded from the suite's checkout. A result can therefore always be traced to the exact commit of the test
+	that produced it, which is what makes a failure reproducible after the suite has moved on.</p>
 
 <p>The next page, <a class="text-accent" href="/tutorial/details-dialog/">Details Dialog</a>, opens that dialog
 	at every level of the tree and walks through what it holds.</p>
