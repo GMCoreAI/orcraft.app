@@ -227,13 +227,14 @@ body:has(.search[open]) {
   margin-left: 2px;
 }
 
+/* Phones have no Ctrl K, and the trigger keeps its label so it still reads as
+   a search field rather than a lone icon. */
 @media (max-width: 720px) {
   .search-trigger {
     min-width: 0;
-    padding: var(--space-2);
+    padding: var(--space-2) var(--space-3);
   }
 
-  .search-trigger__label,
   .search-trigger__kbd,
   .search__hint {
     display: none;

@@ -74,12 +74,39 @@ body:not([data-page="home"]) .topbar__spacer {
   gap: var(--space-6);
 }
 
+/* The three-column grid needs room for the whole menu on one line; below that
+   the outer columns collapse and squeeze the brand and the search.  Give the
+   brand and the tools their own widths and let the menu wrap between them. */
+@media (max-width: 1100px) {
+  .topbar__inner {
+    grid-template-columns: auto 1fr auto;
+    gap: var(--space-4);
+  }
+}
+
+/* Phones: brand and search share the first row, the menu takes a full row
+   beneath, wrapping as it needs. */
 @media (max-width: 720px) {
-  .topbar__wordmark {
-    display: none;
+  .topbar__inner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    row-gap: var(--space-2);
+  }
+
+  .topbar__brand {
+    order: 1;
+  }
+
+  .topbar__tools {
+    order: 2;
+    min-width: 0;
   }
 
   .topbar .nav {
+    order: 3;
+    flex-basis: 100%;
+    max-width: 100%;
     gap: var(--space-4);
   }
 }
