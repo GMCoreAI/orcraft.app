@@ -1,0 +1,141 @@
+---
+title: Tutorial · Execution Tab
+key: tutorial
+description: "The Execution tab is where a session is composed, planned and run: its session action frame, the action frame of the selected row, the top filters of the Test Explorer, plan and unplan, and the two column views of the tree."
+---
+{% import "partials/copy-command.njk" as cmd %}
+{% import "partials/code-block.njk" as codeblock %}
+{% import "partials/zoomable-image.njk" as media %}
+<h1>Execution Tab</h1>
+<p>Every page so far has worked inside the controller's <strong>Execution</strong> tab without describing it as a
+	whole. This page does. The tab is the workspace of a <strong>session</strong>: the set of suites, groups, tests
+	and batches loaded into the tree, the plan each of them carries, the endpoints they run on and the runs they
+	have produced. Its parts are arranged around the tree:</p>
+<ul>
+	<li>the <strong>Session</strong> action frame on the left, whose buttons act on the whole session;</li>
+	<li>the <strong>Test Explorer</strong> in the middle, the execution tree with its filters above it and the
+		action frame of the selected row beneath it;</li>
+	<li>the <strong>Endpoints</strong> panel below the tree, covered in
+		<a class="text-accent" href="/tutorial/endpoints-management/">Endpoints Management</a>;</li>
+	<li>the right pane with <strong>Config &amp; Status</strong>, the run panel and log of the selected row, and
+		below it the <a class="text-accent" href="/tutorial/git-status-frame/">Git Status</a> and
+		<a class="text-accent" href="/tutorial/execution-status-frame/">Execution Status</a> frames.</li>
+</ul>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/execution-tab.png", "The Execution tab with the Session action frame on the left, the Test Explorer holding the tutorial suite with three finished status tests, the localhost endpoint card below it, and the configuration panel of the Status: Fail test, the Git Status rows and the Execution Status table on the right", "large") }}
+<p>The pages that follow go into the right pane frame by frame. This one stays with the left frame and the tree.</p>
+
+<h2 id="the-session-action-frame">The Session action frame</h2>
+<p>A session is the unit the controller saves and loads. Its action frame gathers the operations that concern it
+	as a whole, arranged in small groups from top to bottom:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/session-frame.png", "The Session action frame with the New, Save and Load buttons, then Add Item, then Configure, then Unplan and Details, then Reload and Remove in red", "small") }}
+<ul>
+	<li><strong>New</strong>, <strong>Save</strong> and <strong>Load</strong> manage the session file. Save writes
+		the loaded items with their plans and endpoint selections; Load brings such a file back, and New starts
+		an empty tree. The session's name sits on the top row of the tree, with a star while it has unsaved
+		changes.</li>
+	<li><strong>Add Item</strong> browses for a file to load: a batch, a suite, a group or a single test. Each
+		becomes a top-level row, which is how the mixed session of
+		<a class="text-accent" href="/tutorial/exporting-test-batch-for-ci/">Exporting Test Batch for CI</a> was
+		built.</li>
+	<li><strong class="text-accent">Configure</strong> opens the run panel of the session row, the
+		<strong>Multi-Test Selection</strong> layout with every planned test in its grid, from which the whole
+		session is run or exported.</li>
+	<li><strong>Unplan</strong> takes every planned item out of the plan, and turns into <strong>Plan</strong>
+		when nothing is planned. <strong>Details</strong> opens the
+		<a class="text-accent" href="/tutorial/details-dialog/">Details dialog</a> at session level.</li>
+	<li><strong class="text-danger">Reload</strong> reads every suite and top-level group again from its files,
+		which is what to click after a pull in the Git Status frame or an edit in the editor.
+		<strong class="text-danger">Remove</strong> empties the tree: items and runs alike.</li>
+</ul>
+<p>The frame shows only what applies to the session's state. Once runs exist, a <strong class="text-danger">Clear</strong>
+	button appears among the red ones: it removes every run instance, finished or not, and keeps the items. While
+	tests are queued or running, <strong>Dequeue</strong> and <strong>Stop</strong> appear under Configure, the
+	first taking queued tests out of the queue and the second also stopping the running ones. When several runs of
+	the same test have piled up, <strong>Clean Up</strong> removes all but the latest of each.</p>
+<p>Click the arrow before the <strong>Session</strong> title and the frame folds into a strip of icons, leaving the
+	room to the tree. Every button keeps working from the strip, with its name in the tooltip:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/session-frame-collapsed.png", "The collapsed Session action frame: a narrow vertical strip with the rotated Session title and the icons of the buttons", "small") }}
+
+<h2 id="the-action-frame-of-the-selected-row">The action frame of the selected row</h2>
+<p>Below the tree sits a second action frame. It belongs to whatever row is selected and names it with its badge,
+	so the buttons change with the kind of row. For a test:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/action-frame-test.png", "Action frame of the Status: Fail test with the Configure, Unplan, Details and Clear buttons", "large") }}
+<p><strong class="text-accent">Configure</strong> opens the test's run panel in the right pane, which is also what
+	a click on the row does. <strong>Unplan</strong> takes the test out of the plan, <strong>Details</strong> opens
+	its Details dialog, and <strong class="text-danger">Clear</strong>, present once the test has run, removes its
+	run rows. Select a run row instead, the italic <strong>Test Run</strong> line under the test, and the frame
+	offers what a run supports:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/action-frame-run.png", "Action frame of a Test Run row with the Configure, Details and Remove buttons", "large") }}
+<p>A run cannot be unplanned, because it is not part of the plan; it is a record. Configure shows the
+	configuration it ran with, Details opens its results, and <strong class="text-danger">Remove</strong> deletes
+	this one run. A group's frame reads like a test's, acting on every test under it. A suite's frame adds the
+	operations that make sense for a top-level item:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/action-frame-suite.png", "Action frame of the Orcraft Tutorial suite with Configure, Unplan, Details, Label, Move Down, Clear, Reload and Remove", "large") }}
+<p><strong>Label</strong> asks for a short text and shows it next to the suite's name in the tree, useful when
+	the same suite is loaded twice from different checkouts:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/label-dialog.png", "Label dialog titled Label: Orcraft Tutorial asking for a label for the Test Suite Orcraft Tutorial, with OK and Cancel buttons", "small") }}
+<p><strong>Move Up</strong> and <strong>Move Down</strong> reorder the top-level rows, and with them the order
+	in which the session is exported. <strong class="text-danger">Reload</strong> reads this one suite again from
+	its files, and <strong class="text-danger">Remove</strong> takes it out of the tree.</p>
+<p>When several rows are selected with <strong>Ctrl</strong> and a click, the frame represents the selection as a
+	whole:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/action-frame-selection.png", "Action frame titled Multi-Test Selection with the Configure and Unplan buttons", "large") }}
+<p>Configure opens the Multi-Test Selection panel for the picked rows, the layout used to configure the CI set on
+	the previous page, and Unplan takes all of them out of the plan at once. Every action here is also in the
+	row's right-click menu, together with the ones that need no button of their own, such as Run and Rerun.</p>
+
+<h2 id="plan-and-unplan">Plan and unplan</h2>
+<p>An item in the tree is either <strong>planned</strong> or not. Planned items are what the controller runs
+	when the session is run and what an export writes; their cases are counted in the <strong>Plan</strong>
+	column and roll up to the rows above. Unplanning is the way to keep an item loaded, with its configuration,
+	while leaving it out of the next run: a group that is known to be broken, a slow test that is not wanted
+	tonight, a suite kept in the session for reference.</p>
+<p>Select the <strong>Basic Configuration Parameters</strong> group and click <strong>Unplan</strong>. The
+	controller asks for confirmation, then greys the group and its tests, and their plan drops to zero. The
+	suite's plan and the session's plan lose the same nine cases:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/unplanned-group.png", "Execution tree with the Basic Configuration Parameters group and its tests greyed out, their Plan column reading 0, the Orcraft Tutorial suite at 273 and the session at 401", "large") }}
+<p>The group's action frame changes with its state. Unplan gives way to <strong>Plan</strong>, and Configure is
+	gone, because there is nothing to configure for a run that will not happen:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/action-frame-unplanned.png", "Action frame of the unplanned Basic Configuration Parameters group with only the Plan and Details buttons", "large") }}
+<p>Click <strong>Plan</strong> to bring the group back, with the configuration it had. The counts return to what
+	they were. Unplanning applies at every level: a test, a group, a suite, a multi-selection, or the whole
+	session from the left frame.</p>
+
+<h2 id="filters-above-the-tree">Filters above the tree</h2>
+<p>The row above the tree narrows what it shows without changing what is loaded. It holds status chips, the CI
+	toggle and the level chips, followed by the collapse and expand buttons.</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/status-chips.png", "The Test Explorer with the Warn 1, Fail 1, Error 1, Not Run 62 and All 65 status chips, the round S, G and T level chips and the minus and plus buttons above the tree", "large") }}
+<p>A <strong>status chip</strong> shows how many tests are in a state and hides the rest of the tree when
+	clicked. There is one chip per state a test can be in, Running, Queued, Pass, Warn, Fail, Error, Dequeued,
+	Stopped and Not Run, but a chip appears only while some test is in that state, so the row changes as runs
+	start and finish. <strong>All</strong> counts every test and clears the filter. Click <strong>Fail</strong>
+	and only the failing test remains, with its parents kept so it can be found:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/status-chip-fail.png", "The tree filtered by the Fail chip: only the Orcraft Tutorial suite, the Statuses and Results group, the Status: Fail test and its run row are shown", "large") }}
+<p>A filter that runs out of tests, for example a Fail filter after the failing runs were cleared, drops by
+	itself. The <strong>CI</strong> toggle, shown when the session holds tests configured for CI export, narrows
+	the tree to those tests and combines with the status chips; the CI page shows it on a loaded batch.</p>
+<p>The round <strong>level chips</strong> collapse the tree to one level. <strong>G</strong> keeps the suites
+	open and folds every group, which is the view used to pick groups for an export:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/level-groups.png", "The tree collapsed to group level: the Orcraft Tutorial and Demo suites open showing their groups folded, then the Structure and Lifecycle group item and the Hello World test item", "large") }}
+<p><strong>S</strong> folds the suites as well, leaving one row per top-level item:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/level-suites.png", "The tree collapsed to suite level: the Orcraft Tutorial suite, the Demo suite, the Structure and Lifecycle group and the Hello World test as four rows", "large") }}
+<p><strong>T</strong> opens every container and folds the tests over their run rows, and a <strong>B</strong> chip
+	appears when a batch is loaded. A chip is shown only when the tree has rows of its kind. The
+	<strong>&minus;</strong> and <strong>+</strong> buttons at the end collapse and expand everything.</p>
+
+<h2 id="two-views-of-the-columns">Two views of the columns</h2>
+<p>The tree's columns fall into two sets. The <strong>Cases Summary</strong> set, Plan, Done, Pass, Fail,
+	Progress % and Pass %, counts cases and is what the tutorial has read to check a run. The <strong>Status</strong>
+	set, Endpoints, Status, Start Time, Finish Time and Elapsed, describes each run row: where it ran, how it
+	ended and when. The two buttons after the <strong>Test Explorer</strong> title switch each set on and off,
+	so the tree can show only the one that matters at the moment. With the Cases Summary hidden, the run rows
+	get the room:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/columns-without-summary.png", "The tree showing only the Endpoints, Status, Start Time, Finish Time and Elapsed columns, with the three run rows reading localhost, their statuses and their times", "large") }}
+<p>With the Status set hidden instead, the tree becomes a table of counts:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/columns-without-status.png", "The tree showing only the Plan, Done, Pass, Fail, Progress % and Pass % columns for every row", "large") }}
+<p>Both switches are a matter of display. The tree keeps counting and recording either way, and the
+	<a class="text-accent" href="/tutorial/details-dialog/">Details dialog</a> holds the full record of every run
+	whatever the columns show.</p>
+
+<p>The next page, <a class="text-accent" href="/tutorial/git-status-frame/">Git Status Frame</a>, moves to the
+	right pane and the repositories the loaded items come from.</p>
