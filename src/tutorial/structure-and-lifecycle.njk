@@ -1,0 +1,327 @@
+---
+title: Tutorial · Structure and Lifecycle
+key: tutorial
+description: "Compose a test body from flows and steps, and add the setup and teardown hooks that run around the test, each cycle and each case."
+---
+{% import "partials/copy-command.njk" as cmd %}
+{% import "partials/code-block.njk" as codeblock %}
+{% import "partials/zoomable-image.njk" as media %}
+<h1>Structure and Lifecycle</h1>
+<p>The tests so far did their work inside <code>_run_case</code>. A real test is usually built from smaller parts:
+	<a class="text-accent" href="/framework/steps/">steps</a> that each do one thing, and
+	<a class="text-accent" href="/framework/flows/">flows</a> that run steps in order. Around the cases, optional
+	<a class="text-accent" href="/framework/lifecycle-hooks/">lifecycle hooks</a> prepare and release what the cases
+	share. The <strong>Structure and Lifecycle</strong> group shows both, one test at a time: <strong>Steps and
+	Flows</strong> composes a test body, and the three setup and teardown tests each add one lifecycle scope to the
+	previous one.</p>
+<p>Select each of the four tests, set its <strong>Maze Executable Folder</strong>, and click
+	<strong class="text-accent">Update Plan</strong>. The field is a package folder in this group, a type that can
+	upload the folder to a remote endpoint; on the local machine it behaves like the plain folder used so far.</p>
+
+<h2 id="steps-and-flows">Steps and flows</h2>
+<p>Source directory:</p>
+{{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_structure_and_lifecycle/test_steps_and_flows/") }}
+<p>The test folder holds the test file and two subfolders, <code>flows</code> and <code>steps</code>. The case body
+	runs two flows in turn. The first generates a maze, saves it to a file, loads it back and solves it. The second
+	does the same but corrupts the saved file first, and expects the solver to find no path:</p>
+{{ codeblock.block('def _run_case(self, case: OrcraftTestCase) -> OrcraftTestResult:
+	case.result = TestStepsAndFlowsResult()
+
+	# Flow: Generate/Save -> Load/Solve
+	flow_generate_save = FlowGenerateSaveLoadSolve(
+		FlowGenerateSaveLoadSolveConfig(
+			maze_executable_folder=self.config.maze_executable_folder,
+			width=case.params["width"],
+			height=case.params["height"],
+		)
+	)
+	flow_generate_save_result = flow_generate_save.run()
+
+	if self.handle_errors(flow_generate_save_result, case.result):
+		return case.result
+
+	case.result.maze_area = flow_generate_save_result.maze_area
+	case.result.path_length = flow_generate_save_result.path_length
+	case.result.area_path_ratio = flow_generate_save_result.area_path_ratio
+	case.result.maze_file_path = flow_generate_save_result.maze_file_path
+
+	# Flow: Generate/Save -> Corrupt Saved File -> Load/Solve
+	flow_generate_save_corrupt = FlowGenerateSaveCorruptLoadSolve(
+		FlowGenerateSaveCorruptLoadSolveConfig(
+			maze_executable_folder=self.config.maze_executable_folder,
+			width=case.params["width"],
+			height=case.params["height"],
+		)
+	)
+
+	flow_generate_save_corrupt_result = flow_generate_save_corrupt.run()
+
+	if self.handle_errors(flow_generate_save_corrupt_result, case.result):
+		return case.result
+
+	return case.result') }}
+<p>A flow is built from its config class and run with <code>run()</code>, like a test. After each flow the case
+	calls <a class="text-accent" href="/framework/statuses/#handle-errors"><code>handle_errors</code></a>, which
+	copies the flow's status and descriptions onto the case result and returns <code>True</code> when the flow
+	failed, so the case stops there. The values the first flow measured are copied into the case's own
+	<a class="text-accent" href="/tutorial/result-fields/">result fields</a>.</p>
+
+<h3 id="a-flow">A flow</h3>
+<p>The flow declares its config and result classes and names its result class as <code>result_type</code>. Its
+	body runs steps with <code>run_step</code>, passing each step's config values as keyword arguments, and checks
+	each step result the same way the case checks the flow:</p>
+{{ codeblock.block('class FlowGenerateSaveLoadSolve(OrcraftTestFlow):
+	result_type = FlowGenerateSaveLoadSolveResult
+
+	def __init__(self, config: FlowGenerateSaveLoadSolveConfig) -> None:
+		super().__init__(config)
+
+	def _run_flow(self) -> None:
+		step_1_result = self.run_step(
+			StepDeleteExistingMazeFile,
+			width=self.config.width,
+			height=self.config.height,
+		)
+
+		if self.handle_errors(step_1_result, self.result):
+			return
+
+		step_2_result = self.run_step(
+			StepGenerateSave,
+			maze_executable_folder=self.config.maze_executable_folder,
+			maze_file=step_1_result.maze_file,
+			width=self.config.width,
+			height=self.config.height,
+		)
+
+		if self.handle_errors(step_2_result, self.result):
+			return
+
+		self.result.maze_file_path = step_2_result.maze_file_path
+		self.result.maze_area = step_2_result.maze_area
+
+		step_3_result = self.run_step(
+			StepLoadSolve,
+			maze_executable_folder=self.config.maze_executable_folder,
+			maze_file=step_2_result.maze_file_path,
+		)
+
+		if self.handle_errors(step_3_result, self.result):
+			return
+
+		self.result.path_length = step_3_result.path_length
+
+		if step_3_result.path_found and step_3_result.path_length > 0:
+			self.result.area_path_ratio = round(step_2_result.maze_area / step_3_result.path_length, 2)
+			self.checkpoint(
+				step_3_result.path_length <= step_2_result.maze_area,
+				f"Path length ({step_3_result.path_length}) is within maze area ({step_2_result.maze_area}).",
+				f"Path length ({step_3_result.path_length}) exceeds maze area ({step_2_result.maze_area}) — unexpected.",
+			)
+
+		self.checkpoint(
+			step_3_result.path_found,
+			f"Path found: {step_3_result.path_length} step(s).",
+			"No path found in maze output.",
+		)') }}
+<p>Results travel forward through the flow: the file path the first step chose is handed to the second, and the
+	path the second wrote is handed to the third. The flow's own
+	<a class="text-accent" href="/tutorial/checkpoints/">checkpoints</a> judge the combined outcome.</p>
+
+<h3 id="a-step">A step</h3>
+<p>A step is the smallest unit, and the unit that runs on an endpoint. It has a config class, a result class and
+	a <code>_run_step</code> body:</p>
+{{ codeblock.block('class StepLoadSolveConfig(OrcraftTestStepConfig):
+	name = OrcraftConfigField.Text(default="Load / Solve")
+	maze_executable_folder = OrcraftConfigField.PackageFolder(default="", label="Maze Executable Folder")
+	maze_file = OrcraftConfigField.Text(default="", label="Maze File")
+	log_orientation = OrcraftConfigField.Format(default=OrcraftConfigField.LogTableOrientation.VERTICAL)
+
+
+class StepLoadSolveResult(OrcraftTestStepResult):
+	path_found = OrcraftResultField.Boolean(default=False, label="Path Found")
+	path_length = OrcraftResultField.Numeric(default=None, label="Path Length")
+	log_orientation = OrcraftResultField.Format(default=OrcraftResultField.LogTableOrientation.VERTICAL)
+
+
+class StepLoadSolve(OrcraftTestStep):
+	def __init__(self, config: StepLoadSolveConfig | None = None) -> None:
+		super().__init__(config or StepLoadSolveConfig())
+
+	def _run_step(self) -> OrcraftTestStepResult:
+		self.result = StepLoadSolveResult()
+
+		maze_file = normalize_long_path(self.config.maze_file)
+
+		self.checkpoint(
+			bool(maze_file),
+			"Maze file path is set.",
+			"Maze file path is empty.",
+		)
+
+		if not maze_file:
+			return self.result
+
+		self.checkpoint(
+			os.path.exists(maze_file),
+			f"Maze file exists: {maze_file}",
+			f"Maze file does not exist: {maze_file}",
+		)
+
+		if not os.path.exists(maze_file):
+			return self.result
+
+		result = MazeApp(
+			normalize_long_path(self.config.maze_executable_folder),
+			"solve",
+			maze_file=maze_file,
+		).run()
+
+		self.result.path_found = result.solved
+
+		if result.solved:
+			self.result.path_length = result.steps
+
+		return self.result') }}
+<p>The same three classes, config, component and result, appear at every level of the framework. A step's
+	<code>log_orientation</code> field only changes how its result table is printed: vertically, one parameter per
+	line, which reads better for the few values a step reports.</p>
+
+<h3 id="the-composed-run">The composed run</h3>
+<p>Run <strong>Steps and Flows</strong>. When it finishes, search the log for
+	<code>Corrupted maze has no solution as expected</code>:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/structure-and-lifecycle/corrupt-flow-in-log.png", "Log of a Steps and Flows case showing the unsolvable corrupted maze, the Load / Solve step result with Path Found False, the flow's passing checkpoint, and the Execution Status frame listing the test, cycle, case, case cycle, flow and step stages", "large") }}
+<p>The log nests the same way the code does. The <strong>Load / Solve</strong> step prints its own result table
+	with <strong>Path Found</strong> false, and the flow's checkpoint right after it confirms that this is the
+	expected outcome for a corrupted maze. The <strong>Execution Status</strong> frame at the bottom right lists the
+	stages of the run as they nest: the test, its cycle, the case, the case cycle, the flow and the step, the last
+	one marked with the endpoint it ran on.</p>
+<p>Click <strong>Details</strong> for the run:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/structure-and-lifecycle/steps-and-flows-details.png", "Steps and Flows Details view with each case cycle expanding into two flows, each flow into its steps, every step marked with the localhost endpoint and a passing status", "large") }}
+<p>Every flow and every step is a row of its own beneath the case cycle, with its status, its timing and, for a
+	step, the endpoint it ran on. A failure anywhere in this tree is reported at the row that produced it and
+	surfaced at every row above it.</p>
+
+<h2 id="setup-and-teardown">Setup and teardown</h2>
+<p>Source directory:</p>
+{{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_structure_and_lifecycle/test_setup_and_teardown/") }}
+<p><strong>Setup and Teardown</strong> generates its maze files once, before any case, and deletes them once,
+	after the last case. Each of its four cases loads and solves one of the files, chosen by the case's
+	<code>maze_index</code>. The two hooks are methods on the test:</p>
+{{ codeblock.block('def _setup(self) -> None:
+	workspace_folder = self._workspace_folder()
+	maze_count = int(self.config.maze_count)
+
+	Logger.log(
+		f"Setup: generating {maze_count} maze files in {workspace_folder}",
+		color=Logger.Color.CYAN,
+	)
+
+	flow = FlowGenerateMazeFiles(
+		FlowGenerateMazeFilesConfig(
+			maze_executable_folder=self.config.maze_executable_folder,
+			workspace_folder=workspace_folder,
+			count=maze_count,
+		)
+	)
+
+	# Raising from _setup aborts the test: no cases run and _teardown is skipped.
+	if self.handle_errors(flow.run(), self.result):
+		raise RuntimeError(
+			self.result.error_description
+			or self.result.failure_description
+			or "Setup failed to generate the maze files."
+		)
+
+def _teardown(self) -> None:
+	workspace_folder = self._workspace_folder()
+
+	Logger.log(
+		f"Teardown: deleting maze files in {workspace_folder}",
+		color=Logger.Color.CYAN,
+	)
+
+	# Teardown does not raise — cleanup problems should not mask case results.
+	flow = FlowDeleteMazeFiles(
+		FlowDeleteMazeFilesConfig(
+			workspace_folder=workspace_folder,
+		)
+	)
+	flow.run()') }}
+<p>A hook can run flows and steps like a case can. The two comments state the rule that matters: a setup that
+	raises aborts the test, because the cases would run without what they need, while a teardown swallows its
+	problems so that a cleanup failure never hides the cases' results. Run the test and open its Details:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/structure-and-lifecycle/setup-and-teardown-details.png", "Setup and Teardown Details view with a Setup row holding the Generate Maze Files flow and step before Cycle 1, four cases each solving one maze, and a Teardown row holding the Delete Maze Files flow and step after the cycle", "large") }}
+<p><strong>Setup</strong> and <strong>Teardown</strong> are rows of the results tree in their own right, each
+	with the flow and step it ran, placed before and after <strong>Cycle 1</strong>. Their timing is separate from
+	the cases: generating four mazes took most of the run, and the cases themselves were quick.</p>
+
+<h2 id="cycle-setup-and-teardown">Cycle setup and teardown</h2>
+<p>Source directory:</p>
+{{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_structure_and_lifecycle/test_cycle_setup_and_teardown/") }}
+<p><strong>Cycle Setup and Teardown</strong> subclasses the previous test and keeps its hooks. It sets
+	<strong>Cycles</strong> to two and adds the per-cycle pair, which receives the cycle index:</p>
+{{ codeblock.block('def _test_cycle_setup(self, test_cycle_index: int) -> None:
+	...
+	# Raising here fails only this cycle; the next cycle still runs.
+	if self.handle_errors(flow.run(), self.result):
+		raise RuntimeError(...)
+
+def _test_cycle_teardown(self, test_cycle_index: int) -> None:
+	...
+	# Teardown does not raise — cleanup problems should not mask cycle results.
+	FlowClearCycleMazes(
+		FlowClearCycleMazesConfig(
+			workspace_folder=workspace_folder,
+		)
+	).run()') }}
+<p>The cycle setup regenerates the maze files, so every cycle starts from fresh inputs, and the cycle teardown
+	clears them again, leaving the folder itself to the test-level teardown. Run the test and open its Details:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/structure-and-lifecycle/cycle-setup-and-teardown-details.png", "Cycle Setup and Teardown Details view with Setup before the cycles, each of the two cycles opening with a Test Cycle Setup row and closing with a Test Cycle Teardown row around its three cases", "large") }}
+<p>Each <strong>Cycle</strong> now opens with a <strong>Test Cycle Setup</strong> row and closes with a
+	<strong>Test Cycle Teardown</strong> row, inside the test-level <strong>Setup</strong> and
+	<strong>Teardown</strong> that still bracket the whole run. A raise in a cycle setup fails that cycle only.</p>
+
+<h2 id="case-setup-and-teardown">Case setup and teardown</h2>
+<p>Source directory:</p>
+{{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_structure_and_lifecycle/test_case_setup_and_teardown/") }}
+<p><strong>Case Setup and Teardown</strong> subclasses the cycle test in turn, sets <strong>Case Cycles</strong>
+	to two, and adds the innermost pair, which receives the case and the cycle index:</p>
+{{ codeblock.block('def _case_setup(self, case: OrcraftTestCase, test_cycle_index: int) -> None:
+	maze_index = case.params["maze_index"]
+	...
+	# Raising from _case_setup fails this case only: its case cycles are
+	# skipped and the matching _case_teardown does not run.
+	flow_result = flow.run()
+	if self.handle_errors(flow_result, case.result):
+		raise RuntimeError(...)
+
+def _case_teardown(self, case: OrcraftTestCase, test_cycle_index: int) -> None:
+	maze_index = case.params["maze_index"]
+	...
+	# Teardown does not raise — cleanup problems should not mask case results.
+	FlowReleaseCaseMaze(
+		FlowReleaseCaseMazeConfig(
+			workspace_folder=self._workspace_folder(),
+			maze_index=maze_index,
+		)
+	).run()') }}
+<p>The case setup claims the one maze file the case owns and the case teardown releases it. Because the case
+	hooks bracket the case cycles rather than each cycle, a case that repeats its work twice claims its file once.
+	Run the test:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/structure-and-lifecycle/running-case-setup-and-teardown.png", "Completed Case Setup and Teardown run with all four tests of the Structure and Lifecycle group passing, the log ending with the Teardown result and the test result of 12 passed cases", "large") }}
+<p>With two cycles of three cases the test plans 12 cases, and the whole group is now green. Open the run's
+	Details:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/structure-and-lifecycle/case-setup-and-teardown-details.png", "Case Setup and Teardown Details view showing all lifecycle scopes at once: Setup, then Cycle 1 with its Test Cycle Setup, each case wrapped in Case Setup and Case Teardown around two case cycles, each case cycle running the Solve Maze flow and step", "large") }}
+<p>All the scopes are visible in one tree. Reading from the outside in: <strong>Setup</strong>, then
+	<strong>Cycle 1</strong> with its <strong>Test Cycle Setup</strong>, then <strong>Case 1</strong> with its
+	<strong>Case Setup</strong>, its two <strong>Case Cycle</strong> rows and its <strong>Case Teardown</strong>,
+	and so on outward again. Each hook row holds the flow and step it ran, so a failure in a hook is placed as
+	precisely as a failure in a case.</p>
+<p>The hooks and the order they run in are listed in the
+	<a class="text-accent" href="/framework/lifecycle-hooks/">framework reference</a>, together with what happens
+	when a hook raises at each scope.</p>
+
+<p>Every step on this page ran on the local machine. The next group, <strong>Endpoints</strong>, sends steps to
+	other machines, starting with <a class="text-accent" href="/tutorial/endpoints-management/">Endpoints
+	Management</a>.</p>

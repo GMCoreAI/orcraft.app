@@ -20,6 +20,7 @@
     { "label": "Matrix Lambda Dimensions", "slug": "matrix-lambda-dimensions/" },
     { "label": "Orcraft Statuses", "slug": "orcraft-statuses/" },
     { "label": "Checkpoints", "slug": "checkpoints/" },
-    { "label": "Result Fields", "slug": "result-fields/" }
+    { "label": "Result Fields", "slug": "result-fields/" },
+    { "label": "Structure and Lifecycle", "slug": "structure-and-lifecycle/" }
   ]
 }
