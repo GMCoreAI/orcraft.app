@@ -1,0 +1,133 @@
+---
+title: Tutorial · Remote Type Fidelity
+key: tutorial
+description: "Values passed between steps keep their Python types across endpoints: tuples stay tuples, enums stay enums, nested structures keep their shape."
+---
+{% import "partials/copy-command.njk" as cmd %}
+{% import "partials/code-block.njk" as codeblock %}
+{% import "partials/zoomable-image.njk" as media %}
+<h1>Remote Type Fidelity</h1>
+<p>A flow passes values from one step to the next as if every step ran in the same process: a step puts a value on
+	its result, and the flow hands it to the next step's config. When the steps run on endpoints, those values have
+	to cross the network, and a naive transport would flatten them on the way: a tuple would come back as a list,
+	an enum member as its string, a nested structure as a bag of generic containers. Code that checks
+	<code>isinstance</code>, uses a tuple as a dict key, or compares enum members would then behave differently on a
+	remote step than on a local one.</p>
+<p>Orcraft keeps the types intact. Arguments are serialized to the endpoint and results serialized back with
+	their Python types preserved, lists, tuples and dicts are walked so nested structures keep their shape, and enum
+	members and instances of the suite's own classes arrive as what they were, because the
+	<a class="text-accent" href="/tutorial/packages-uploading/">test package</a> is on the endpoint too. This is
+	what lets a flow be written against <code>localhost</code> and moved to a lab later without touching the code
+	that wires one step's output into the next step's input. The framework reference covers it under
+	<a class="text-accent" href="/framework/steps/#type-fidelity">type fidelity</a>.</p>
+<p>The <strong>Type Fidelity</strong> test of the <strong>Endpoints</strong> group makes the guarantee visible: one
+	step assembles typed values on an endpoint, and a second step on the same endpoint checks every type after the
+	round trip through the controller.</p>
+
+<h2 id="producing-typed-values">Producing typed values</h2>
+<p>Source directory:</p>
+{{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_endpoints/test_type_fidelity/") }}
+<p>The first step solves a maze and builds values of the kinds that a careless transport would damage: a tuple of
+	dimensions, an enum member from the suite's own <code>MazeSolveStatus</code>, tuple coordinates, and a dict
+	that nests tuples, an enum and another dict:</p>
+{{ codeblock.block('def _run_step(self) -> OrcraftTestStepResult:
+	self.result = StepProduceMazeTypedDataResult()
+
+	exe_folder = normalize_long_path(self.config.maze_executable_folder)
+	width = int(self.config.width)
+	height = int(self.config.height)
+
+	result = MazeApp(exe_folder, "solve", width=width, height=height).run()
+
+	# Determine solve status from the run result
+	status = result.status
+	maze_area = width * height
+
+	# Assemble typed data that exercises RPC type preservation:
+	# - tuple (would flatten to list without proper serialization)
+	# - enum (would flatten to string value without proper serialization)
+	# - nested dict with mixed types
+	self.result.dimensions = (width, height)
+	self.result.solve_status = status
+	self.result.start_coords = (0, 0)
+	self.result.metadata = {
+		"bounds": (0, 0, width - 1, height - 1),
+		"tags": ("maze", "tutorial", "generated"),
+		"status": status,
+		"nested": {
+			"area": maze_area,
+			"pair": (True, False),
+		},
+	}
+
+	Logger.log(f"dimensions   = {self.result.dimensions!r}", color=Logger.Color.BLUE, module_tag=False)
+	Logger.log(f"solve_status = {self.result.solve_status!r}", color=Logger.Color.BLUE, module_tag=False)
+	Logger.log(f"start_coords = {self.result.start_coords!r}", color=Logger.Color.BLUE, module_tag=False)
+	Logger.log(f"metadata     = {self.result.metadata!r}", color=Logger.Color.BLUE, module_tag=False)
+
+	return self.result') }}
+<p>The values are plain attributes of the result rather than declared result fields. Structured data is rarely
+	something a person wants as a column in the controller, and plain attributes travel to the flow without ever
+	becoming one; the
+	<a class="text-accent" href="/framework/result-fields/#plain-attributes">framework reference</a> draws the
+	line between the two.</p>
+
+<h2 id="verifying-the-types">Verifying the types</h2>
+<p>The flow passes the four values to the second step as config values, exactly as it would pass a path or a
+	number:</p>
+{{ codeblock.block('step_2_result = self.run_step(
+	StepVerifyMazeTypedData,
+	endpoint=self.config.test_endpoint,
+	dimensions=step_1_result.dimensions,
+	solve_status=step_1_result.solve_status,
+	start_coords=step_1_result.start_coords,
+	metadata=step_1_result.metadata,
+)') }}
+<p>The second step declares them as plain attributes of its config, prints each one with its type, and asserts the
+	type with a <a class="text-accent" href="/tutorial/checkpoints/">checkpoint</a>:</p>
+{{ codeblock.block('class StepVerifyMazeTypedDataConfig(OrcraftTestStepConfig):
+	name = OrcraftConfigField.Text(default="Verify Maze Typed Data")
+	dimensions = None
+	solve_status = None
+	start_coords = None
+	metadata = None
+
+
+...
+
+	self.checkpoint(isinstance(dimensions, tuple), "\'dimensions\' is tuple", f"\'dimensions\' type is {type(dimensions).__name__}")
+	self.checkpoint(isinstance(dimensions, tuple) and len(dimensions) == 2, "\'dimensions\' has length 2", "\'dimensions\' length is not 2")
+	self.checkpoint(isinstance(solve_status, MazeSolveStatus), "\'solve_status\' is MazeSolveStatus enum", f"\'solve_status\' type is {type(solve_status).__name__}")
+	self.checkpoint(isinstance(solve_status, MazeSolveStatus) and solve_status in list(MazeSolveStatus), "\'solve_status\' has valid value", "\'solve_status\' value is not valid")
+	self.checkpoint(isinstance(start_coords, tuple), "\'start_coords\' is tuple", f"\'start_coords\' type is {type(start_coords).__name__}")
+	self.checkpoint(isinstance(metadata, dict), "\'metadata\' is dict", f"\'metadata\' type is {type(metadata).__name__}")
+	self.checkpoint(isinstance(bounds, tuple), "\'metadata.bounds\' is tuple", f"\'metadata.bounds\' type is {type(bounds).__name__}")
+	self.checkpoint(isinstance(tags, tuple), "\'metadata.tags\' is tuple", f"\'metadata.tags\' type is {type(tags).__name__}")
+	self.checkpoint(isinstance(meta_status, MazeSolveStatus), "\'metadata.status\' is MazeSolveStatus enum", f"\'metadata.status\' type is {type(meta_status).__name__}")
+	self.checkpoint(isinstance(nested, dict), "\'metadata.nested\' is dict", f"\'metadata.nested\' type is {type(nested).__name__}")
+	self.checkpoint(isinstance(pair, tuple), "\'metadata.nested.pair\' is tuple", f"\'metadata.nested.pair\' type is {type(pair).__name__}")
+	self.checkpoint(isinstance(area, int), "\'metadata.nested.area\' is int", f"\'metadata.nested.area\' type is {type(area).__name__}")') }}
+<p>Each value made two trips: from the first step on the endpoint to the flow on the controller, and from the flow
+	back to the second step on the endpoint. A type lost on either leg would fail its checkpoint.</p>
+
+<h2 id="running-the-test">Running the test</h2>
+<p>Select the <strong>Type Fidelity</strong> test, set its <strong>Maze Executable Folder</strong>, and choose the
+	macOS machine as the <strong>Test Endpoint</strong> so the values cross both a network and an operating
+	system boundary. Click <strong class="text-accent">Update Plan</strong>, then
+	<strong class="text-purple">Run</strong> and confirm. When the run finishes, search the log for
+	<code>'metadata.nested.area'</code>:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/remote-type-fidelity/typed-values-in-log.png", "Log of the Type Fidelity run on GMG-TEST-5 showing the values printed by the verify step with their types, tuple for dimensions, MazeSolveStatus for solve_status, dict for metadata and tuple for its nested pair, followed by a passing checkpoint for every type", "large") }}
+<p>The verify step prints what it received: <code>(5, 8)</code> with type <code>tuple</code>,
+	<code>&lt;MazeSolveStatus.SOLVED: 'solved'&gt;</code> with type <code>MazeSolveStatus</code>, the nested
+	<code>(True, False)</code> still a <code>tuple</code>, and the area still an <code>int</code>. Every
+	checkpoint below passes.</p>
+<p>Click <strong>Details</strong> for the run:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/remote-type-fidelity/type-fidelity-details.png", "Type Fidelity Details view with the Produce Maze Typed Data and Verify Maze Typed Data steps both on GMG-TEST-5 and passing", "large") }}
+<p>Both steps ran on <strong>GMG-TEST-5</strong>, and the typed values never appear in the tree: they were plain
+	attributes, handed from step to flow to step, and only the checkpoints that judged them left a trace. Choose
+	<strong>localhost</strong> as the endpoint instead and the same test passes the same way, which is the point:
+	the code that passes values between steps does not know or care where the steps run.</p>
+
+<p>The endpoints have so far always been there. The next page,
+	<a class="text-accent" href="/tutorial/controlled-endpoints-disconnection/">Controlled Endpoints
+	Disconnection</a>, takes one away on purpose and waits for it to come back.</p>
