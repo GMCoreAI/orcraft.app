@@ -65,6 +65,14 @@ function wrapDocsSections(inner) {
 export default function (eleventyConfig) {
   eleventyConfig.addNunjucksGlobal("imageSize", imageSize);
 
+  // Sidebar data of every docs section, for pages that list the whole documentation
+  // (the AI agents instructions snippet).
+  eleventyConfig.addGlobalData("docsSections", () =>
+    ["ai-agents/ai-agents", "framework/framework", "setup/setup", "tutorial/tutorial"].map((name) =>
+      JSON.parse(readFileSync(`src/${name}.json`, "utf8"))
+    )
+  );
+
   // Inlined so icons inherit currentColor and size from their container.
   eleventyConfig.addShortcode("icon", (name) =>
     readFileSync(`${ICON_DIR}/${name}.svg`, "utf8")

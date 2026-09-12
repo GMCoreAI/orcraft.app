@@ -221,6 +221,50 @@ if __name__ == "__main__":
     stop meaning what the controller expects.</p>
 </div>
 
+<h2 id="item-paths">Item paths</h2>
+<p>The CI export computes the paths of every item when it writes the snapshot. It knows the folder it
+  writes into and the folder each loaded suite came from, and it stores the relative path from the
+  first to the second in the item. Take a repository that keeps its suites and its exported snapshot
+  together:</p>
+
+{{ codeblock.block('orcraft-validation/
+  CI/
+    Validation/
+      batch.py
+      ci_run.py
+      test_suite_controller/            <- mirrors written by the export
+  Suites/
+    test-suite-controller/              <- the suite as the team wrote it
+      test_suite_orcraft_controller_validation.py', "text") }}
+
+<p>The snapshot was written into <code>CI/Validation</code>, so the item carries the way from there to
+  <code>Suites/test-suite-controller</code>:</p>
+
+{{ codeblock.block('OrcraftBatchItem(
+	name="Test Suite: Orcraft Controller Validation",
+	kind="suite",
+	source_path="test_suite_controller/test_suite_orcraft_controller_validation.py",
+	class_name="TestSuiteOrcraftControllerValidation",
+	import_roots=(".", "../../Suites/test-suite-controller"),
+	package_source_path="../../Suites/test-suite-controller",
+)') }}
+
+<p><code>source_path</code> points at the mirror beside the batch. <code>import_roots</code> puts the
+  snapshot folder and the suite folder on the import path. <code>package_source_path</code> names the
+  suite folder as the package uploaded to the endpoints. Nothing is edited by hand: as long as the
+  snapshot and the suites stay where they were at export time, <code>python batch.py</code> runs. When
+  a pipeline checks the suites out somewhere else, <code>ci_run.py</code> re-roots the items by
+  repository name, from <code>--suites-root</code> or from an
+  <code>ORCRAFT_SUITE_ROOT_&lt;REPO&gt;</code> variable, as the Running table below describes.</p>
+
+<div class="docs-callout docs-callout--warning">
+  <span class="docs-callout__label">Snapshot and suites move together</span>
+  <p>The stored paths are valid only for the placement at export time. Moving the snapshot folder, or
+    the suites, breaks them: the items no longer find their suite and the batch fails to load. Either
+    move the snapshot and the suites together, keeping their relative position, or run the snapshot
+    through <code>ci_run.py</code> and tell it where the suites are.</p>
+</div>
+
 <h2 id="execution">Execution</h2>
 <p>A batch always runs its items concurrently, each in its own subprocess. Suite and group items start at
   once and start their own children; the tests of the whole batch, test items included, take their turn
@@ -350,6 +394,11 @@ if __name__ == "__main__":
         resolving each item's repository from <code>--suites-root</code>, from an
         <code>ORCRAFT_SUITE_ROOT_&lt;REPO&gt;</code> variable or from the paths baked in at export time,
         and exiting with <code>0</code>, <code>10</code> or <code>20</code> for pass, fail or error.</td>
+    </tr>
+    <tr>
+      <td>AI agent</td>
+      <td>Let an <a class="text-accent" href="/ai-agents/">AI agent</a> write a batch of the items it
+        was asked to run, each configured through a subclass, and run it from the command line.</td>
     </tr>
   </tbody>
 </table>

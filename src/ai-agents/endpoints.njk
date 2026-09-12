@@ -1,0 +1,46 @@
+---
+title: AI Agents · Endpoints file
+key: ai-agents
+description: "The endpoints file the controller saves from its Endpoints panel, and how an AI agent uses it to know which machines exist and how to address them."
+---
+{% import "partials/code-block.njk" as codeblock %}
+<h1>Endpoints file</h1>
+<p>The AI agent has to know which machines exist and how to address them. That knowledge lives in the
+  controller. The Endpoints panel is where a team registers its machines and checks that each one
+  answers. The panel's <strong>Save</strong> button writes them to a JSON file, by default in the
+  <code>Endpoints</code> folder of the controller's working directory. Register the machines, save,
+  and put the file in the run folder for the AI agent.</p>
+
+<h2 id="file">File format</h2>
+{{ codeblock.block('{
+  "endpoints": [
+    {
+      "type": "Host Name",
+      "host_name": "lab-linux-1",
+      "ip": "10.0.0.21",
+      "resolved_hostname": "lab-linux-1",
+      "port": 50051,
+      "secure_enabled": true,
+      "accepted_duplicates": []
+    },
+    {
+      "type": "Host Name",
+      "host_name": "lab-win-1",
+      "ip": "10.0.0.31",
+      "resolved_hostname": "lab-win-1",
+      "port": 50051,
+      "secure_enabled": true,
+      "accepted_duplicates": []
+    }
+  ]
+}', "json") }}
+
+<p>Each entry is one registered machine. <code>type</code> is <code>"Host Name"</code> or
+  <code>"IP"</code>, depending on how the machine was added. <code>host_name</code>, <code>ip</code>
+  and <code>port</code> are what the AI agent puts in an endpoint field: the host name or the address,
+  followed by <code>:port</code> when the port is not the default <code>50051</code>.</p>
+
+<h2 id="loading">Loading into a controller</h2>
+<p>The same file loads back into any controller through the panel's <strong>Load</strong> button. One
+  saved list therefore serves the team and its AI agents alike, and it is the only list of machines
+  the AI agent works from.</p>

@@ -1,0 +1,71 @@
+---
+title: AI Agents · AI agents overview
+key: ai-agents
+description: "Running and extending Orcraft suites from an AI agent: the requests it takes, how it names machines, and what the pages of this section cover."
+---
+{% import "partials/copy-command.njk" as cmd %}
+<h1>Orcraft for AI agents</h1>
+<p>An Orcraft suite is ordinary Python, and its configuration is declared as class attributes. An AI
+  agent such as Claude Code can therefore work with a suite without an API to learn and without the
+  controller GUI. To run a test, the AI agent writes a small Python file that fills in the values it
+  needs, runs it and reads the log. To extend a suite, it writes new components the way the existing
+  ones are written. This section is written for the AI agent as much as for the person instructing
+  it.</p>
+
+<h2 id="requests">Example requests</h2>
+<p>A request names what to do and where to do it. The examples below are only examples: any request
+  about the suites, the machines and the logs works the same way.</p>
+
+<h3 id="run-requests">Run requests</h3>
+<p>A run request names an existing test, group or suite and the machines to run it on. The AI agent
+  writes a configured copy of the item, runs it and reports from the log.</p>
+{{ cmd.copyPath("Run the TCP Traffic group: Linux machines as fan-out, Windows machines as link partners.") }}
+{{ cmd.copyPath("Run the network suite with the macOS machine as SUT and lab-win-1 as link partner.") }}
+
+<h3 id="development-requests">Development requests</h3>
+<p>A development request adds to a suite. The AI agent writes the new component in the suite
+  repository, following the structure of the existing ones, with the
+  <a class="text-accent" href="/framework/">Framework reference</a> as its guide. The edited suite is
+  then <a class="text-accent" href="/setup/getting-started/#add-the-suite">added to the controller</a>
+  like any other suite and run by hand for polishing.</p>
+{{ cmd.copyPath("Add a bidirectional traffic test to the TCP Traffic group; fail below 900 Mbit/s.") }}
+{{ cmd.copyPath("Add a Solve Timeout parameter to the tutorial maze tests, default 5 seconds.") }}
+{{ cmd.copyPath("Write a suite for the maze application with a group per feature, like the tutorial.") }}
+
+<h3 id="analysis-requests">Analysis requests</h3>
+<p>An analysis request is about the logs of earlier runs. The AI agent reads them and answers from
+  what they record.</p>
+{{ cmd.copyPath("Compare last night's TCP Transmit logs from the macOS machine and lab-linux-2.") }}
+{{ cmd.copyPath("Explain why TCP Receive failed on lab-linux-2 in the last run.") }}
+
+<h3 id="mixed-requests">Mixed requests</h3>
+<p>A mixed request does several of these at once. The AI agent writes the component, runs it on the
+  machines named and reads the log. When the run shows a defect in the new code, it fixes the code and
+  runs again. The person receives the finished test together with its first passing run, and the
+  request can end with the commit that lands it.</p>
+{{ cmd.copyPath("Add an IPv6 group like TCP Traffic and run it: Linux as fan-out, Windows as partners.") }}
+{{ cmd.copyPath("Add a TCP retransmit test, run it on lab-linux-1, and when it passes commit and push.") }}
+
+<h2 id="machines">Machines and roles</h2>
+<p>A machine in a request can be named by host name, by address, by operating system or by role. All
+  of these resolve to the entries of the controller's
+  <a class="text-accent" href="/ai-agents/endpoints/">endpoints file</a>, the one list of machines
+  the AI agent has.</p>
+<p>When a test has several endpoint fields, the request also says which machine plays which part.
+  In the examples above, "as fan-out" and "as link partners" name the two endpoint fields of the
+  traffic tests: the machine under test, with one run per machine, and the set of partners that every
+  run shares. The AI agent finds the fields and their types in the test's config class.</p>
+
+<h2 id="pages">Pages in this section</h2>
+<ul>
+  <li><a class="text-accent" href="/ai-agents/inputs/">AI agent inputs</a>: what the AI agent needs,
+    and a template for the instructions file.</li>
+  <li><a class="text-accent" href="/ai-agents/endpoints/">Endpoints file</a>: the file the controller
+    saves from its Endpoints panel.</li>
+  <li><a class="text-accent" href="/ai-agents/configuring/">Configuring a run</a>: the file the AI
+    agent writes to fill in the values of one run.</li>
+  <li><a class="text-accent" href="/ai-agents/running/">Running a batch</a>: how that file is run, and
+    what a run needs to reach remote endpoints.</li>
+  <li><a class="text-accent" href="/ai-agents/results/">Reading the log</a>: the log a run leaves
+    behind and the tables the AI agent reads from it.</li>
+</ul>

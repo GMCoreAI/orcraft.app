@@ -1,0 +1,92 @@
+---
+title: AI Agents · Running a batch
+key: ai-agents
+description: "How an AI agent runs configured Orcraft tests through a batch, maps the result to an exit code, and reaches remote endpoints."
+---
+{% import "partials/code-block.njk" as codeblock %}
+{% import "partials/copy-command.njk" as cmd %}
+<h1>Running a batch</h1>
+<p>A configured copy lives outside the suite repository, so it cannot import the test on its own. It
+  is run through a <a class="text-accent" href="/framework/batches/">batch</a> whose items say where
+  the code is: the run folder for the copy, and the suite repository for everything the copy imports
+  and for the package that ships to the endpoints. A CI snapshot exported from the controller runs its
+  mirrors in exactly this way.</p>
+<p>The run needs the <code>orcraft</code> package installed in the Python the AI agent uses, as
+  described in <a class="text-accent" href="/setup/getting-started/#install-from-pypi">Getting
+  started</a>. The controller GUI is not started.</p>
+
+<h2 id="batches">Batch file</h2>
+<p>The batch file sits in the run folder beside the configured copies:</p>
+
+{{ codeblock.block('from orcraft import (
+	OrcraftBatchItem,
+	OrcraftConfigField,
+	OrcraftTestBatch,
+	OrcraftTestBatchConfig,
+)
+
+
+class TcpTrafficBatchConfig(OrcraftTestBatchConfig):
+	name = OrcraftConfigField.Text(default="TCP Traffic Fan-out")
+	items = OrcraftConfigField.Items(default_factory=lambda: [
+		OrcraftBatchItem(
+			name="Test: TCP Transmit",
+			kind="test",
+			source_path="run_tcp_tx.py",
+			class_name="TestTcpTx",
+			import_roots=(".", "../orcraft-test-suite-network"),
+			package_source_path="../orcraft-test-suite-network",
+		),
+		OrcraftBatchItem(
+			name="Test: TCP Receive",
+			kind="test",
+			source_path="run_tcp_rx.py",
+			class_name="TestTcpRx",
+			import_roots=(".", "../orcraft-test-suite-network"),
+			package_source_path="../orcraft-test-suite-network",
+		),
+	])
+
+
+class TcpTrafficBatch(OrcraftTestBatch):
+	def __init__(self) -> None:
+		super().__init__(config=TcpTrafficBatchConfig())
+
+
+if __name__ == "__main__":
+	TcpTrafficBatch().run()') }}
+
+<p>Relative paths in an item are relative to the batch file.</p>
+<ul>
+  <li><code>source_path</code> names the configured copy to run.</li>
+  <li><code>import_roots</code> puts the run folder and the repository on the import path of the item's
+    process, so the copy finds the test it subclasses.</li>
+  <li><code>package_source_path</code> names the repository as the package uploaded to the endpoints,
+    so they receive the suite and not the run folder.</li>
+</ul>
+<p>The batch is run from the run folder like any framework file. Its log is written to a
+  <code>Logs</code> folder there.</p>
+{{ cmd.copyCommand("python tcp_traffic_batch.py") }}
+
+<h2 id="exit-code">Exit code</h2>
+<p><code>run()</code> executes the whole batch and returns its result. The result's
+  <code>status</code> is an <code>OrcraftStatus</code>. A file that has to give an exit code to a calling
+  script maps it itself:</p>
+
+{{ codeblock.block('import sys
+
+from orcraft import OrcraftStatus
+
+
+def main() -> None:
+	result = TcpTrafficBatch().run()
+	sys.exit(0 if result.status is OrcraftStatus.PASS else 1)') }}
+
+<h2 id="remote-endpoints">Remote endpoints</h2>
+<p>A run that reaches a remote endpoint needs the same security material as the controller: the
+  authorization token and the certificates. The framework reads the token from the
+  <code>ORCRAFT_CONTROLLER_AUTH_TOKEN</code> environment variable, and the certificates from the
+  machine's Orcraft profile folder, where the controller's Security tab generated them. On a machine
+  where the controller has completed the
+  <a class="text-accent" href="/setup/endpoints/#secure-endpoint-connection">security setup</a>, the
+  AI agent only needs the variable defined in the environment it runs in.</p>

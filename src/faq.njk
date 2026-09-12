@@ -57,7 +57,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
           suite developed against localhost runs on remote endpoints by selecting them in the run panel. A
           parameter added to the configuration becomes a GUI field that anyone can change. Dimensions expand the
           same test into a different case matrix per run. The code stays the same; only the run configuration
-          changes.</p>
+          changes. An <a class="text-accent" href="/ai-agents/">AI agent</a> configures a run the same
+          way without the panel: it redeclares the fields in a subclass, runs it and reads the log.</p>
       </div>
     </details>
 
@@ -77,8 +78,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
     <details class="faq__item">
       <summary class="faq__question"><h3 class="faq__title" id="new-language">Do I need to learn a new language or DSL?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
-        <p>No. Tests are ordinary Python classes with a few base classes and field types imported from the
-          <code>orcraft</code> package. Anything Python can do, a test step can do, including calling the
+        <p>No. Orcraft has no DSL (domain-specific language) of its own. Tests are ordinary Python classes
+          with a few base classes and field types imported from the <code>orcraft</code> package. Anything Python can do, a test step can do, including calling the
           libraries and tools your team already uses. Orcraft requires Python 3.14 or later.</p>
       </div>
     </details>
@@ -165,6 +166,18 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="validated-with-orcraft">Orcraft is a test orchestration platform. Is Orcraft itself validated with Orcraft?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>Hell yeah! Every component of Orcraft (the controller GUI, the framework, the endpoint
+          application, the Maze app, the Tutorial suite and so on) is validated with Orcraft suites,
+          written like any suite you would write. The tests are developed and enhanced continuously,
+          and they run continuously.</p>
+        <p>We see this as the strongest argument for the platform: if Orcraft can validate a system as
+          complex as Orcraft, it can validate what you build.</p>
+      </div>
+    </details>
+
     <h2 id="why-orcraft">Why teams choose Orcraft</h2>
 
     <details class="faq__item">
@@ -178,11 +191,13 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
     </details>
 
     <details class="faq__item">
-      <summary class="faq__question"><h3 class="faq__title" id="single-source">One suite for GUI, CLI and CI</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <summary class="faq__question"><h3 class="faq__title" id="single-source">One suite for GUI, CLI, CI and AI agents</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
-        <p>The same Python suite runs from the controller GUI, from the command line and from a CI pipeline.
-          A run confirmed in the GUI is exported as a snapshot that reproduces it exactly elsewhere, so there is
-          no "works in the GUI but not in CI".</p>
+        <p>The same Python suite runs from the controller GUI, from the command line, from a CI pipeline and
+          from an <a class="text-accent" href="/ai-agents/">AI agent</a>. A run confirmed in the GUI is
+          exported as a snapshot that reproduces it exactly elsewhere, so there is no "works in the GUI but
+          not in CI". An AI agent runs the same suite by writing a file that sets the fields it needs, and
+          reads the log afterwards.</p>
       </div>
     </details>
 

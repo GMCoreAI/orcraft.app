@@ -95,8 +95,10 @@ description: "The Orcraft test framework: suites, groups, tests, cases, flows an
   and implements one method. Everything else - discovery, configuration, distribution to endpoints,
   execution, logging and result collection - is what the controller does with that class.</p>
 
-<p>Because a suite is ordinary Python, the same files run three ways without modification: standalone
-  from the command line, from the controller GUI, and from the controller CLI in a CI pipeline. The
+<p>Because a suite is ordinary Python, the same files run without modification: standalone
+  from the command line, from the controller GUI, from the controller CLI in a CI pipeline, and from
+  an <a class="text-accent" href="/ai-agents/">AI agent</a> that sets the configuration in a
+  subclass. The
   <a class="text-accent" href="/tutorial/">Tutorial</a> walks through building one step by step; this
   section is the reference for what the framework itself offers.</p>
 

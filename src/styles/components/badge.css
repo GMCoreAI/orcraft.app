@@ -17,6 +17,12 @@
   border: 1px solid rgba(34, 211, 238, 0.35);
 }
 
+.badge--agent {
+  background: rgba(168, 85, 247, 0.12);
+  color: var(--color-purple);
+  border: 1px solid rgba(168, 85, 247, 0.35);
+}
+
 /* Section markers for docs headings. The label is supplied by CSS because the
    sidebar builds its heading text by stripping tags from the template source -
    a marker written as markup would end up appended to the nav entry. */

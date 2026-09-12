@@ -1,0 +1,69 @@
+---
+title: AI Agents · Configuring a run
+key: ai-agents
+description: "How an AI agent configures an Orcraft test without editing it: a subclass that redeclares the config fields it needs, the same mechanism the CI export uses."
+---
+{% import "partials/code-block.njk" as codeblock %}
+<h1>Configuring a run</h1>
+<p>Every value a test exposes in the controller's run panel is a
+  <a class="text-accent" href="/framework/configuration-fields/">config field</a> on its config class.
+  A subclass that redeclares a field with a new default is a configured copy of the test, and the
+  framework treats the copy exactly like the original. The controller's own CI export uses this
+  mechanism for its mirror classes. The AI agent uses it in the same way.</p>
+
+<h2 id="configured-copy">Configured copy</h2>
+<p>For the request "Run the TCP Traffic group: Linux machines as fan-out, Windows machines as link
+  partners", the AI agent writes this file into the run folder:</p>
+
+{{ codeblock.block('from orcraft import OrcraftConfigField
+from traffic_lib.base_traffic_test import DirectionalTrafficConfig
+from test_group_tcp.test_tcp_tx.test_tcp_tx import TestTcpTx
+
+
+class DirectionalTrafficConfig(DirectionalTrafficConfig):
+	sut_endpoint = OrcraftConfigField.EndpointFanout(
+		default=("lab-linux-1", "lab-linux-2"),
+		label="SUT Endpoint",
+	)
+	link_partner_endpoints = OrcraftConfigField.MultiSelectEndpoints(
+		default=("lab-win-1", "lab-win-2"),
+		label="Link Partner Endpoints",
+	)
+	nuttcp_tool_package = OrcraftConfigField.PackageFolder(
+		default="/home/lab/orcraft/tools/nuttcp",
+		label="Nuttcp Tool Package",
+	)
+
+
+class TestTcpTx(TestTcpTx):
+	def __init__(self, config=None):
+		super().__init__(config if config is not None else DirectionalTrafficConfig(name="TCP Transmit"))') }}
+
+<p>What changed against the original:</p>
+<ul>
+  <li>The SUT field was redeclared from a single <code>Endpoint</code> to an
+    <code>EndpointFanout</code>. The test now runs once per machine listed, in parallel.</li>
+  <li>The link partner field kept its <code>MultiSelectEndpoints</code> type and received the partner
+    machines. Every run shares them.</li>
+  <li>The tool package, a required field with no value in the code, was filled in. A standalone run has
+    no run panel to ask for it.</li>
+</ul>
+<p>Everything else is inherited: the test body, the other fields and the result fields. The subclasses
+  keep the names of the classes they extend, as the CI export's mirrors do, so the file reads as the
+  same test with its values filled in. The endpoint field types are described on the
+  <a class="text-accent" href="/framework/endpoints/">Endpoints</a> page.</p>
+
+<div class="docs-callout">
+  <span class="docs-callout__label">Run folder</span>
+  <p>A run file is configuration for one run, not code. It lives in a folder of its own beside the suite
+    repositories, never inside one, and the test it configures is never edited. The batch on the
+    <a class="text-accent" href="/ai-agents/running/">Running a batch</a> page tells the framework
+    where the repository is, so the imports above resolve without the repository being touched.</p>
+</div>
+
+<h2 id="containers">Groups, suites and batches</h2>
+<p>A group or a suite is configured the same way, through a subclass of its own config class. Whatever
+  the request covers, one item or several, the configured copies are listed in a
+  <a class="text-accent" href="/framework/batches/">batch</a> in the same run folder. The batch is what
+  runs them, as the <a class="text-accent" href="/ai-agents/running/">Running a batch</a> page
+  shows.</p>

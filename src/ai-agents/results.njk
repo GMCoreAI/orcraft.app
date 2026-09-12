@@ -1,0 +1,60 @@
+---
+title: AI Agents · Reading the log
+key: ai-agents
+description: "Where an Orcraft run writes its log, which tables an AI agent reads from it, and what the AI agent can do with the log afterwards."
+---
+<h1>Reading the log</h1>
+<p>A run writes its log to a <code>Logs</code> folder in the working directory, one
+  <code>.ansi</code> file per component. The children of a group, suite or batch are filed in a
+  folder named after the parent's log file. The console shows the same text.</p>
+
+<h2 id="tables">Log tables</h2>
+<p>The log is made of titled tables. The titles are what the AI agent searches for:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Table</th>
+      <th>Content</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>&lt;name&gt; | Configuration</code></td>
+      <td>Every config field with the value the run used, including the endpoints.</td>
+    </tr>
+    <tr>
+      <td><code>Case N | Result</code></td>
+      <td>One case: its status, times, the description of any failure, error or warning, and the
+        test's own <a class="text-accent" href="/framework/result-fields/">result fields</a>.</td>
+    </tr>
+    <tr>
+      <td><code>&lt;name&gt; | Result</code></td>
+      <td>The component's summary: status, finish time, elapsed time and case counts.</td>
+    </tr>
+    <tr>
+      <td><code>&lt;group&gt; | Tests</code>, <code>&lt;suite&gt; | Groups</code>,
+        <code>&lt;batch&gt; | Items</code></td>
+      <td>One row per child with its status, counts and the endpoints it ran on.</td>
+    </tr>
+    <tr>
+      <td><code>&lt;name&gt; | Failures</code>, <code>&lt;name&gt; | Errors</code>,
+        <code>&lt;name&gt; | Warnings</code></td>
+      <td>The issues collected during the run, with the step and case they came from.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="statuses">Statuses</h2>
+<p>A status is <code class="status-pass">PASS</code>, <code class="status-fail">FAIL</code> or
+  <code class="status-error">ERROR</code>. The
+  <a class="text-accent" href="/framework/statuses/">Statuses</a> page explains the difference between
+  the last two, which is what an analysis turns on. The log of a group, suite or batch also carries one
+  <code>Started</code> and one <code>Finished</code> line per test, with status, elapsed time and
+  endpoints in fixed columns.</p>
+
+<h2 id="analysis">Analysis</h2>
+<p>The log is the complete record of the run, so the AI agent that ran the test can also analyze it:
+  explain a failure from its step and case, compare two runs of the same test on two machines, or
+  summarize a batch. The result of a run started this way lives in this log only. It does not appear
+  in the controller's history or in its details dialog.</p>

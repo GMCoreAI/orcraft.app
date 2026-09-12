@@ -1,0 +1,71 @@
+---
+title: AI Agents · AI agent inputs
+key: ai-agents
+description: "What an AI agent needs to run an Orcraft suite: the suite repositories, the endpoints file and the documentation, with a template for the instructions file."
+---
+{% import "partials/code-block.njk" as codeblock %}
+<h1>AI agent inputs</h1>
+<p>The AI agent needs these inputs. None of them is written specially for it.</p>
+<table>
+  <thead>
+    <tr>
+      <th>Input</th>
+      <th>Purpose</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>The suite repositories</td>
+      <td>The tests, groups and suites the AI agent may run, cloned where it works. Their config
+        classes tell it which fields exist, which of them are endpoints and which are required.</td>
+    </tr>
+    <tr>
+      <td>The endpoints file</td>
+      <td>The machines and their addresses, saved from the controller's Endpoints panel. See
+        <a class="text-accent" href="/ai-agents/endpoints/">Endpoints file</a>.</td>
+    </tr>
+    <tr>
+      <td>This documentation</td>
+      <td>This section tells the AI agent how to configure a run, run it and read the log. The
+        <a class="text-accent" href="/framework/">Framework reference</a> describes the classes and
+        fields it writes. The instructions file below lists the addresses of both.</td>
+    </tr>
+  </tbody>
+</table>
+<p>A required field whose value is not in the code, such as the folder of a tool package, needs its
+  value given as well. Otherwise the AI agent asks for it.</p>
+
+<h2 id="instructions">Instructions file</h2>
+<p>The practical arrangement is to keep all of this in the instructions file that the AI agent reads
+  at the start of every request, such as <code>CLAUDE.md</code> or <code>AGENTS.md</code>. The file
+  sits in the folder the AI agent works from, which holds the suite repositories and the run folder
+  side by side. The template below is written for a machine where everything sits under
+  <code>~/orcraft/</code>. The Rules section applies everywhere as written. Replace every line of the
+  Paths section with your own.</p>
+
+{% set agentInstructions %}
+# Orcraft
+
+An Orcraft test suite is ordinary Python. The same files run from the controller GUI, from the CLI, from CI and from an AI agent.
+{% for section in docsSections %}{% if section.docsBase == "/ai-agents/" or section.docsBase == "/framework/" %}
+## {{ section.docsTitle }} documentation
+
+{% for item in section.docsItems -%}
+- [{{ item.label }}]({{ site.url }}{{ section.docsBase }}{{ item.slug }})
+{% endfor %}
+{%- endif %}{%- endfor %}
+## Rules
+
+- Never edit a test to run it. Configure a run with a subclass that redeclares the fields it needs.
+- Configured copies and their batch go into the run folder, never into a suite repository.
+- Every batch item points `import_roots` and `package_source_path` at the suite repository.
+- Run the batch from the run folder. After the run, read the log under `Logs/` there and summarize the result.
+
+## Paths (example - replace every line with your own)
+
+- Suite repositories: `~/orcraft/orcraft-test-suite-network`, `~/orcraft/orcraft-test-suite-tutorial`
+- Run folder: `~/orcraft/orcraft-runs`
+- Endpoints file: `~/orcraft/orcraft-runs/endpoints.json`
+- Nuttcp Tool Package field: `~/orcraft/tools/nuttcp`
+{% endset %}
+{{ codeblock.block(agentInstructions, "markdown") }}

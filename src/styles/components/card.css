@@ -46,6 +46,33 @@
   box-shadow: var(--shadow-card);
 }
 
+.card__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-2);
+}
+
+.card__heading .card__title {
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
+.card__badges {
+  display: flex;
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
+
+.card__badges .badge {
+  margin-inline: 0;
+  padding: 0.1em 0.45em;
+  font-size: 0.6rem;
+  white-space: nowrap;
+}
+
 .card__shot {
   display: block;
   width: 100%;

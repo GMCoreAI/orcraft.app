@@ -1,0 +1,13 @@
+{
+  "layout": "layouts/docs.njk",
+  "docsTitle": "AI Agents",
+  "docsBase": "/ai-agents/",
+  "docsItems": [
+    { "label": "AI agents overview", "slug": "" },
+    { "label": "AI agent inputs", "slug": "inputs/" },
+    { "label": "Endpoints file", "slug": "endpoints/" },
+    { "label": "Configuring a run", "slug": "configuring/" },
+    { "label": "Running a batch", "slug": "running/" },
+    { "label": "Reading the log", "slug": "results/" }
+  ]
+}
