@@ -34,17 +34,29 @@ description: "Compose a session from suites, groups and tests, export it as a na
 		own;</li>
 	<li>the <strong>Hello World</strong> test file from the tutorial suite, as a test item of its own.</li>
 </ul>
-<p>Each is a top-level row in the tree, and each will be an item of the batch. A suite need not go in whole.
-	Right-click a group and choose <strong>Unplan</strong> to leave it out; here every group of the tutorial suite
-	is unplanned except <strong>Intro</strong> and <strong>Statuses and Results</strong>, and every group of the
-	Demo suite except <strong>Basic</strong>. Then configure what remains as on the earlier pages: the
-	<strong>Maze Executable Folder</strong> of the status tests and of the four lifecycle tests, and
-	<strong>Update Plan</strong> on each.</p>
-<p>Select the <strong>Session</strong> row at the top of the tree. Its panel lists every planned test with the
-	configured values, and the <strong>Export for CI</strong> button at the bottom exports that whole scope:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/exporting-test-batch-for-ci/session-panel-export-button.png", "Session run panel reporting Total Cases 99, listing the planned tests of the Orcraft Tutorial and Demo suites with their configured values, the panel of the first test beneath, and the Export for CI button at the bottom", "large") }}
-<p>The button is on every run panel and exports the scope the panel shows: one test from a test's panel, a group
-	from a group's panel, and everything planned from the session row.</p>
+<p>Each is a top-level row in the tree. The set to export is then picked by selecting rows: hold
+	<strong>Ctrl</strong> and click the <strong>Intro</strong> and <strong>Statuses and Results</strong> groups of the
+	tutorial suite, the <strong>Basic</strong> group of the Demo suite, the <strong>Structure and Lifecycle</strong>
+	group item and the <strong>Hello World</strong> test item. A suite need not go in whole; picking two of its
+	groups takes those two:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/exporting-test-batch-for-ci/selected-rows.png", "Execution tree collapsed to group level with five rows highlighted: the Intro and Statuses and Results groups of the Orcraft Tutorial suite, the Basic group of the Demo suite, the Structure and Lifecycle group item and the Hello World test item", "large") }}
+<p>Selecting more than one row opens the <strong>Multi-Test Selection</strong> panel in the right pane, the
+	configuration layout for a set of tests. Its upper part is a grid: one row per test in the selection, grouped
+	under their suites and groups, and one column per configuration field any of them declares, so a field a test
+	does not have shows as a dash. The lower part is the ordinary run panel of the test whose row is chosen in the
+	grid.</p>
+<p>The <strong>Maze Executable Folder</strong> column is where the status and lifecycle tests need their value.
+	Browse the folder on one row, then right-click the cell and choose <strong>Apply this value to all tests</strong>:
+	every test that has the field takes it. The <strong>Status: Error</strong> test has a <strong>Maze Bin
+	Folder</strong> instead, set on its own row:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/exporting-test-batch-for-ci/selection-panel.png", "Multi-Test Selection panel reporting Total Cases 100, with a grid of the selected tests whose Maze Executable Folder and Maze Bin Folder cells carry the newly set values marked with an orange dot, the run panel of the first test beneath, and the Update Plan, Reset To Defaults, Export for CI and Run buttons", "large") }}
+<p>The orange dot on the edited cells marks values that differ from the plan. Click
+	<strong class="text-accent">Update Plan</strong> to commit them for every test in the selection at once:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/exporting-test-batch-for-ci/selection-panel-planned.png", "Multi-Test Selection panel after Update Plan, with the folder values shown in blue as planned and the Update Plan button disabled", "large") }}
+<p>The values turn blue as planned values, and the panel's <strong class="text-brown">Export for CI</strong>
+	button exports exactly this selection. The button is on every run panel and exports the scope the panel shows:
+	one test from a test's panel, a group from a group's panel, the selected rows from a selection's panel, and
+	everything planned from the session row.</p>
 
 <h2 id="naming-the-snapshot">Naming the snapshot</h2>
 <p>Click <strong class="text-brown">Export for CI</strong>. The export validates the configuration the way

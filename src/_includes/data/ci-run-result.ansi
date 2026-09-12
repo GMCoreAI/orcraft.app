@@ -7,8 +7,8 @@ Status              | [33mERROR[00m
 Error Description   | [33mIntentional Exception for demonstration purposes[00m
 Failure Description | [91mIntentional Failure for demonstration purposes[00m
 Warning Description | [93mIntentional Warning for demonstration purposes[00m
-Finish Time         | 2026-09-12  19:53:28.674
-Elapsed Time        | 13.762 s
+Finish Time         | 2026-09-12  20:35:51.677
+Elapsed Time        | 14.441 s
 Total Items         | 4
 Passed Items        | [92m2[00m
 Failed Items        | [91m0[00m
