@@ -1,0 +1,97 @@
+---
+title: Tutorial · Matrix Lambda Dimensions
+key: tutorial
+description: "Let a matrix dimension take its values from a function that runs when the test is configured, such as the releases currently published."
+---
+{% import "partials/copy-command.njk" as cmd %}
+{% import "partials/code-block.njk" as codeblock %}
+{% import "partials/zoomable-image.njk" as media %}
+<h1>Matrix Lambda Dimensions</h1>
+<p>Some values only exist when the test is configured: the releases currently published, the devices currently
+	attached, the branches currently open. A <strong>lambda dimension</strong> takes its values from a function the
+	test supplies, and the matrix is built from whatever that function returns. This page follows
+	<a class="text-accent" href="/tutorial/matrix-dimensions-randomization/">Matrix Dimensions Randomization</a> and
+	uses the <strong>Matrix Lambda Dimensions</strong> test of the <strong>Advanced Configuration Parameters</strong>
+	group.</p>
+<p>Select the <strong>Matrix Lambda Dimensions</strong> test:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/matrix-lambda-dimensions/matrix-lambda-dimensions-config.png", "Matrix Lambda Dimensions run panel reporting Total Cases 18, with the Maze App Version column header marked with a lambda icon and listing maze-v3.0.0, maze-v2.0.0 and maze-v1.0.0 across the cases", "large") }}
+<p>The panel reports <strong>Total Cases: 18</strong>. The <strong>Maze App Version</strong> column header carries a
+	lambda icon, and its values, <code>maze-v3.0.0</code>, <code>maze-v2.0.0</code> and <code>maze-v1.0.0</code>, are
+	the release tags the test's function fetched from GitHub while the panel was being built. There is no
+	<strong>Maze Executable Folder</strong> field this time: every case obtains the binary of its own version, so the
+	test needs nothing configured before it runs.</p>
+
+<h2 id="defining-a-lambda-dimension">Defining a lambda dimension</h2>
+<p>Source directory:</p>
+{{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_advanced_configuration_parameters/test_matrix_lambda_dimensions/") }}
+<p>The dimension is declared with
+	<a class="text-accent" href="/framework/matrix/#dimensions"><code>Dimension.lambda_choice</code></a>, whose
+	<code>factory</code> is a function of no arguments that returns the values:</p>
+{{ codeblock.block('matrix = OrcraftConfigField.Matrix(
+	OrcraftConfigField.Dimension.lambda_choice(label="Maze App Version", factory=lambda: fetch_maze_app_release_versions()),
+	OrcraftConfigField.Dimension(label="command", values=("generate", "solve", "save")),
+	OrcraftConfigField.Dimension(label="algorithm", values=(None, "BFS", "DFS", "ASTAR")),
+
+	exclude=[
+		lambda case: case.params["command"] in ("generate", "save") and case.params["algorithm"] is not None,
+	],
+)') }}
+<p>The factory runs when the test is configured, which is when the controller builds its run panel, not when the
+	test file is imported. Its result becomes the dimension's value list, in the order returned, and the matrix is
+	the product of that list with the two listed dimensions. Three releases, three commands and four algorithms give
+	36 combinations; the <a class="text-accent" href="/tutorial/matrix-cases-exclusion/">exclusion rule</a> removes
+	the <code>generate</code> and <code>save</code> cases that name an algorithm, leaving 18.</p>
+<p>The label can be any text, and it is the key under which the value reaches the test:
+	<code>case.params["Maze App Version"]</code>. The function here is the same GitHub helper that
+	<a class="text-accent" href="/tutorial/lambda-configuration-parameters/#versions-provider">Lambda Configuration
+	Parameters</a> uses for its selector fields. The difference is what the values are for. A
+	<code>SelectLambda</code> field offers them for the user to pick one; a lambda dimension turns every one of them
+	into cases.</p>
+
+<h3 id="using-the-fetched-values">Using the fetched values</h3>
+<p>Each case receives one release tag and resolves it to a folder holding that release's binary:</p>
+{{ codeblock.block('def _run_case(self, case: OrcraftTestCase):
+
+	bin_folder = get_maze_app_bin_folder(case.params["Maze App Version"])
+
+	maze_app = MazeApp(bin_folder, case.params["command"], algorithm=case.params["algorithm"])
+
+	maze_app.run()
+
+	return case.result') }}
+<p><code>get_maze_app_bin_folder</code> lives in the suite's shared <code>github_repo_access</code> module. It
+	downloads the release asset for the current platform into a folder under the system's temporary directory and
+	returns that folder, or returns it at once when the binary is already there. The first run of a version therefore
+	downloads it, and every later case of that version reuses the copy.</p>
+
+<h2 id="the-fetched-value-list">The fetched value list</h2>
+<p>Click the <strong>Maze App Version</strong> column header. The <strong>Dimension Filter</strong> dialog lists
+	the values the factory returned:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/matrix-lambda-dimensions/lambda-dimension-dialog.png", "Dimension Filter dialog for the Maze App Version dimension listing maze-v1.0.0, maze-v2.0.0 and maze-v3.0.0, all checked, with Select All and Clear All enabled", "large") }}
+<p>The values are checkable, and <strong>Select All</strong> and <strong>Clear All</strong> work as they do for a
+	listed dimension, so the matrix can be narrowed to one release for a configuration in the way
+	<a class="text-accent" href="/tutorial/filtering-matrix-dimensions/">Filtering Matrix Dimensions</a> describes.
+	There is no <strong>Random Configuration</strong> group and no <strong>Add value</strong> field: the list is what
+	the function returned, and a value that is not a published release could not be run.</p>
+
+<h2 id="running-across-releases">Running across releases</h2>
+<p>Click <strong class="text-purple">Run</strong> and confirm with <strong>Yes</strong>. Nothing had to be
+	configured, so <strong>Update Plan</strong> stayed disabled and the run executes the plan as loaded. The test
+	reports 18 planned, done and passed cases, and the log's result table shows which release each case ran:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/matrix-lambda-dimensions/running-matrix-lambda-dimensions-test.png", "Completed Matrix Lambda Dimensions run with all 18 cases passing and the log listing the maze-v2.0.0 and maze-v1.0.0 cases with their command and algorithm", "large") }}
+<p>The cases run version by version, newest first, because that is the order the factory returned. Each case's log
+	states whether its binary was downloaded or taken from the cache before the Maze application's own output.</p>
+
+<h3 id="inspecting-the-run">Inspecting the run</h3>
+<p>Click <strong>Details</strong> for the completed run. The <strong>List Dimensions</strong> table records the
+	three release tags as the dimension's default, planned and run values, next to the listed commands and
+	algorithms:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/matrix-lambda-dimensions/matrix-lambda-dimensions-details.png", "Matrix Lambda Dimensions Details view listing maze-v3.0.0, maze-v2.0.0 and maze-v1.0.0 as the Maze App Version values for the default, plan and run, with 18 planned and run cases all passing", "large") }}
+<p>This is the record that matters for a dimension whose values change over time. When a fourth release is
+	published, the next configuration of the test fetches four tags and plans 24 cases, and the details of this run
+	still show the three it covered.</p>
+
+<p>This completes the matrix pages of the tutorial. The next group,
+	<strong>Statuses and Results</strong>, begins with
+	<a class="text-accent" href="/tutorial/orcraft-statuses/">Orcraft Statuses</a>: how a test tells the controller
+	that a case passed, passed with a warning, failed or could not run at all.</p>
