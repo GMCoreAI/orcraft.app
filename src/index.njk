@@ -6,10 +6,33 @@ key: home
 {# Search body: this page is indexed alongside the docs so capabilities and
    "how it works" are findable from anywhere. Titled "Home" in results. #}
 <div data-pagefind-body data-pagefind-meta="title:Home">
-<h1 class="visually-hidden">Orcraft: test orchestration platform</h1>
+<h1 class="visually-hidden">Orcraft: the platform that lets AI agents run your testing lab</h1>
+
+<!-- Principles: code-first, code-once, code-only. -->
+<section class="band band--tight">
+  <div class="container">
+    <dl class="principles">
+      <div class="principles__item">
+        <dt class="principles__term">Code-<span class="text-accent">first</span></dt>
+        <dd class="principles__desc">Suites, groups, tests, flows and steps are developed directly in Python.
+          Orcraft derives the GUI from the code, preserving a single source of truth across GUI, CLI and CI execution.</dd>
+      </div>
+      <div class="principles__item">
+        <dt class="principles__term">Code-<span class="text-accent">once</span></dt>
+        <dd class="principles__desc">Write a test suite once, then re-run it with different settings, endpoints or
+          dimensions - without touching the code.</dd>
+      </div>
+      <div class="principles__item">
+        <dt class="principles__term">Code-<span class="text-accent">only</span></dt>
+        <dd class="principles__desc">No JSON, no YAML, no configuration layers to maintain - everything is defined in Python,
+          including test configuration widgets in the GUI, generated dynamically from the code.</dd>
+      </div>
+    </dl>
+  </div>
+</section>
 
 <!-- Evaluation -->
-<section class="band band--tight">
+<section class="section--tight">
   <div class="container text-center">
   <h2 id="try-it-now" class="section__title section__title--caps">Try it now</h2>
   <div class="install">
@@ -24,45 +47,6 @@ key: home
   </div>
 </section>
 
-<!-- Headaches -->
-<section class="section--tight container">
-  <h2 id="headaches-solved" class="section__title section__title--caps"><span class="text-danger">Headaches</span>, <span class="text-success">solved</span></h2>
-  <ul class="solved" data-reveal-group aria-label="Testing headaches and how Orcraft solves them">
-    <li class="solved__head" aria-hidden="true">
-      <span><img class="solved__figure" src="/assets/images/headaches/headache.png" alt="" /></span>
-      <span><img class="solved__figure" src="/assets/images/headaches/solved.png" alt="" /></span>
-    </li>
-    <li class="solved__row reveal">
-      <span class="solved__pain"><span class="solved__mark">{% icon "mood-sad" %}</span>Writing a test suite from a blank page</span>
-      <span class="solved__fix"><span class="solved__mark">{% icon "mood-smile" %}</span>AI generates a structured, ready-to-run test suite from documentation.</span>
-    </li>
-    <li class="solved__row reveal">
-      <span class="solved__pain"><span class="solved__mark">{% icon "mood-sad" %}</span>Config files, scripts and plugins to maintain</span>
-      <span class="solved__fix"><span class="solved__mark">{% icon "mood-smile" %}</span>The Python suite is the whole config. The GUI is generated from it.</span>
-    </li>
-    <li class="solved__row reveal">
-      <span class="solved__pain"><span class="solved__mark">{% icon "mood-sad" %}</span>Copying tests and tools to every lab machine</span>
-      <span class="solved__fix"><span class="solved__mark">{% icon "mood-smile" %}</span>The controller uploads the packages and updates the endpoint.</span>
-    </li>
-    <li class="solved__row reveal">
-      <span class="solved__pain"><span class="solved__mark">{% icon "mood-sad" %}</span>Hand-written parameter combinations</span>
-      <span class="solved__fix"><span class="solved__mark">{% icon "mood-smile" %}</span>Dimensions expand one test into a planned case matrix.</span>
-    </li>
-    <li class="solved__row reveal">
-      <span class="solved__pain"><span class="solved__mark">{% icon "mood-sad" %}</span>GUI runs that behave differently in CI</span>
-      <span class="solved__fix"><span class="solved__mark">{% icon "mood-smile" %}</span>One suite. An exported snapshot reproduces the run exactly.</span>
-    </li>
-    <li class="solved__row reveal">
-      <span class="solved__pain"><span class="solved__mark">{% icon "mood-sad" %}</span>Tallying results by hand</span>
-      <span class="solved__fix"><span class="solved__mark">{% icon "mood-smile" %}</span>Statistics counts roll up automatically, from test case to suite.</span>
-    </li>
-    <li class="solved__row reveal">
-      <span class="solved__pain"><span class="solved__mark">{% icon "mood-sad" %}</span>Logs on every machine, results collected by hand</span>
-      <span class="solved__fix"><span class="solved__mark">{% icon "mood-smile" %}</span>One place: live logs, step-level results, spreadsheet export, AI analysis.</span>
-    </li>
-  </ul>
-</section>
-
 <!-- Product preview -->
 <section class="band">
   <div class="container container--wide">
@@ -73,57 +57,46 @@ key: home
         <img src="/assets/images/screenshots/home/build-tests.png"
           alt="Orcraft controller generating a test suite" loading="lazy" />
       </button>
-      <div class="card__heading">
-        <h3 id="develop-tests-ai-assisted" class="card__title">Develop tests</h3>
-        <div class="card__badges"><span class="badge badge--ai">AI-assisted</span><span class="badge badge--agent">AI agent</span></div>
-      </div>
-      <p class="card__text">Develop test suites manually based on the <a class="text-accent" href="/framework/">Framework</a> documentation, or generate a complete or partial suite using AI from the existing documentation sources of the system under test.</p>
+      <h3 id="develop-tests" class="card__title">Develop tests</h3>
+      <p class="card__text">Let an <a class="text-accent" href="/ai-agents/">AI agent</a> write the suite from the documentation of the system under test, in the structure of the <a class="text-accent" href="/framework/">Framework</a>. Or develop it manually from the Framework documentation.</p>
     </article>
     <article class="card card--panel reveal">
       <button class="card__shot" type="button" data-lightbox aria-label="Enlarge screenshot">
         <img src="/assets/images/screenshots/home/configure-run.png"
           alt="Orcraft run configuration for GUI, CLI and CI" loading="lazy" />
       </button>
-      <div class="card__heading">
-        <h3 id="configure-the-run" class="card__title">Configure the run</h3>
-        <div class="card__badges"><span class="badge badge--agent">AI agent</span></div>
-      </div>
-      <p class="card__text">Run with defaults from the CLI or CI. Or configure the run through GUI widgets auto-generated from the code, including target endpoints selection, with no additional configuration files, scripts or plugins to maintain. Or let an <a class="text-accent" href="/ai-agents/">AI agent</a> set the values in code.</p>
+      <h3 id="configure-the-run" class="card__title">Configure the run</h3>
+      <p class="card__text">Let an <a class="text-accent" href="/ai-agents/">AI agent</a> set the values in code: endpoints, parameters and dimensions. Or configure the run through GUI widgets auto-generated from the code, including target endpoints selection, with no additional configuration files, scripts or plugins to maintain. Or run with defaults from the CLI or CI.</p>
     </article>
     <article class="card card--panel reveal">
       <button class="card__shot" type="button" data-lightbox aria-label="Enlarge screenshot">
         <img src="/assets/images/screenshots/home/run-across-endpoints.png"
           alt="Orcraft controller running a session across endpoints" loading="lazy" />
       </button>
-      <div class="card__heading">
-        <h3 id="run-from-gui-cli-or-ci" class="card__title">Run from GUI, CLI or CI</h3>
-        <div class="card__badges"><span class="badge badge--agent">AI agent</span></div>
-      </div>
-      <p class="card__text">Execute entirely from the GUI, following the configurable test plan. Or confirm everything works from the GUI, then export the same working configuration to run unattended from the CLI or CI. Or tell an <a class="text-accent" href="/ai-agents/">AI agent</a> which machines to run on and let it configure the run, execute it and read the log.</p>
+      <h3 id="run-from-gui-cli-ci-or-ai-agent" class="card__title">Run from GUI, CLI, CI or AI agent</h3>
+      <p class="card__text">Tell an <a class="text-accent" href="/ai-agents/">AI agent</a> which machines to run on and let it configure the run, execute it and read the log. Or execute entirely from the GUI, following the configurable test plan. Or confirm everything works from the GUI, then export the same working configuration to run unattended from the CLI or CI.</p>
     </article>
     <article class="card card--panel reveal">
       <button class="card__shot" type="button" data-lightbox aria-label="Enlarge screenshot">
         <img src="/assets/images/screenshots/home/logs-and-results.png"
           alt="Orcraft test group results with per-endpoint detail" loading="lazy" />
       </button>
-      <div class="card__heading">
-        <h3 id="analyze-results-ai-assisted" class="card__title">Analyze results</h3>
-        <div class="card__badges"><span class="badge badge--ai">AI-assisted</span><span class="badge badge--agent">AI agent</span></div>
-      </div>
-      <p class="card__text">Structured reports down to the test step level, with spreadsheet export, then turned into an AI-assisted analysis: failures, recurring patterns across endpoints and versions, and recommended actions.</p>
+      <h3 id="analyze-results" class="card__title">Analyze results</h3>
+      <p class="card__text">Let an <a class="text-accent" href="/ai-agents/results/">AI agent</a> read the logs and report failures, recurring patterns across endpoints and versions, and recommended actions. Or read the structured reports down to the test step level in the GUI, export them to a spreadsheet, or export any scope for agents as a plain-text summary with its logs.</p>
     </article>
     </div>
   </div>
 </section>
 
 <!-- Core capabilities -->
-<section class="section container">
+<section class="section">
+  <div class="container">
   <h2 id="core-capabilities" class="section__title section__title--caps">Core capabilities</h2>
   <div class="capabilities">
     <article class="card card--feature">
       <span class="card__icon">{% icon "code" %}</span>
       <h3 id="test-development-framework" class="card__title">Test development framework</h3>
-      <p class="card__text"><a class="text-accent" href="/framework/#component-model">A defined structure</a>, generated by AI or written manually: suites, groups, tests, cases, flows and steps in plain Python.</p>
+      <p class="card__text"><a class="text-accent" href="/framework/#component-model">A defined structure</a>, written by an AI agent or by hand: suites, groups, tests, cases, flows and steps in plain Python.</p>
     </article>
     <article class="card card--feature">
       <span class="card__icon">{% icon "variable" %}</span>
@@ -138,7 +111,7 @@ key: home
     <article class="card card--feature">
       <span class="card__icon">{% icon "terminal-2" %}</span>
       <h3 id="gui-cli-ci" class="card__title">GUI + CLI + CI + AI agent</h3>
-      <p class="card__text"><a class="text-accent" href="/setup/">Run the same suites</a> from the controller, the command line, a CI pipeline or an <a class="text-accent" href="/ai-agents/">AI agent</a>.</p>
+      <p class="card__text">Develop with an <a class="text-accent" href="/ai-agents/">AI agent</a>, open the suite in the GUI to see that everything is right, <a class="text-accent" href="/setup/">export it to CI</a>, then let the AI agent do the work.</p>
     </article>
     <article class="card card--feature">
       <span class="card__icon">{% icon "world" %}</span>
@@ -158,7 +131,7 @@ key: home
     <article class="card card--feature">
       <span class="card__icon">{% icon "file-spreadsheet" %}</span>
       <h3 id="reports-and-export" class="card__title">Reports &amp; export</h3>
-      <p class="card__text">Analyze any run with AI, then export the results to <a class="text-accent" href="/tutorial/running-a-group/#group-details">structured spreadsheets</a> or portable session files.</p>
+      <p class="card__text">Export any scope to <a class="text-accent" href="/tutorial/running-a-group/#group-details">structured spreadsheets</a>, to portable session files, or for agents as a plain-text summary with its logs.</p>
     </article>
     <article class="card card--feature">
       <span class="card__icon">{% icon "history" %}</span>
@@ -170,6 +143,7 @@ key: home
       <h3 id="secure-connection" class="card__title">Secure connection</h3>
       <p class="card__text">Optional <a class="text-accent" href="/setup/endpoints/#secure-endpoint-connection">mTLS</a> between controller and endpoints, with token-based access control.</p>
     </article>
+  </div>
   </div>
 </section>
 
@@ -187,12 +161,14 @@ key: home
 </section>
 
 <!-- Supported platforms -->
-<section class="section container">
+<section class="section">
+  <div class="container">
   <h2 id="supported-on" class="band__title">Supported on</h2>
   <ul class="audience-list">
     <li><img class="os-icon" src="/assets/images/os/os_windows.png" alt="" />Windows</li>
     <li><img class="os-icon" src="/assets/images/os/os_linux.png" alt="" />Linux</li>
     <li><img class="os-icon" src="/assets/images/os/os_macos.png" alt="" />macOS</li>
   </ul>
+  </div>
 </section>
 </div>

@@ -1,7 +1,7 @@
 {
   "name": "Orcraft",
   "url": "https://orcraft.app",
-  "description": "A platform for AI-assisted test development and orchestration",
+  "description": "The platform that lets AI agents run your testing lab",
   "slogan": {
     "lead": "Testing,",
     "accent": "Solved."

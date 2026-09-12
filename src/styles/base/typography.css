@@ -71,6 +71,17 @@ small,
   text-shadow: 0 0 18px rgba(34, 211, 238, 0.35);
 }
 
+/* The AI agent highlight: the purple of the "AI agent" badge, so the masthead
+   and the "How it works" cards name the same actor in the same color. */
+.text-agent {
+  font-weight: 700;
+  background: linear-gradient(90deg, var(--color-purple), var(--color-accent-strong));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 18px rgba(167, 139, 250, 0.35);
+}
+
 code,
 pre {
   font-family: var(--font-mono);

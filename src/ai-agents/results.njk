@@ -58,3 +58,20 @@ description: "Where an Orcraft run writes its log, which tables an AI agent read
   explain a failure from its step and case, compare two runs of the same test on two machines, or
   summarize a batch. The result of a run started this way lives in this log only. It does not appear
   in the controller's history or in its details dialog.</p>
+
+<h2 id="export-for-agents">Export for Agents</h2>
+<p>Runs made from the controller can be handed to the AI agent the other way round. The details dialog
+  of any scope, from one test run to the whole session, has an <strong>Export for Agents</strong> button
+  beside the spreadsheet export. It writes one folder under the controller's <code>Agents</code> folder,
+  or in the folder chosen in its dialog, with:</p>
+<ul>
+  <li><code>summary.txt</code>: the scope's configuration and results as plain text, written
+    failure-first. A failed or errored row keeps its whole subtree of flows, steps and descriptions; a
+    passed row stays one line with its parameters and result fields, and the subtrees of passed cases
+    and passed setup and teardown stages are dropped. It ends with the list of runs in the scope and
+    where each log is in the folder.</li>
+  <li><code>logs/</code>: the log of every run the dialog shows, laid out as under the controller's
+    <code>Logs</code> folder, with the colour codes stripped so each file is plain text.</li>
+</ul>
+<p>The AI agent reads the folder like the log of a run it started itself: the same tables, the same
+  statuses. Nothing in the folder is a prompt or an instruction; what to ask about it is the request.</p>

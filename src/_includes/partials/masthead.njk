@@ -15,30 +15,54 @@
     #}
 
     <p class="lead lead--strong">
-      A platform for <strong class="text-ai">AI-assisted</strong> test development and orchestration
+      The platform that lets <strong class="text-agent">AI agents</strong> run your testing lab
     </p>
   </div>
 
-  {# Principles sit on the page background so the home page alternates from the very top. #}
+  {# The thesis sits on the page background so the home page alternates from the very top. #}
   <div class="masthead__principles">
     <div class="container">
-    <dl class="principles">
-      <div class="principles__item">
-        <dt class="principles__term">Code-<span class="text-accent">first</span></dt>
-        <dd class="principles__desc">Suites, groups, tests, flows and steps are developed directly in Python. 
-          Orcraft derives the GUI from the code, preserving a single source of truth across GUI, CLI and CI execution.</dd>
+      <div class="pillars" data-reveal-group>
+        <article class="pillar reveal">
+          <div class="pillar__head">
+            <span class="pillar__icon">{% icon "stack-2" %}</span>
+            <h3 id="test-suite-standardization" class="pillar__title">Test suite standardization</h3>
+          </div>
+          <p class="pillar__text">Every suite has the
+            <a class="text-accent" href="/framework/#component-model">same structure</a>: suites, groups, tests,
+            cases, flows and steps in plain Python, with configuration declared as fields. An AI agent writes it
+            without an API to learn, and the controller derives the GUI from it.</p>
+        </article>
+        <article class="pillar reveal">
+          <div class="pillar__head">
+            <span class="pillar__icon">{% icon "code" %}</span>
+            <h3 id="continuous-test-development" class="pillar__title">Continuous test development</h3>
+          </div>
+          <p class="pillar__text">The suite is written from the documentation of the system under test and grows with
+            it. As the system changes, the AI agent finds the features the suite does not cover yet and
+            <a class="text-accent" href="/ai-agents/#continuous-expansion">adds the missing tests</a>; every fixed
+            bug <a class="text-accent" href="/ai-agents/#bug-coverage">becomes a test</a>.</p>
+        </article>
+        <article class="pillar reveal">
+          <div class="pillar__head">
+            <span class="pillar__icon">{% icon "hierarchy" %}</span>
+            <h3 id="orchestration" class="pillar__title">Orchestration</h3>
+          </div>
+          <p class="pillar__text">The AI agent picks the machines from the controller's
+            <a class="text-accent" href="/ai-agents/endpoints/">endpoints file</a>, configures the run in code and
+            <a class="text-accent" href="/ai-agents/running/">runs it across the lab</a>. The controller uploads the
+            package to every endpoint and collects the logs and results in one place.</p>
+        </article>
+        <article class="pillar reveal">
+          <div class="pillar__head">
+            <span class="pillar__icon">{% icon "infinity" %}</span>
+            <h3 id="continuous-integration" class="pillar__title">Continuous integration</h3>
+          </div>
+          <p class="pillar__text">The same suite runs from the pipeline: a
+            <a class="text-accent" href="/framework/batches/">snapshot</a> exported from the GUI, or a batch the AI
+            agent writes on every merge. A run confirmed by hand and a run started by a pipeline are the same run.</p>
+        </article>
       </div>
-      <div class="principles__item">
-        <dt class="principles__term">Code-<span class="text-accent">once</span></dt>
-        <dd class="principles__desc">Write a test suite once, then re-run it with different settings, endpoints or
-          dimensions - without touching the code.</dd>
-      </div>
-      <div class="principles__item">
-        <dt class="principles__term">Code-<span class="text-accent">only</span></dt>
-        <dd class="principles__desc">No JSON, no YAML, no configuration layers to maintain - everything is defined in Python, 
-          including test configuration widgets in the GUI, generated dynamically from the code.</dd>
-      </div>
-    </dl>
     </div>
   </div>
 </header>

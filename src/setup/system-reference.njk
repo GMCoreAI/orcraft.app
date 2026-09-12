@@ -438,11 +438,6 @@ launchctl kickstart -k gui/$(id -u)/com.orcraft.endpoint", 'bash') }}
       <td>cryptography</td>
       <td>mTLS and token-based security</td>
     </tr>
-    <tr>
-      <td>anthropic, openai, google-genai</td>
-      <td>AI test generation and analysis - dormant until you configure a
-        <a class="text-accent" href="#ai-providers">provider</a></td>
-    </tr>
   </tbody>
 </table>
 
@@ -497,34 +492,6 @@ launchctl kickstart -k gui/$(id -u)/com.orcraft.endpoint", 'bash') }}
   </tbody>
 </table>
 
-<h3 id="ai-providers">AI providers</h3>
-<p>AI-assisted generation and analysis are optional. Endpoints never contact AI providers.</p>
-<table>
-  <thead>
-    <tr>
-      <th>Provider</th>
-      <th>What the controller needs</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>OpenAI</td>
-      <td>An API key and outbound HTTPS</td>
-    </tr>
-    <tr>
-      <td>Anthropic</td>
-      <td>An API key and outbound HTTPS</td>
-    </tr>
-    <tr>
-      <td>Google Gemini</td>
-      <td>An API key and outbound HTTPS</td>
-    </tr>
-    <tr>
-      <td>OpenAI-compatible gateway</td>
-      <td>A base URL, API key or OAuth client credentials, and outbound HTTPS</td>
-    </tr>
-  </tbody>
-</table>
 <p>Installing for the first time? Start with
   <a class="text-accent" href="/setup/prerequisites/">Prerequisites</a>, then
   <a class="text-accent" href="/setup/getting-started/">Getting started</a>.</p>

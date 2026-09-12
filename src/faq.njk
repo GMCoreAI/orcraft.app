@@ -23,10 +23,14 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
     <details class="faq__item">
       <summary class="faq__question"><h3 class="faq__title" id="what-is-orcraft">What is Orcraft?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
-        <p>Orcraft is a platform for developing and orchestrating tests. It has two halves: a plain-Python
+        <p>Orcraft is the platform that lets AI agents run your testing lab. It has two halves: a plain-Python
           <a class="text-accent" href="/framework/">test framework</a> that gives suites a defined structure, and
           a controller that runs those suites from a GUI, the command line or a CI pipeline, on the local machine
           or across remote endpoints, and collects the logs and results in one place.</p>
+        <p>An <a class="text-accent" href="/ai-agents/">AI agent</a> works with both halves. It writes suites in
+          the framework's structure, runs them on the machines registered in the controller and reads the logs
+          the runs leave behind. The person decides what to test, reviews what the AI agent wrote in the
+          controller GUI, runs it and corrects it.</p>
       </div>
     </details>
 
@@ -36,7 +40,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
         <p>Validation and engineering teams that test software, firmware or hardware on real machines: lab
           setups, devices under test, cross-platform automation and CI execution. If your tests need to run on
           more than one machine, be configured by people who did not write them, or produce results someone has
-          to report on, Orcraft is built for you.</p>
+          to report on, Orcraft is built for you. If you want an AI agent to do the developing, running and
+          reporting, and keep the GUI for review, Orcraft is built for that too.</p>
       </div>
     </details>
 
@@ -108,23 +113,40 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
     </details>
 
     <details class="faq__item">
-      <summary class="faq__question"><h3 class="faq__title" id="is-ai-required">Is AI required to use Orcraft?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <summary class="faq__question"><h3 class="faq__title" id="need-ai-agent">Do I need an AI agent to use Orcraft?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
-        <p>No. AI-assisted generation and analysis are optional and stay dormant until you configure a provider.
-          When enabled, the controller can generate a complete or partial suite from the documentation of the
-          system under test, and analyze a run for failures, recurring patterns and recommended actions. Everything
-          else works exactly the same without it.</p>
+        <p>No. Orcraft has no built-in AI, no AI provider to configure and no API key to enter. An
+          <a class="text-accent" href="/ai-agents/">AI agent</a> is one way to develop and run suites: it works
+          through the same framework and the same files as a person, and everything it writes opens in the
+          controller GUI. Without one, the GUI, the CLI and CI work exactly the same.</p>
       </div>
     </details>
 
     <details class="faq__item">
-      <summary class="faq__question"><h3 class="faq__title" id="ai-providers">Which AI providers are supported?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <summary class="faq__question"><h3 class="faq__title" id="which-ai-agents">Which AI agents work with Orcraft?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
-        <p>OpenAI, Anthropic, Google Gemini, and any OpenAI-compatible gateway, including private ones inside your
-          own network. Only the controller talks to the provider, and only when you ask it to. Endpoints never
-          contact AI providers. See the
-          <a class="text-accent" href="/setup/system-reference/#ai-providers">System reference</a> for what each
-          provider needs.</p>
+        <p>Any AI agent that can read a folder, write Python and run a command on the machine where the suites are cloned, such as Claude Code, OpenAI Codex or Gemini CLI. Nothing in Orcraft is specific to one agent: its inputs are a suite repository, the endpoints file saved from the controller and this documentation, and its output is ordinary Python files and a log. The <a class="text-accent" href="/ai-agents/inputs/">AI agent inputs</a> page has a template for the instructions file the agent reads at the start of every request.</p>
+      </div>
+    </details>
+
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="person-role">Where does the person fit in?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>The person decides what to test and asks for it. The AI agent writes the suite, runs it on the machines named and reads the log. Everything it writes is an ordinary suite, so the person opens it in the controller GUI, reviews it, runs it and corrects what needs correcting, then hands it back to the AI agent or to CI. Standing instructions, such as adding tests as the system changes or turning every fixed bug into a test, are given once and reviewed the same way, one commit at a time.</p>
+      </div>
+    </details>
+
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="agent-reaches-machines">How does an AI agent reach the lab machines?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>Through the same endpoint application the controller uses, and only the machines the team registered. The controller's Endpoints panel saves the registered machines to a file, and that file is the only list of machines the AI agent works from. A run started by the AI agent uses the same authorization token and certificates as the controller, as described in <a class="text-accent" href="/ai-agents/running/#remote-endpoints">Running a batch</a>, so an endpoint that accepts the controller accepts the AI agent and no other.</p>
+      </div>
+    </details>
+
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="agent-edits-tests">Can an AI agent change my tests when it runs them?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>No. To run a test the AI agent writes a separate file that subclasses it and redeclares the fields it needs, the same mechanism a CI snapshot uses, and keeps that file outside the suite repository. The test itself is not edited. When the request is to change a test, the AI agent edits the repository like a developer would, and the change is reviewed in the GUI or in the commit.</p>
       </div>
     </details>
 
@@ -152,8 +174,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       <div class="faq__answer">
         <p>Test traffic, logs and results stay between your controller and your endpoints. The controller makes
           two optional outbound calls, a version check against PyPI at startup and a status check for suites kept
-          in Git, and both fail quietly when the network is unavailable. AI providers are contacted only if you
-          configure one. Isolated machines can install from a copied wheel file.</p>
+          in Git, and both fail quietly when the network is unavailable. The controller contacts no AI provider.
+          Isolated machines can install from a copied wheel file.</p>
       </div>
     </details>
 
@@ -181,12 +203,22 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
     <h2 id="why-orcraft">Why teams choose Orcraft</h2>
 
     <details class="faq__item">
-      <summary class="faq__question"><h3 class="faq__title" id="ai-from-documentation">From documentation to a running suite, with AI</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <summary class="faq__question"><h3 class="faq__title" id="ai-agents-run-the-lab">A testing lab run by AI agents</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
-        <p>Point the controller at the existing documentation of the system under test and it generates a
-          complete or partial suite in the same plain-Python structure you would write by hand, ready to review
-          and run. After the run, the same AI analyzes the results for failures, recurring patterns across
-          endpoints and versions, and recommended actions. Both are optional, with the provider of your choice.</p>
+        <p>An AI agent can already write Python, read a log and run a command. What it lacks in a testing lab is
+          a structure to write tests in, a list of the machines it may use and a way to run on them. Orcraft
+          supplies all of that without an API to learn: a suite is plain Python with its configuration declared
+          as fields, the controller's <a class="text-accent" href="/ai-agents/endpoints/">endpoints file</a> is
+          the list of machines, and a run is a small file the AI agent
+          <a class="text-accent" href="/ai-agents/configuring/">writes and executes</a>.</p>
+        <p>With that in place the lab runs continuously. The AI agent creates the first suite from the
+          documentation of the system under test. As the system changes, it compares what the system does with what the
+          suite checks and adds the missing tests. Every bug that gets fixed becomes a test that reports the
+          bug's return. Every merge runs the suite from the pipeline on the lab machines. The
+          <a class="text-accent" href="/ai-agents/">AI Agents</a> section shows the requests and the standing
+          instructions that set this up.</p>
+        <p>The person stays in charge. Everything the AI agent writes is an ordinary suite that opens in the
+          controller GUI, where it is reviewed, run and corrected like any suite written by hand.</p>
       </div>
     </details>
 
@@ -202,11 +234,12 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
     </details>
 
     <details class="faq__item">
-      <summary class="faq__question"><h3 class="faq__title" id="team-runs">The developer writes, the whole team runs</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <summary class="faq__question"><h3 class="faq__title" id="team-runs">The AI agent or the developer writes, the whole team runs</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>Because the GUI is generated from the code, a lab technician or a tester who never opens the Python
-          can select endpoints, set parameters, filter a matrix and run the suite. The developer decides what is
-          configurable by declaring it; everyone else gets a form. Sessions and results are shared the same way.</p>
+          can select endpoints, set parameters, filter a matrix and run the suite. Whoever writes the suite, an AI
+          agent or a developer, decides what is configurable by declaring it; everyone else gets a form. Sessions
+          and results are shared the same way.</p>
       </div>
     </details>
 
@@ -234,8 +267,8 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       <div class="faq__answer">
         <p>Live logs from every endpoint, step-level statuses, statistics that roll up automatically from case
           to suite, spreadsheet export and portable session files. Sessions are saved, reopened later and
-          re-executed with the same plan. With an AI provider configured, a run can be analyzed for failures,
-          recurring patterns across endpoints and versions, and recommended actions.</p>
+          re-executed with the same plan. Any scope can also be exported for agents: a plain-text summary of
+          its results with the logs of its runs, in one folder for an AI agent to analyze.</p>
       </div>
     </details>
 
@@ -339,6 +372,13 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
       </div>
     </details>
 
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="vs-agent-scripts">Why not let an AI agent write plain scripts?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>An AI agent can write a script for anything, and a lab full of scripts is what teams end up maintaining. Orcraft gives the AI agent a structure to write into, so every suite it produces has the same shape, the same configuration fields and the same results, whoever asked for it and whenever. That structure is also what the controller reads: a suite written by an AI agent gets a GUI, endpoint selection, a case matrix, live logs and roll-up statistics without any of that being written. A script gets none of it.</p>
+      </div>
+    </details>
+
     <h2 id="getting-started">Getting started</h2>
 
     <details class="faq__item">
@@ -347,6 +387,13 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
         <p>Minutes. Install Python, run <code>pip install orcraft</code>, start the controller and run the
           Hello World suite from the <a class="text-accent" href="/tutorial/">Tutorial</a> on localhost. Remote
           endpoints, matrices and CI come later, one chapter at a time.</p>
+      </div>
+    </details>
+
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="start-with-ai-agent">How do I start with an AI agent?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>Install Orcraft, register the lab machines in the controller and save the endpoints file from the Endpoints panel. Clone the suite repositories, or start with none, into the folder the AI agent works from, and put the instructions file from the <a class="text-accent" href="/ai-agents/inputs/">AI agent inputs</a> page beside them. Then make the first request: create a suite from the documentation of the system under test, or run an existing test on the machines you name. The <a class="text-accent" href="/ai-agents/">AI Agents</a> overview lists example requests for every kind of work.</p>
       </div>
     </details>
 
