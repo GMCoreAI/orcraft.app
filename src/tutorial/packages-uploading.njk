@@ -1,0 +1,180 @@
+---
+title: Tutorial · Packages Uploading
+key: tutorial
+description: "How the suite's code and a test's data files reach the endpoints: the upload policies, the package field types, and binding a field to the endpoints that need it."
+---
+{% import "partials/copy-command.njk" as cmd %}
+{% import "partials/code-block.njk" as codeblock %}
+{% import "partials/zoomable-image.njk" as media %}
+<h1>Packages Uploading</h1>
+<p>A step that runs on an endpoint needs two things on that machine: the suite's code, so the step can be executed
+	there at all, and whatever files the step works on. Orcraft moves both for you before the run, and calls what it
+	moves a <strong>package</strong>. The suite itself is the <strong>test package</strong>, uploaded as a whole. A
+	file or folder that a test needs is declared as a <strong>package field</strong>, a configuration field whose
+	value is uploaded along with the code and rewritten, inside the step, to the path where it landed.</p>
+<p>Uploading is governed by policies, so a run is neither slowed by re-sending what a machine already has nor
+	broken by a machine that misses something:</p>
+<ul>
+	<li><strong>Always</strong> uploads before every run. It is the safe choice while the suite or the files are
+		still changing.</li>
+	<li><strong>If Missing</strong> uploads only when the endpoint does not already hold an identical copy. This is
+		the default, and the usual choice once things are stable.</li>
+	<li><strong>Never</strong> uploads nothing and expects the endpoint to have the files already.</li>
+</ul>
+<p>The endpoint application is a package of a kind too. Its version on each machine is compared with the
+	controller's, and the <strong>Update Endpoint App</strong> row decides whether it is brought up to date before
+	the run: <strong>On Mismatch</strong> by default, <strong>Always</strong>, or <strong>Never</strong>. This is
+	how a whole lab follows a controller upgrade without anyone logging in to the machines.</p>
+<p>This page follows the uploads of two tests of the <strong>Endpoints</strong> group. The first,
+	<strong>Default Endpoint and Package Upload</strong> from
+	<a class="text-accent" href="/tutorial/endpoints-config-types/">the previous page</a>, shows the test package
+	and one package folder arriving on a machine. The second, <strong>Package Upload Parameter Types</strong>,
+	declares every package field type and binds each to the endpoints that need it.</p>
+
+<h2 id="the-test-package">The test package</h2>
+<p>Source directory:</p>
+{{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_endpoints/test_default_endpoint_and_package_upload/") }}
+<p>Select <strong>Default Endpoint and Package Upload</strong> with <strong>Test Endpoint</strong> still set to
+	the Linux machine. Set <strong>Upload Test Package</strong> to <strong>Always</strong> so the upload is visible
+	on every run, click <strong class="text-accent">Update Plan</strong>, then <strong class="text-purple">Run</strong>
+	and confirm. Search the log for <code>package</code>:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/packages-uploading/package-upload-in-log.png", "Log of the Default Endpoint and Package Upload run showing the configuration table with Upload Test Package always, a Lock acquired line for GMG-TEST-3, a progress bar uploading the orcraft-test-suite-tutorial package, and a second one uploading the v3.0.0 package folder", "large") }}
+<p>The run starts by taking the endpoint for itself, the <strong>Lock acquired</strong> line, and then uploads.
+	The first progress bar sends <code>orcraft-test-suite-tutorial</code>, the suite's code, and the second sends
+	<code>v3.0.0</code>, the <strong>Maze Executable Folder</strong>. Each upload ends with an
+	<strong>Uploaded and activated</strong> line. With <strong>If Missing</strong> the same lines would read
+	<em>Existing remote package already active</em> on the second run, because the endpoint keeps what it received
+	and recognizes an identical copy by its content.</p>
+<p>The suite is uploaded as a whole, not test by test, so a step can import the suite's shared modules on the
+	endpoint exactly as it does on the controller. The Maze folder is uploaded because the field that names it is a
+	<code>PackageFolder</code>, not a plain <code>Folder</code>; a plain folder field would hand the step a path
+	that exists only on the controller.</p>
+
+<h2 id="package-field-types">Package field types</h2>
+<p>Source directory:</p>
+{{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_endpoints/test_package_upload_parameter_types/") }}
+<p>There is a package field for each shape a test's inputs can take: a single file, a single folder, a list of
+	files and a list of folders. Each is the uploading counterpart of a filesystem field from the
+	<a class="text-accent" href="/tutorial/basic-configuration-parameters-group/">Basic Configuration
+	Parameters</a> group, with the same Browse dialog and the same value type:</p>
+<ul>
+	<li><code>PackageFile</code> uploads one file.</li>
+	<li><code>PackageFolder</code> uploads one folder with everything in it.</li>
+	<li><code>PackageFileList</code> uploads any number of files.</li>
+	<li><code>PackageFolderList</code> uploads any number of folders.</li>
+</ul>
+<p>Without further instruction a package field is uploaded to every endpoint the test uses. That is fine for a
+	small binary and wasteful for a large data set that only one machine reads, so a field can be bound to the
+	endpoint fields that actually need it with the <code>endpoints</code> option.
+	<strong>Package Upload Parameter Types</strong> declares four endpoint fields, one of each kind seen on the
+	previous page, and one package field of each type, each bound differently:</p>
+{{ codeblock.block('test_endpoint = OrcraftConfigField.Endpoint(default="localhost", label="Test Endpoint")
+endpoint_1 = OrcraftConfigField.EndpointFanout(default=("localhost",), label="Endpoint 1")
+endpoint_2 = OrcraftConfigField.Endpoint(default="localhost", label="Endpoint 2")
+aux_endpoints = OrcraftConfigField.MultiSelectEndpoints(default=("localhost",), label="Aux Endpoints")
+
+maze_executable_folder = OrcraftConfigField.PackageFolder(
+	default="",
+	label="Maze Executable Folder",
+	required=True,
+	layout=OrcraftConfigField.Layout.NewRow,
+)
+
+maze_file = OrcraftConfigField.PackageFile(
+	default="",
+	label="Maze File",
+	required=True,
+	layout=OrcraftConfigField.Layout.NewRow,
+	endpoints=[endpoint_1],
+)
+
+maze_files = OrcraftConfigField.PackageFileList(
+	default=(),
+	label="Maze Files",
+	required=True,
+	layout=OrcraftConfigField.Layout.NewRow,
+	endpoints=[endpoint_2],
+)
+
+maze_folders = OrcraftConfigField.PackageFolderList(
+	default=(),
+	label="Maze Folders",
+	required=True,
+	layout=OrcraftConfigField.Layout.NewRow,
+	endpoints=[test_endpoint, aux_endpoints],
+)') }}
+<p>The <strong>Maze Executable Folder</strong> has no <code>endpoints</code> option and goes everywhere, because
+	every step runs the application. The single <strong>Maze File</strong> goes only to the fan-out endpoints, the
+	<strong>Maze Files</strong> only to <strong>Endpoint 2</strong>, and the <strong>Maze Folders</strong> to the
+	test endpoint and the multi-select set. A binding names endpoint fields, not machines, so it holds whatever
+	machines are chosen later.</p>
+
+<h3 id="configuring-the-uploads">Configuring the uploads</h3>
+<p>Select the test. Set the Windows machine as <strong>Test Endpoint</strong>, the Linux machine as
+	<strong>Endpoint 1</strong> and as the single <strong>Aux Endpoints</strong> entry, and the macOS machine as
+	<strong>Endpoint 2</strong>. Then browse the package fields: the <code>v3.0.0</code> folder as before, its
+	<code>maze.json</code> as the <strong>Maze File</strong>, <code>maze2.json</code> and <code>maze3.json</code>
+	as the <strong>Maze Files</strong>, and the <code>v2.0.0</code> and <code>v1.0.0</code> folders as the
+	<strong>Maze Folders</strong>:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/packages-uploading/package-parameter-types-config.png", "Package Upload Parameter Types run panel with four endpoint fields set to GMG-TEST-1, GMG-TEST-3, GMG-TEST-5 and GMG-TEST-3, and four package fields each showing an Endpoints line reading All, Endpoint 1 (Fanout), Endpoint 2, or Test Endpoint and Aux Endpoints (Multi-Select), with an Upload choice of If Missing", "large") }}
+<p>Every package field carries two things a plain filesystem field does not. The <strong>Endpoints</strong> line
+	states the binding as declared, <strong>All</strong> for the unbound folder and the field names for the others.
+	The <strong>Upload</strong> choice is the field's own policy, separate from the test package's: a large data set
+	can stay on <strong>If Missing</strong> while the code is set to <strong>Always</strong>.</p>
+
+<h3 id="the-uploads-in-the-log">The uploads in the log</h3>
+<p>Click <strong class="text-accent">Update Plan</strong>, <strong class="text-purple">Run</strong>, and confirm.
+	When the run finishes, search the log for <code>Lock acquired</code>:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/packages-uploading/package-fields-upload-in-log.png", "Log of the Package Upload Parameter Types run showing the locks acquired on GMG-TEST-1, GMG-TEST-3 and GMG-TEST-5, the package upload running on the three endpoints in parallel, the test package uploaded to each, the v3.0.0 package already active on all three, and the v2.0.0 and v1.0.0 package already active on GMG-TEST-3 and GMG-TEST-1 only", "large") }}
+<p>The three machines are locked together, because the run uses all of them at once, and the uploads run on
+	them in parallel. The test package is sent to every machine, as <strong>Always</strong> demands. The other
+	lines read <em>already active</em>, because these files were uploaded by the earlier runs of this page and their
+	fields are on <strong>If Missing</strong>. Where they appear is the binding made visible: the
+	<code>v3.0.0</code> package is checked on all three machines, and the <code>v2.0.0, v1.0.0</code> package only on
+	<strong>GMG-TEST-3</strong> and <strong>GMG-TEST-1</strong>, the machines behind <strong>Aux Endpoints</strong>
+	and <strong>Test Endpoint</strong>.</p>
+<p>The maze files have no line of their own. Package fields whose files lie in the same folder are uploaded
+	together as one package, and the three maze files live inside the <code>v3.0.0</code> executable folder, so
+	they travel with it. Their bindings still hold: the package sent to <strong>GMG-TEST-5</strong> carries
+	<code>maze2.json</code> and <code>maze3.json</code> but not <code>maze.json</code>, which only
+	<strong>GMG-TEST-3</strong> receives.</p>
+
+<h3 id="using-uploaded-paths">Using uploaded paths</h3>
+<p>Inside a step the package field holds the path on the machine the step is running on, not the path browsed on
+	the controller. The step that solves the single uploaded file therefore checks the file exists and uses it
+	directly:</p>
+{{ codeblock.block('def _run_step(self) -> OrcraftTestStepResult:
+	self.result = StepSolveUploadedFileResult()
+
+	maze_file = normalize_long_path(self.config.maze_file)
+
+	self.checkpoint(
+		bool(maze_file) and os.path.exists(maze_file),
+		f"Uploaded maze file exists: {maze_file}",
+		f"Uploaded maze file is missing: {maze_file}",
+	)
+
+	if not (maze_file and os.path.exists(maze_file)):
+		return self.result
+
+	result = MazeApp(
+		normalize_long_path(self.config.maze_executable_folder),
+		"solve",
+		maze_file=maze_file,
+	).run()
+
+	self.result.path_found = result.solved') }}
+<p>The flow sends this step to each fan-out endpoint, the file list step to <strong>Endpoint 2</strong> and the
+	folder list step to the test endpoint, which is exactly where the fields were bound. The folder list step runs
+	each uploaded version's own executable, so the <code>v2.0.0</code> and <code>v1.0.0</code> binaries are
+	exercised on the Windows machine with no copy of them made by hand.</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/packages-uploading/running-package-parameter-types.png", "Completed Package Upload Parameter Types run with the test row naming three endpoints and a passing status, and the log ending with the Solve Uploaded Folder List step reporting two versions solved, the flow reporting five mazes solved, and the locks released on all three machines", "large") }}
+<p>The end of the log sums it up: two versions solved by the folder list step, five mazes solved in all, and the
+	three locks released. Open the run's Details:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/packages-uploading/package-parameter-types-details.png", "Package Upload Parameter Types Details view with the three steps of the flow marked GMG-TEST-3, GMG-TEST-5 and GMG-TEST-1 in the Endpoints column, and the configuration table listing the four endpoint fields and the four package fields with their plan and run values", "large") }}
+<p>Each of the three steps ran on the machine its package field was bound to, and the configuration table keeps
+	the browsed paths of every package field next to the endpoints they were sent to.</p>
+
+<p>Every step so far ran to completion before the next one started. The next page,
+	<a class="text-accent" href="/tutorial/asynchronous-steps/">Handling Asynchronous Steps</a>, starts work on an
+	endpoint and comes back for its result later.</p>
