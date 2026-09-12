@@ -93,7 +93,7 @@ description: "The Execution tab is where a session is composed, planned and run:
 <p>Select the <strong>Basic Configuration Parameters</strong> group and click <strong>Unplan</strong>. The
 	controller asks for confirmation, then greys the group and its tests, and their plan drops to zero. The
 	suite's plan and the session's plan lose the same nine cases:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/unplanned-group.png", "Execution tree with the Basic Configuration Parameters group and its tests greyed out, their Plan column reading 0, the Orcraft Tutorial suite at 273 and the session at 401", "large") }}
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/unplanned-group.png", "The Test Explorer with its chips and the tree with the Basic Configuration Parameters group and its tests greyed out, their Plan column reading 0, the Orcraft Tutorial suite at 273 and the session at 401", "large") }}
 <p>The group's action frame changes with its state. Unplan gives way to <strong>Plan</strong>, and Configure is
 	gone, because there is nothing to configure for a run that will not happen:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/action-frame-unplanned.png", "Action frame of the unplanned Basic Configuration Parameters group with only the Plan and Details buttons", "large") }}
@@ -116,9 +116,9 @@ description: "The Execution tab is where a session is composed, planned and run:
 	the tree to those tests and combines with the status chips; the CI page shows it on a loaded batch.</p>
 <p>The round <strong>level chips</strong> collapse the tree to one level. <strong>G</strong> keeps the suites
 	open and folds every group, which is the view used to pick groups for an export:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/level-groups.png", "The tree collapsed to group level: the Orcraft Tutorial and Demo suites open showing their groups folded, then the Structure and Lifecycle group item and the Hello World test item", "large") }}
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/level-groups.png", "The Test Explorer with the Not Run and All chips and the level chips above the tree collapsed to group level: the Orcraft Tutorial and Demo suites open showing their groups folded, then the Structure and Lifecycle group item and the Hello World test item", "large") }}
 <p><strong>S</strong> folds the suites as well, leaving one row per top-level item:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/level-suites.png", "The tree collapsed to suite level: the Orcraft Tutorial suite, the Demo suite, the Structure and Lifecycle group and the Hello World test as four rows", "large") }}
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/level-suites.png", "The Test Explorer with its chips above the tree collapsed to suite level: the Orcraft Tutorial suite, the Demo suite, the Structure and Lifecycle group and the Hello World test as four rows", "large") }}
 <p><strong>T</strong> opens every container and folds the tests over their run rows, and a <strong>B</strong> chip
 	appears when a batch is loaded. A chip is shown only when the tree has rows of its kind. The
 	<strong>&minus;</strong> and <strong>+</strong> buttons at the end collapse and expand everything.</p>
@@ -130,9 +130,9 @@ description: "The Execution tab is where a session is composed, planned and run:
 	ended and when. The two buttons after the <strong>Test Explorer</strong> title switch each set on and off,
 	so the tree can show only the one that matters at the moment. With the Cases Summary hidden, the run rows
 	get the room:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/columns-without-summary.png", "The tree showing only the Endpoints, Status, Start Time, Finish Time and Elapsed columns, with the three run rows reading localhost, their statuses and their times", "large") }}
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/columns-without-summary.png", "The Test Explorer with its chips and the tree showing only the Endpoints, Status, Start Time, Finish Time and Elapsed columns, with the three run rows reading localhost, their statuses and their times", "large") }}
 <p>With the Status set hidden instead, the tree becomes a table of counts:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/columns-without-status.png", "The tree showing only the Plan, Done, Pass, Fail, Progress % and Pass % columns for every row", "large") }}
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/columns-without-status.png", "The Test Explorer with its chips and the tree showing only the Plan, Done, Pass, Fail, Progress % and Pass % columns for every row", "large") }}
 <p>Both switches are a matter of display. The tree keeps counting and recording either way, and the
 	<a class="text-accent" href="/tutorial/details-dialog/">Details dialog</a> holds the full record of every run
 	whatever the columns show.</p>
