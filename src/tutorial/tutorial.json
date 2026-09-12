@@ -15,6 +15,7 @@
     { "label": "Lambda Configuration Parameters", "slug": "lambda-configuration-parameters/" },
     { "label": "Matrix and Cases", "slug": "matrix-and-cases/" },
     { "label": "Filtering Matrix Dimensions", "slug": "filtering-matrix-dimensions/" },
-    { "label": "Matrix Cases Exclusion", "slug": "matrix-cases-exclusion/" }
+    { "label": "Matrix Cases Exclusion", "slug": "matrix-cases-exclusion/" },
+    { "label": "Matrix Dimensions Randomization", "slug": "matrix-dimensions-randomization/" }
   ]
 }

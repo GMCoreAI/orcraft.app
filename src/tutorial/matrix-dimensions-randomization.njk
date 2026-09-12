@@ -1,0 +1,158 @@
+---
+title: Tutorial · Matrix Dimensions Randomization
+key: tutorial
+description: "Let matrix dimensions draw their values at random while the case count stays fixed, and redraw or re-specify them from the controller."
+---
+{% import "partials/copy-command.njk" as cmd %}
+{% import "partials/code-block.njk" as codeblock %}
+{% import "partials/zoomable-image.njk" as media %}
+<h1>Matrix Dimensions Randomization</h1>
+<p>A dimension does not have to list its values. It can describe how to draw them instead: a few numbers from a
+	range, a few entries from a pool, or a few strings built from a character set. This page follows
+	<a class="text-accent" href="/tutorial/matrix-cases-exclusion/">Matrix Cases Exclusion</a> and uses the
+	<strong>Matrix Dimensions Randomization</strong> test of the <strong>Advanced Configuration Parameters</strong>
+	group.</p>
+<p>What stays fixed is the <em>number</em> of values each dimension contributes. The matrix therefore produces the
+	same number of cases on every configuration, which is what lets the controller plan a randomized test the way it
+	plans any other, while the values themselves change from one draw to the next.</p>
+<p>Select the <strong>Matrix Dimensions Randomization</strong> test and set its <strong>Maze Executable
+	Folder</strong>:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/matrix-dimensions-randomization/matrix-dimensions-randomization-config.png", "Matrix Dimensions Randomization run panel reporting Total Cases 48, with the seed, height, width_ratio and illegal_arg column headers marked with a dice icon and filled with drawn values", "large") }}
+<p>The panel reports <strong>Total Cases: 48</strong>. Four of the six column headers, <strong>seed</strong>,
+	<strong>height</strong>, <strong>width_ratio</strong> and <strong>illegal_arg</strong>, carry a dice icon: these
+	dimensions drew their values when the panel was built. Here <strong>seed</strong> drew <code>100</code> and
+	<code>2024</code> from its pool, <strong>height</strong> drew <code>15</code> and <code>9</code>,
+	<strong>width_ratio</strong> drew two floating-point numbers and <strong>illegal_arg</strong> drew
+	<code>GM</code> and <code>G</code>. Another panel would show other values, but always two per dimension.</p>
+
+<h2 id="defining-random-dimensions">Defining random dimensions</h2>
+<p>Source directory:</p>
+{{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_advanced_configuration_parameters/test_matrix_dimensions_randomization/") }}
+<p>The random dimensions are declared with the
+	<a class="text-accent" href="/framework/matrix/#dimensions"><code>Dimension</code></a> class methods, next to two
+	ordinary dimensions that list their values:</p>
+{{ codeblock.block('matrix = OrcraftConfigField.Matrix(
+	OrcraftConfigField.Dimension(label="command", values=("generate", "solve")),
+	OrcraftConfigField.Dimension(label="algorithm", values=(None, "BFS")),
+	OrcraftConfigField.Dimension.random_choice(label="seed", values=(1, 7, 42, 100, 2024), size=2),
+	OrcraftConfigField.Dimension.random(label="height", min_value=5, max_value=15, size=2),
+	OrcraftConfigField.Dimension.random(label="width_ratio", min_value=1.5, max_value=2.0, size=2),
+	OrcraftConfigField.Dimension.random_string(label="illegal_arg", min_length=1, max_length=2, size=2, charset=" MG"),
+
+	random_order=True,
+
+	exclude=[
+		lambda case: case.params["command"] == "generate" and case.params["algorithm"] is not None,
+	],
+)') }}
+<p>Each constructor describes a draw and the <code>size</code> of it:</p>
+<ul>
+	<li><code>random_choice</code> takes <code>size</code> values from the <code>values</code> pool, without
+		repeating one.</li>
+	<li><code>random</code> takes <code>size</code> numbers from the inclusive range between <code>min_value</code>
+		and <code>max_value</code>. Integer bounds give integers, as for <strong>height</strong>; floating-point bounds
+		give floating-point numbers, as for <strong>width_ratio</strong>.</li>
+	<li><code>random_string</code> takes <code>size</code> strings whose length lies between <code>min_length</code>
+		and <code>max_length</code>, built from <code>charset</code>. A single <code>length</code> can be given
+		instead of the two bounds, and without a <code>charset</code> letters and digits are used.</li>
+</ul>
+<p>The declaration fixes the case count. Two commands, two algorithms and four dimensions of two values give
+	<code>2 × 2 × 2 × 2 × 2 × 2 = 64</code> combinations, and the <a class="text-accent" href="/tutorial/matrix-cases-exclusion/">exclusion rule</a>
+	removes the sixteen <code>generate</code> cases that name an algorithm, leaving 48. The rule refers only to the
+	two listed dimensions, so it removes the same sixteen cases whatever the random dimensions draw and the count
+	stays 48. A rule that looked at a random value could remove a different number of cases on each draw, and the
+	panel warns about that combination. The <code>random_order</code> option is covered
+	<a class="text-accent" href="#run-order">below</a>.</p>
+
+<h3 id="using-the-drawn-values">Using the drawn values</h3>
+<p>The drawn values reach <code>_run_case</code> through <code>case.params</code> like any other dimension value.
+	The test derives the maze width from the height and the ratio, and appends the random string to the command:</p>
+{{ codeblock.block('def _run_case(self, case: OrcraftTestCase):
+
+	maze_app = MazeApp(
+		self.config.maze_executable_folder,
+		(case.params["command"] + case.params["illegal_arg"]).strip(),
+		width=round(case.params["height"] * case.params["width_ratio"]),
+		height=case.params["height"],
+		seed=case.params["seed"],
+		algorithm=case.params["algorithm"],
+	)
+
+	maze_app.run()
+
+	return case.result') }}
+<p>A command such as <code>generateGM</code> is not one the Maze application knows, and its complaint appears in the
+	case log. The case still passes, because this test only exercises the values and checks nothing. Turning an
+	application's answer into a case status is the subject of the <strong>Statuses and Results</strong> group later in
+	the tutorial.</p>
+
+<h2 id="the-random-configuration">The random configuration</h2>
+<p>Click the <strong>seed</strong> column header. The <strong>Dimension Filter</strong> dialog introduced in
+	<a class="text-accent" href="/tutorial/filtering-matrix-dimensions/">Filtering Matrix Dimensions</a> opens, but
+	for a random dimension its lower half, <strong>Random Configuration</strong>, is where the dimension is
+	defined:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/matrix-dimensions-randomization/random-choice-dialog.png", "Dimension Filter dialog for the seed dimension listing the drawn values 100 and 2024, with Random Configuration set to Random Choice, the values pool 1, 7, 42, 100, 2024 and a size of 2", "large") }}
+<p><strong>Mode</strong> reads <strong>Random Choice</strong>, <strong>Values</strong> holds the pool declared in the
+	source and <strong>Size</strong> the number of values to draw. The list above shows the two values this draw
+	produced, both checked. <strong>Select All</strong> and <strong>Clear All</strong> are disabled and the
+	<strong>Add value</strong> field is absent: the list is the result of the draw, not a set of choices to narrow.</p>
+<p>The <strong>height</strong> dimension shows the numeric form of the same dialog:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/matrix-dimensions-randomization/random-number-dialog.png", "Dimension Filter dialog for the height dimension listing the drawn values 15 and 9, with Random Configuration set to Random Number, Min 5, Max 15 and a size of 2", "large") }}
+<p><strong>Random Number</strong> exposes the <strong>Min</strong> and <strong>Max</strong> bounds and the
+	<strong>Size</strong>. The <strong>illegal_arg</strong> dimension shows the string form:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/matrix-dimensions-randomization/random-string-dialog.png", "Dimension Filter dialog for the illegal_arg dimension listing the drawn values G and GM, with Random Configuration set to Random String, a length between 1 and 2, a size of 2 and the charset MG", "large") }}
+<p><strong>Random String</strong> exposes <strong>Min Length</strong>, <strong>Max Length</strong>,
+	<strong>Size</strong> and <strong>Charset</strong>. The charset declared in the source is <code>" MG"</code> with
+	a leading space; the strings are stripped of it in <code>_run_case</code>, which is how a draw can also produce a
+	plain <code>generate</code> with no suffix at all.</p>
+
+<h3 id="drawing-again">Drawing again</h3>
+<p>The specification is the configuration. The values it happened to draw are not, so a run does not draw new
+	values by itself: the values on the panel are the values the run uses, and a second run of the same panel uses
+	them again. To draw again, open the dimension's dialog and click <strong class="text-accent">Apply</strong> or
+	<strong>OK</strong>, even with nothing changed. The dimension is drawn afresh, the case table is rebuilt around
+	the new values and the plan is marked as changed until <strong class="text-accent">Update Plan</strong> commits
+	it.</p>
+
+<h3 id="changing-the-specification">Changing the specification</h3>
+<p>Every field of the <strong>Random Configuration</strong> group can be edited for this configuration. Set the
+	<strong>seed</strong> dimension's <strong>Size</strong> to <code>3</code> and click <strong>OK</strong>:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/matrix-dimensions-randomization/seed-size-three.png", "Matrix Dimensions Randomization run panel after drawing three seeds, reporting Total Cases 72 with the seed column header and the Total Cases counter marked as changed", "large") }}
+<p>Three seeds instead of two make <strong>Total Cases: 72</strong>, and both the <strong>seed</strong> header and
+	the counter carry the <code>🔸</code> badge because the panel no longer matches the committed plan. The
+	<strong>Mode</strong> itself can be changed too, so a dimension declared with a pool can be re-specified as a
+	numeric range from the controller, and <strong>Disabled</strong> turns the dimension back into a plain list of
+	the values currently drawn. <strong>Reset to Defaults</strong> inside the dialog restores the declared
+	specification, and the panel's own <strong>Reset To Defaults</strong> restores every dimension at once.</p>
+
+<h3 id="run-order">Run order</h3>
+<p>The <strong>Run Order</strong> control above the case table decides the order in which the selected cases run.
+	<strong>In Order</strong> runs them by case number. <strong>Random (New)</strong> shuffles them with a fresh seed,
+	and the <strong>Order</strong> column shows the position each case will take. Once a shuffled run exists,
+	<strong>Random (Last)</strong> repeats its order. The matrix declares <code>random_order=True</code> to ask for a
+	shuffled order by default; the value is part of the
+	<a class="text-accent" href="/framework/matrix/#matrix-options">matrix options</a>, together with the seed options
+	that make a shuffled run reproducible.</p>
+
+<h2 id="running-the-drawn-cases">Running the drawn cases</h2>
+<p>With the declared specification in place, click <strong class="text-accent">Update Plan</strong>, then
+	<strong class="text-purple">Run</strong> and confirm with <strong>Yes</strong>. The test reports 48 planned, done
+	and passed cases, and the log's result table records the drawn value of every dimension for every case:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/matrix-dimensions-randomization/running-matrix-dimensions-randomization-test.png", "Completed Matrix Dimensions Randomization run with all 48 cases passing and the log listing the drawn seed, height, width_ratio and illegal_arg of each case", "large") }}
+<p>The log is what makes a random run reproducible after the fact. A case that fails in a soak run can be re-run by
+	hand with the exact values the table shows, and the full floating-point value of <strong>width_ratio</strong>
+	appears here even where the panel had to truncate it.</p>
+
+<h3 id="inspecting-the-run">Inspecting the run</h3>
+<p>Click <strong>Details</strong> for the completed run. The configuration panel on the left has a
+	<strong>Random Dimensions</strong> table that records the specification of each random dimension, with its
+	default, planned and run values side by side: the mode, the pool or range, the length bounds, the size and the
+	charset. The listed dimensions keep their own table below it:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/matrix-dimensions-randomization/matrix-dimensions-randomization-details.png", "Matrix Dimensions Randomization Details view with a Random Dimensions table recording the mode, pool, range, size and charset of each random dimension for the default, plan and run, and a results tree with 48 passing cases", "large") }}
+<p>The dialog records the specification because that is what was configured. The values the run drew are in the case
+	table further down and in the log, so both halves of a random run, the rule and the outcome, can be inspected
+	later.</p>
+
+<p>The values on this page are drawn by the framework. A dimension can also obtain its values from a function the
+	test supplies, which is what
+	<a class="text-accent" href="/tutorial/matrix-lambda-dimensions/">Matrix Lambda Dimensions</a> covers next.</p>
