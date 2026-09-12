@@ -1,0 +1,102 @@
+---
+title: Tutorial · Checkpoints
+key: tutorial
+description: "Check several things in one case with checkpoints, read both outcomes in the log, and see how one failing check marks the case."
+---
+{% import "partials/copy-command.njk" as cmd %}
+{% import "partials/code-block.njk" as codeblock %}
+{% import "partials/zoomable-image.njk" as media %}
+<h1>Checkpoints</h1>
+<p>A <a class="text-accent" href="/framework/statuses/#checkpoints">checkpoint</a> is the framework's assertion.
+	It takes a condition and a message for each outcome, logs the outcome either way, and moves the case to
+	<strong class="status-fail">FAIL</strong> when the condition does not hold. The
+	<a class="text-accent" href="/tutorial/orcraft-statuses/">Status tests</a> set a status from a single
+	observation; the <strong>Checkpoints</strong> test of the same <strong>Statuses and Results</strong> group checks
+	several distinct things about every run of the Maze application and records each check on its own.</p>
+<p>Select the <strong>Checkpoints</strong> test and set its <strong>Maze Executable Folder</strong>. Its matrix is
+	the one the Status tests use: a valid and a misspelt command, two heights, and start coordinates that are either
+	valid or out of bounds, 16 cases in all. Click <strong class="text-accent">Update Plan</strong>.</p>
+
+<h2 id="defining-checkpoints">Defining checkpoints</h2>
+<p>Source directory:</p>
+{{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_statuses_and_results/test_checkpoints/") }}
+<p>The test body hands the case to the suite's Maze helper, which runs the application and then checks its
+	output:</p>
+{{ codeblock.block('def _run_case(self, case: OrcraftTestCase):
+
+	maze_app = MazeApp(
+		self.config.maze_executable_folder,
+		case.params["command"],
+		width=case.params["width"],
+		height=case.params["height"],
+		start_row=case.params["start_row"],
+		start_col=case.params["start_col"],
+	)
+
+	maze_app.test(case)
+
+	return case.result') }}
+<p>The helper's <code>test</code> method runs the application once and passes its output through three checks:</p>
+{{ codeblock.block('def test(self, case: OrcraftTestCase) -> None:
+	result = self._execute()
+	self._test_version_logging(result.stdout, case)
+	self._test_path_found_message(result, case)
+	self._test_error_messages(result.stderr, case)') }}
+<p>Each check ends in a call to <code>case.checkpoint</code>. The first confirms that the application printed its
+	version banner and that the banner matches the executable's version. The second applies to a
+	<code>solve</code> that produced no error: it confirms that a path was reported and that the number of arrows in
+	the drawn path agrees with the step count the application claims. The third compares the application's error
+	output with the message the helper expects for the case's inputs:</p>
+{{ codeblock.block('def _test_error_messages(self, stderr: str, case: OrcraftTestCase) -> None:
+	expected = self._get_expected_error()
+	failure = None if expected in stderr else "Error message is not as expected."
+	pass_msg = "Error message matches expected." if stderr else "No error messages as expected."
+	fail_msg = failure or ""
+	details = f"Expected error message:\\n\\n{expected}" if failure is not None else None
+	case.checkpoint(failure is None, pass_msg, fail_msg, details)') }}
+<p>The arguments are the condition, the message to log when it holds, the message to log when it does not, and an
+	optional <code>details</code> text that is logged with a failure. A valid input is expected to produce no error
+	output at all, so the passing message differs depending on whether the application wrote anything.</p>
+
+<h2 id="checkpoints-in-the-log">Checkpoints in the log</h2>
+<p>Click <strong class="text-purple">Run</strong> and confirm. When the run finishes, type
+	<code>No error messages as expected</code> into the log's search field and click <strong>Next</strong> to jump
+	to the first case:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/checkpoints/passing-checkpoints-in-log.png", "Log of the first Checkpoints case showing the solved maze, the Path found line and four green Checkpoint Pass entries for the version banner, the path-found message, the arrow count and the absence of error messages", "large") }}
+<p>Below the solved maze and its <code>Path found</code> line, four <strong>Checkpoint Pass</strong> entries record
+	what was checked: the version banner matched, the path-found message was present, the arrow count matched the
+	step count, and no error message appeared. A passing case is therefore readable as evidence of what was
+	verified, not only as a green status.</p>
+<p>Now search for <code>(valid: 0 to 4)</code>:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/checkpoints/failed-checkpoint-in-log.png", "Log of a Checkpoints case with an out-of-bounds start column, showing the application's error line, a green Checkpoint Pass for the version banner, a red Checkpoint Fail reading Error message is not as expected, and a Checkpoint Failure Details block with the expected error message", "large") }}
+<p>This case asked to solve a maze from column <code>-2</code>. The application refused with
+	<em>Start (0,-2) is out of bounds for a 15×5 maze</em>, so the version banner check still passes, and there is
+	no path-found check because the run produced an error. The error message check fails: the helper expected
+	<em>Start col -2 is out of bounds (valid: 0 to 4)</em>, and the application's wording differs. The log shows the
+	red <strong>Checkpoint Fail</strong> entry with the failure message, followed by a
+	<strong>Checkpoint Failure Details</strong> block carrying the <code>details</code> text.</p>
+<p>A failing checkpoint marks the case <strong class="status-fail">FAIL</strong>, records its message as the case's
+	failure description, and then <em>continues</em> with the remaining checks. One case can therefore report every
+	problem it found rather than only the first one. When a failed check means the rest of the work would be
+	meaningless, <code>is_error=True</code> turns it into an <strong class="status-error">ERROR</strong> that ends the
+	case instead; that option, and how checkpoints behave inside setup and teardown hooks, is covered in the
+	<a class="text-accent" href="/framework/statuses/#checkpoints">framework reference</a>.</p>
+
+<h2 id="the-outcome">The outcome</h2>
+<p>Clear the search field. The end of the log holds the test's result and its failures table:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/checkpoints/running-checkpoints-test.png", "Completed Checkpoints run with 16 done, 10 passed and 6 failed, the log showing the test result with the failure description Error message is not as expected and a Failures table listing the six failing cases", "large") }}
+<p>The test reports 16 done, 10 passed and 6 failed. The six failures are exactly the <code>solve</code> cases with a
+	negative start coordinate: the application rejects the coordinate, but with a different message than the helper
+	expects. The <code>slove</code> cases pass, because the application's complaint about the unknown command is the
+	one expected, and the two fully valid cases pass every check. The failure description of the test as a whole is
+	the message of the first failing checkpoint.</p>
+<p>Click <strong>Details</strong> to see the same outcome per case:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/checkpoints/checkpoints-details.png", "Checkpoints Details view with cases 2, 3, 4, 6, 7 and 8 reading Fail and the other ten reading Pass, and a summary of 16 planned, 10 passed and 6 failed", "large") }}
+<p>Cases 2, 3, 4, 6, 7 and 8 read <strong class="status-fail">Fail</strong> with the checkpoint's message in their
+	<strong>Failure Description</strong> column; the rest read <strong class="status-pass">Pass</strong>. A
+	checkpoint thus does two jobs at once: it decides the status, and it leaves a line in the log that says what was
+	checked and what was seen.</p>
+
+<p>Checkpoints report whether a case is right. The next page,
+	<a class="text-accent" href="/tutorial/result-fields/">Result Fields</a>, shows how a case reports the values it
+	measured alongside its status.</p>
