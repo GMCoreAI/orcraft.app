@@ -9,12 +9,27 @@ description: "Running and extending Orcraft suites from an AI agent: the request
   agent such as Claude Code can therefore work with a suite without an API to learn and without the
   controller GUI. To run a test, the AI agent writes a small Python file that fills in the values it
   needs, runs it and reads the log. To extend a suite, it writes new components the way the existing
-  ones are written. This section is written for the AI agent as much as for the person instructing
-  it.</p>
+  ones are written. Everything the AI agent writes is an ordinary suite: the person opens it in the
+  controller GUI later, reviews it, runs it and corrects what needs correcting. This section is
+  written for the AI agent as much as for the person instructing it.</p>
 
 <h2 id="requests">Example requests</h2>
 <p>A request names what to do and where to do it. The examples below are only examples: any request
   about the suites, the machines and the logs works the same way.</p>
+
+<h3 id="getting-started-requests">Getting started requests</h3>
+<p>A getting started request creates a suite where none exists. Its source is the documentation of
+  the system under test: a README, a user manual, an API specification, a requirements document or
+  the source code itself. The request names that source, and the AI agent reads it to decide what the
+  groups are and what each first test checks. It then creates the suite repository with the suite
+  file, one folder per group and a first test in each, laid out like the
+  <a class="text-accent" href="/tutorial/">tutorial suite</a>. The new suite is then
+  <a class="text-accent" href="/setup/getting-started/#add-the-suite">added to the controller</a>, and
+  every later request grows it.</p>
+{{ cmd.copyPath("Create a suite for the maze application from its README: one group with one test that starts it and checks it exits cleanly.") }}
+{{ cmd.copyPath("Read the maze application's user manual and write a suite with a group per feature, like the tutorial.") }}
+{{ cmd.copyPath("Create a suite for the payments service from its OpenAPI specification: a group per endpoint, a smoke test in each.") }}
+{{ cmd.copyPath("Start a suite for the router from its requirements document: a Connectivity group with a ping test from a fan-out endpoint.") }}
 
 <h3 id="run-requests">Run requests</h3>
 <p>A run request names an existing test, group or suite and the machines to run it on. The AI agent
@@ -29,8 +44,26 @@ description: "Running and extending Orcraft suites from an AI agent: the request
   then <a class="text-accent" href="/setup/getting-started/#add-the-suite">added to the controller</a>
   like any other suite and run by hand for polishing.</p>
 {{ cmd.copyPath("Add a bidirectional traffic test to the TCP Traffic group; fail below 900 Mbit/s.") }}
-{{ cmd.copyPath("Add a Solve Timeout parameter to the tutorial maze tests, default 5 seconds.") }}
-{{ cmd.copyPath("Write a suite for the maze application with a group per feature, like the tutorial.") }}
+{{ cmd.copyPath("Add a Solve Timeout parameter to the maze suite's Solve tests, default 5 seconds.") }}
+
+<h3 id="continuous-expansion">Setting the AI agent to expand coverage</h3>
+<p>Coverage does not have to wait for someone to notice a gap. A standing instruction, run on a
+  schedule or from the pipeline of the system under test, sets the AI agent to compare what the
+  system does with what the suite checks and to add what is missing: a case in a matrix, a test in a
+  group, a group for a feature the suite does not touch yet. Each pass ends with the new tests run
+  once and a commit for the person to review.</p>
+{{ cmd.copyPath("Every night, compare the maze application's features with the maze suite and add tests for what is not covered.") }}
+{{ cmd.copyPath("On every merge to the router firmware, read the changed code and add the network suite tests that cover it.") }}
+{{ cmd.copyPath("Every day, review the TCP Traffic matrix against the NIC's supported MTUs and fill in the missing cases.") }}
+
+<h3 id="bug-coverage">Setting the AI agent to cover fixed bugs</h3>
+<p>A bug that was fixed once can come back. A standing instruction sets the AI agent to turn every
+  fix in the system under test into a test: it reads the bug report or the fixing commit, writes a
+  test that fails the way the bug did, and adds it where it belongs in the suite. From then on, the
+  suite reports the bug's return on the first run that shows it.</p>
+{{ cmd.copyPath("Every night, for every bug closed today in the maze tracker, add a test to the maze suite that reproduces it.") }}
+{{ cmd.copyPath("Bug 4127, the solver looping on a maze without exit, is fixed; add a test that fails on the old build.") }}
+{{ cmd.copyPath("Read the router's 2.3.1 release notes and add a network suite test for each fixed bug.") }}
 
 <h3 id="analysis-requests">Analysis requests</h3>
 <p>An analysis request is about the logs of earlier runs. The AI agent reads them and answers from
