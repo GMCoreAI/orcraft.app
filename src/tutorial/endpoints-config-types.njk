@@ -38,6 +38,10 @@ description: "Declare where a test runs with a single endpoint field, a multi-se
 	Windows, Linux and macOS machines registered earlier.</p>
 
 <h2 id="a-single-endpoint">A single endpoint</h2>
+<p>An <code>Endpoint</code> field holds one machine. Its value is one of the endpoints registered in the controller,
+	and every step of the test that does not name another endpoint runs on that machine. It is the simplest way to
+	move a test off the controller: nothing in the test changes, only the machine chosen in the panel. A test that
+	declares a single endpoint field runs entirely on one machine, whichever it is.</p>
 <p>Source directory:</p>
 {{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_endpoints/test_default_endpoint_and_package_upload/") }}
 <p>Every test config inherits a <code>test_endpoint</code> field that defaults to <code>localhost</code>. It stays
@@ -58,9 +62,13 @@ description: "Declare where a test runs with a single endpoint field, a multi-se
 <h2 id="endpoints-with-roles">Endpoints with roles</h2>
 <p>Source directory:</p>
 {{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_endpoints/test_multiple_endpoints_and_files_transfer/") }}
-<p>A test that needs two machines with different jobs declares two fields, one per role.
-	<strong>Multiple Endpoints and Files Transfer</strong> generates mazes on the first and solves them on the
-	second, moving the files between them in the meantime:</p>
+<p>Some scenarios need more than one machine at a time, each with its own job: something that produces and
+	something that consumes, a server and a client, a host and the device attached to it. For that a test declares
+	several <code>Endpoint</code> fields, one per role, and its flows send each step to the field of the role the step
+	belongs to. The roles are fixed by the test; which machine plays which role is chosen in the panel, and the same
+	machine may be chosen for more than one role.</p>
+<p><strong>Multiple Endpoints and Files Transfer</strong> declares two such roles. It generates mazes on the
+	first and solves them on the second, moving the files between them in the meantime:</p>
 {{ codeblock.block('endpoint_1 = OrcraftConfigField.Endpoint(default="localhost", label="Endpoint 1")
 endpoint_2 = OrcraftConfigField.Endpoint(default="localhost", label="Endpoint 2")') }}
 <p>The flows pass an <code>endpoint</code> argument to <code>run_step</code> so that each step goes to the machine
@@ -77,8 +85,12 @@ endpoint_2 = OrcraftConfigField.Endpoint(default="localhost", label="Endpoint 2"
 <h2 id="a-set-of-endpoints">A set of endpoints</h2>
 <p>Source directory:</p>
 {{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_endpoints/test_multi_select_endpoints/") }}
-<p>When the number of machines in a role is not fixed, the role becomes a set. <strong>Multi-Select
-	Endpoints</strong> keeps one generator and takes any number of solvers:</p>
+<p>A <code>MultiSelectEndpoints</code> field holds a set of machines rather than one. The set is still one role in
+	one run: the test receives all the selected endpoints together, loops over them, and decides what each one does.
+	This is the type for a role whose size is not fixed, such as any number of devices that one host drives, or any
+	number of solvers fed by one generator. Selecting three machines does not repeat the test; it gives the single run
+	three machines to work with.</p>
+<p><strong>Multi-Select Endpoints</strong> keeps one generator and takes any number of solvers:</p>
 {{ codeblock.block('test_endpoint = OrcraftConfigField.Endpoint(default="localhost", label="Test Endpoint")
 aux_endpoints = OrcraftConfigField.MultiSelectEndpoints(default=("localhost",), label="Aux Endpoints")') }}
 <p>A <code>MultiSelectEndpoints</code> field holds a tuple of endpoints, and the test body loops over it, running
@@ -91,9 +103,13 @@ aux_endpoints = OrcraftConfigField.MultiSelectEndpoints(default=("localhost",), 
 <h2 id="fan-out">Fan-out</h2>
 <p>Source directory:</p>
 {{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_endpoints/test_endpoint_fanout/") }}
-<p>The opposite need is to run the same verification on every machine of a lab. That is a fan-out: one test,
-	one run per selected endpoint. <strong>Endpoint Fanout</strong> runs the flows of the first test, but
-	redeclares the inherited field:</p>
+<p>An <code>EndpointFanout</code> field also holds a set of machines, but with the opposite meaning: the test is
+	repeated once per selected endpoint, and each repetition is a run of its own. The runs start together and execute
+	in parallel, each appears as its own <strong>Test Run</strong> row in the execution tree with the machine it ran on,
+	and the test's plan is the case count multiplied by the number of machines. This is the type for running the
+	same verification on every machine of a lab, for example the same application check on Windows, Linux and
+	macOS.</p>
+<p><strong>Endpoint Fanout</strong> runs the flows of the first test, but redeclares the inherited field:</p>
 {{ codeblock.block('test_endpoint = OrcraftConfigField.EndpointFanout(default=("localhost",), label="Test Endpoint")') }}
 <p>An <code>EndpointFanout</code> field also holds a tuple, but each selected endpoint gets a run of its own.
 	Select all three machines:</p>
@@ -110,9 +126,13 @@ aux_endpoints = OrcraftConfigField.MultiSelectEndpoints(default=("localhost",), 
 <h3 id="queued-runs">Queued runs</h3>
 <p>Source directory:</p>
 {{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_endpoints/test_endpoint_fanout_queued/") }}
-<p>By default a run holds the endpoints it uses, and another run that needs one of them waits. This matters when
-	a fan-out and a fixed endpoint meet in one test. In <strong>Endpoint Fanout - Queued</strong> the generator,
-	<strong>Endpoint 1</strong>, is a plain endpoint, and the solver, <strong>Endpoint 2</strong>, is a fan-out.
+<p>A run holds the endpoints it uses for as long as it runs, because a test usually owns the machine it is
+	working on: two runs writing to the same files or driving the same device at once would corrupt each other's
+	results. When a second run needs an endpoint that a first run is holding, the second run is queued and starts
+	only when the endpoint is released. Queueing is automatic; the tree shows it as a status.</p>
+<p>This matters when a fan-out and a fixed endpoint meet in one test. In
+	<strong>Endpoint Fanout - Queued</strong> the generator, <strong>Endpoint 1</strong>, is a plain endpoint,
+	and the solver, <strong>Endpoint 2</strong>, is a fan-out, so every fanned-out run needs the same generator.
 	Choose the Windows machine as the generator and the Linux and macOS machines as solvers, then run:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/endpoints-config-types/fanout-queued-tree.png", "Execution tree during the Endpoint Fanout - Queued run, with the first Test Run row running on GMG-TEST-1 and GMG-TEST-3 and the second row, for GMG-TEST-1 and GMG-TEST-5, showing Queued in its Status column", "large") }}
 <p>Two runs are created, one per solver, but they do not start together. Both need the generator, so the second
@@ -124,9 +144,12 @@ aux_endpoints = OrcraftConfigField.MultiSelectEndpoints(default=("localhost",), 
 <h3 id="permutations">Permutations</h3>
 <p>Source directory:</p>
 {{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_endpoints/test_endpoint_fanout_permutations/") }}
-<p>When both roles are fan-outs, the runs are the combinations of the two selections, and the panel lets you
-	choose which combinations to keep. Select the Windows and the Linux machine for both
-	<strong>Endpoint 1</strong> and <strong>Endpoint 2</strong> of <strong>Endpoint Fanout - Permutations</strong>:</p>
+<p>A test can declare more than one fan-out field. The runs are then the combinations, or permutations, of the
+	selections: every machine chosen for the first role paired with every machine chosen for the second. Two
+	machines in each of two roles give four runs, three in each give nine. Because that grows quickly, the panel
+	lists the combinations and lets you keep only the ones worth running.</p>
+<p><strong>Endpoint Fanout - Permutations</strong> declares both its roles as fan-outs. Select the Windows and
+	the Linux machine for both <strong>Endpoint 1</strong> and <strong>Endpoint 2</strong>:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/endpoints-config-types/fanout-permutations-config.png", "Endpoint Fanout - Permutations run panel with GMG-TEST-1 and GMG-TEST-3 selected in both fan-out fields and a Fanout Endpoints Permutations table listing the four combinations, all ticked, with Total Cases 16", "large") }}
 <p>A <strong>Fanout Endpoints Permutations</strong> table appears with one row per combination, four here, each
 	with a check mark in <strong>Select</strong>. Clearing a row drops that combination from the plan, which is how
