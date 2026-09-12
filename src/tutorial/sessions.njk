@@ -1,0 +1,69 @@
+---
+title: Tutorial · Sessions
+key: tutorial
+description: "A session is the controller's workspace, saved to a file with its items, plans, unplanned rows and runs; this page saves one, starts fresh and loads it back."
+---
+{% import "partials/copy-command.njk" as cmd %}
+{% import "partials/code-block.njk" as codeblock %}
+{% import "partials/zoomable-image.njk" as media %}
+<h1>Sessions</h1>
+<p>Everything the tutorial has built up in the controller so far is one <strong>session</strong>: the items loaded
+	into the tree, the values planned for each test, the groups taken out of the plan, the endpoints picked, and
+	the runs with their results. The session is the controller's workspace, and closing the window would lose it,
+	so the controller saves it to a file and loads it back. A saved session is how a lab's setup outlives the
+	evening it was made: the same tests, the same plans, the same machines, ready the next morning or on
+	another controller.</p>
+<p>A session file is a JSON file in the <code>Sessions</code> folder next to the controller's <code>Logs</code>.
+	It records the loaded items by their paths, the plan and the draft edits of every test, which items are
+	unplanned, the runs and their results, and the shape of the tree. It does not copy the suites: loading a
+	session reads the tests again from their files, so a suite edited in the meantime comes back edited.</p>
+
+<h2 id="the-unsaved-session">The unsaved session</h2>
+<p>The tree's top row names the session. A controller starts with <strong>New Session</strong>, and the star after
+	the name says it holds changes that are not in any file. Load the tutorial suite, add the Structure and
+	Lifecycle group and the Hello World test as items of their own, run the first two status tests and unplan the
+	Advanced Configuration Parameters group, and the row reads:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/sessions/unsaved-session.png", "Top of the Test Explorer with the Session row labelled New Session followed by a star, a plan of 156 with 32 done, and beneath it the Orcraft Tutorial suite, the Structure and Lifecycle group item and the Hello World test item", "large") }}
+<p>The star appears on any change that a save would record: an item added or removed, a plan updated, a row
+	planned or unplanned, a run started. It is the cue that closing the controller now would lose something.</p>
+
+<h2 id="saving">Saving</h2>
+<p>Click <strong>Save</strong> in the <a class="text-accent" href="/tutorial/execution-tab/#new-save-and-load">Session
+	action frame</a>. A file dialog opens in the <code>Sessions</code> folder with the session's name proposed;
+	give the file a name that says what the session is for, here <code>statuses-lab</code>. The controller
+	confirms where it wrote:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/sessions/session-saved-notice.png", "Session Saved notice reading Session saved to C:\\orcraft\\Sessions\\statuses-lab.json", "small") }}
+<p>The session row takes the file's name and loses its star:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/sessions/saved-session.png", "Top of the Test Explorer with the Session row now labelled statuses-lab without a star and the same three items beneath it", "large") }}
+<p>From now on the name is the session's, and the star tracks changes against the file. Unplan one more group
+	and it is back:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/sessions/modified-session.png", "Top of the Test Explorer with the Session row labelled statuses-lab followed by a star and the plan reduced to 147", "large") }}
+<p>Save again to write the file over. A session that is running tests can be saved too: the file records the
+	running tests as stopped and the queued ones as dequeued, since neither can be resumed from a file.</p>
+
+<h2 id="starting-over">Starting over</h2>
+<p><strong>New</strong> empties the tree. With unsaved changes on the row, the controller asks first, because
+	the work would be lost:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/sessions/new-session-confirm.png", "New Session dialog warning that starting a new session removes all items and discards unsaved changes, and asking whether to continue, with Yes and No buttons", "small") }}
+<p>Confirm, and the tree holds only the session row, back to <strong>New Session</strong>, and the
+	<strong>Add Item</strong> placeholder:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/sessions/empty-session.png", "Empty Test Explorer with the Session row labelled New Session with a star, zero counts, and an Add Item link reading Browse for Batch/Suite/Group/Test file", "large") }}
+
+<h2 id="loading">Loading</h2>
+<p><strong>Load</strong> opens the same file dialog on the <code>Sessions</code> folder. Pick
+	<code>statuses-lab.json</code>. The controller reads every item from its files again, restores the plans,
+	the unplanned rows and the runs, and the tree is as it was at the save:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/sessions/loaded-session.png", "Execution tree after loading statuses-lab: the Session row named statuses-lab without a star, the Advanced Configuration Parameters group greyed as unplanned, and the Status: Pass with Warning and Status: Fail tests with their run rows, statuses and times restored", "large") }}
+<p>The two runs are back with their statuses, times and logs, so the Details dialog and the log pane work on
+	them as before. The Advanced Configuration Parameters group is still unplanned, and the plan count is the
+	saved one. The Basic Configuration Parameters group is planned again, because it was unplanned after the
+	save and that change was never written.</p>
+<p>Loading into a session that has running tests stops them first, after a confirmation, since the tree is
+	replaced whole. Loading never merges: to combine two sessions, load one and add the other's items with
+	<strong>Add Item</strong>.</p>
+<p>The session file is also what the controller keeps for itself between launches: closing the window and
+	opening it again brings the last state back, named or not. Saving gives that state a name and a file that
+	can be kept, copied to another controller, or loaded next to other sessions of the same lab.</p>
+
+<p>The next page, <a class="text-accent" href="/tutorial/exporting-test-batch-for-ci/">Exporting Test Batch for
+	CI</a>, takes a composed session out of the controller altogether, into a form a pipeline runs.</p>

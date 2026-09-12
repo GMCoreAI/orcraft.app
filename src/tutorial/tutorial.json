@@ -28,6 +28,7 @@
     { "label": "Controlled Endpoints Disconnection", "slug": "controlled-endpoints-disconnection/" },
     { "label": "Handling Asynchronous Steps", "slug": "asynchronous-steps/" },
     { "label": "Remote Type Fidelity", "slug": "remote-type-fidelity/" },
+    { "label": "Sessions", "slug": "sessions/" },
     { "label": "Exporting Test Batch for CI", "slug": "exporting-test-batch-for-ci/" },
     { "label": "Execution Tab", "slug": "execution-tab/" },
     { "label": "Git Status Frame", "slug": "git-status-frame/" },
