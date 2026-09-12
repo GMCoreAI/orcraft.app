@@ -1,0 +1,77 @@
+---
+title: Tutorial · Details Dialog
+key: tutorial
+description: "Open the Details dialog at any level of the tree to see the configuration and the full results hierarchy of that scope, filter it by status, and export it."
+---
+{% import "partials/copy-command.njk" as cmd %}
+{% import "partials/code-block.njk" as codeblock %}
+{% import "partials/zoomable-image.njk" as media %}
+<h1>Details Dialog</h1>
+<p>The execution tree shows what happened in numbers: planned, done, passed, failed. The <strong>Details</strong>
+	dialog shows what happened in full. It opens on any row of the tree and gathers everything that belongs to that
+	row's scope: the configuration of every item in it, with default, planned and run values side by side, and a
+	results tree that goes down through cycles, cases, case cycles, flows and steps, with the status, timing and
+	descriptions of each. Earlier pages opened it on single tests; this page opens it at the other levels and
+	walks through its parts.</p>
+<p>The session in the controller is a workspace. It holds every suite and test loaded, relevant to the question at
+	hand or not, and a run of a whole suite mixes hundreds of results. The Details dialog is the tool that scopes
+	that workspace to a chosen level and summarizes it there, which is why it exists at every level from the
+	session row down to a single case, and why its exports are the way results leave the controller.</p>
+<p>To have something to look at, run the five tests of the <strong>Statuses and Results</strong> group with their
+	folders set as on <a class="text-accent" href="/tutorial/orcraft-statuses/">Orcraft Statuses</a>: the group then
+	holds a pass with warnings, a failure, an error, a partly failing checkpoint run and a passing run with result
+	fields.</p>
+
+<h2 id="the-session-level">The session level</h2>
+<p>Select the <strong>Session</strong> row at the top of the tree and click <strong>Details</strong> in the action
+	bar, or right-click the row and choose it:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/details-dialog/details-session.png", "Session Details dialog with the configuration of every loaded suite, group and test nested on the left, a results tree of the whole session on the right with Not Run rows for tests that have not run, and an Items Filter with Pass, Warn, Fail, Error, Not Run and All chips", "large") }}
+<p>The left half, <strong>Session Configurations</strong>, nests the configuration of every loaded item: the
+	suite, each group in it, each test in the group with its <strong>Default Value</strong>, <strong>Plan
+	Value</strong> and <strong>Run Value</strong> columns. The right half, <strong>Session Results</strong>, starts
+	with the summary strip the tree also shows and then lists every item as a tree. Tests that have not run appear
+	with <strong>Not Run</strong> rows for the cases they plan, so the scope is complete rather than limited to what
+	has happened.</p>
+<p>At the bottom, the <strong>Items Filter</strong> counts the rows of the results tree by status:
+	<strong>Pass</strong>, <strong>Warn</strong>, <strong>Fail</strong>, <strong>Error</strong>,
+	<strong>Not Run</strong> and <strong>All</strong>. The counts are rows, so a case and its case cycle count
+	twice; they are there to say how much of each kind the tree holds and to narrow it.</p>
+
+<h2 id="the-group-level">The group level</h2>
+<p>Close the dialog, select the <strong>Statuses and Results</strong> group and open Details again. Then click
+	the <strong>Fail</strong> chip:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/details-dialog/details-group-fail-filter.png", "Details dialog of the Statuses and Results group with the Fail chip active, the results tree narrowed to the failing cases of the Status: Fail and Checkpoints runs, and the group's configuration and case tables on the left", "large") }}
+<p>The dialog is now scoped to the group: its description and its tests' configurations on the left, and only the
+	group's results on the right. With <strong>Fail</strong> active the tree keeps the rows that failed and the
+	rows above them, so the failing cases of <strong>Status: Fail</strong> and <strong>Checkpoints</strong> are
+	listed together with the test runs they belong to and nothing else. Click <strong>All</strong> to restore the
+	tree. The chips work the same way as the status chips above the execution tree, one level deeper.</p>
+
+<h2 id="the-test-level">The test level</h2>
+<p>Open Details on <strong>Status: Fail</strong>:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/details-dialog/details-test.png", "Details dialog of the Status: Fail test with its description, its configuration table, the List Dimensions and case tables, and a results tree of sixteen cases with two passing and fourteen failing", "large") }}
+<p>A test's dialog adds what only a test has: the <strong>Test Description</strong> from the config class, the
+	<strong>List Dimensions</strong> table with the default, planned and run values of each matrix dimension, and
+	the case table with a <strong>Planned</strong> and a <strong>Run</strong> check per case. The results tree runs
+	from the test run through its cycle to every case and case cycle, and further down to flows and steps when the
+	test has them. Scrolling the tree to the right reveals the columns every row carries: the endpoint, the status,
+	the start and finish times and the elapsed time, the error, failure and warning descriptions, the repository,
+	branch and commit of the test, and any <a class="text-accent" href="/tutorial/result-fields/">result
+	fields</a> the test declares.</p>
+<p>The buttons above the tree help with large scopes. <strong>Refresh</strong> re-reads the results while a run
+	is still going, the <strong>&minus;</strong> and <strong>+</strong> buttons collapse and expand every row, and
+	the tree's own arrows fold single branches.</p>
+
+<h2 id="exporting-the-scope">Exporting the scope</h2>
+<p>The two buttons at the bottom left take the dialog's scope out of the controller.</p>
+<p><strong>Export to XLSX</strong> writes a workbook with the summary, the configurations and the results tree of
+	the scope, every column included. It is the format for a report or for analysis in a spreadsheet.</p>
+<p><strong>Export for Agents</strong> writes a folder with a <code>summary.txt</code> of the scope and a
+	<code>logs</code> folder holding the run logs of the scope with their colour codes stripped. It is the format
+	for handing results to an <a class="text-accent" href="/ai-agents/results/">AI agent</a>, which reads plain text
+	better than a workbook and needs the logs next to the summary to explain a failure.</p>
+<p>Both exports contain exactly what the dialog shows, at the level it was opened on. Opening it on the session
+	exports everything; opening it on one failing test exports that test.</p>
+
+<p>The dialog gathers the logs it exports from the same place the controller shows them. The next page,
+	<a class="text-accent" href="/tutorial/log-frame/">Log Frame</a>, is about that place.</p>
