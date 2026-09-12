@@ -1,0 +1,73 @@
+---
+title: Tutorial · Log Frame
+key: tutorial
+description: "The Log tab of the right pane: what it shows for a selected run, how to search it, and how to reach the full log file and its folder."
+---
+{% import "partials/copy-command.njk" as cmd %}
+{% import "partials/code-block.njk" as codeblock %}
+{% import "partials/zoomable-image.njk" as media %}
+<h1>Log Frame</h1>
+<p>Every run writes a log: the framework prints each configuration, each result table, each checkpoint, and
+	everything the test itself logs, in colour, into a file next to the suite. The <strong>Log</strong> tab of the
+	right pane shows that file for the run selected in the tree, following it while the run is going and keeping
+	it afterwards. It is the first place to look when a status is not the one expected, because it holds the
+	reasoning the tree summarizes.</p>
+<p>The right pane has two tabs, <strong>Configuration</strong> and <strong>Log</strong>. Selecting a test opens
+	<strong>Configuration</strong>, the run panel used throughout the tutorial. Starting a run switches to
+	<strong>Log</strong>, and selecting a finished run in the tree opens <strong>Log</strong> on that run's file.
+	The tab is available only for rows that have a log, that is for test runs; a suite, group or test row without
+	a run keeps the tab disabled.</p>
+
+<h2 id="the-log-during-a-run">The log during a run</h2>
+<p>Run <strong>Status: Fail</strong> from the <strong>Statuses and Results</strong> group and look at the right
+	pane while it runs:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/log-frame/log-during-run.png", "Controller during the Status: Fail run with the Log tab open, its title reading Test Run Status: Fail Status: Running with a spinner, the frame outlined in purple, the log scrolling through case configurations and results, and Auto-Scroll ticked at the bottom", "large") }}
+<p>The frame's title names the run and its current status, <strong>Running</strong> with a spinner, and the frame
+	is outlined in the status colour, purple while running. The log grows as cases finish, and with
+	<strong>Auto-Scroll</strong> ticked the view follows the end. Untick it to read an earlier part while the run
+	continues; the view stays where it is until it is ticked again.</p>
+<p>The tree and the <a class="text-accent" href="/tutorial/execution-status-frame/">Execution Status</a> frame
+	below the log move at the same time, so the three views tell one story: the tree counts, the status frame
+	shows where in the run the controller is, and the log shows what is being done there.</p>
+
+<h2 id="the-log-of-a-finished-run">The log of a finished run</h2>
+<p>When the run ends the title takes the final status and the outline its colour, red for
+	<strong>Fail</strong>. Select the run in the tree at any later time to bring its log back:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/log-frame/log-test-selected.png", "Controller with the Status: Fail run selected in the tree and the Log tab showing the end of its log: the case result rows, the test result table with Failed Cases 14, and the Failures table listing each failing case with its failure description", "large") }}
+<p>The end of a test's log is where the summary lives: the test's result table with its counts, and after it a
+	<strong>Failures</strong> table listing every failing case with its description, and a
+	<strong>Warnings</strong> table when there were any. Reading a log from the bottom up is usually the quickest
+	route: the summary says which cases to look at, and the case's own section above says why.</p>
+
+<h3 id="searching-the-log">Searching the log</h3>
+<p>Type into the search field above the log and press <strong>Next</strong> or <strong>Prev</strong> to jump
+	between matches:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/log-frame/log-search.png", "Log frame with Failure Description typed in the search field and the first match highlighted in a case result table, with Prev and Next buttons beside the field", "large") }}
+<p>The current match is highlighted and the view scrolls to it. Searching for a status word such as
+	<code>FAIL</code>, a checkpoint message, or a value from the case table is the way to find one case among
+	dozens. Clearing the field returns to the end of the log.</p>
+
+<h3 id="the-log-file">The log file</h3>
+<p>The three buttons at the bottom right lead to the file behind the view:</p>
+<ul>
+	<li><strong>Open Log Folder</strong> opens the folder that holds the log in the file manager, with the log
+		selected. The other logs of the same test are beside it.</li>
+	<li><strong>Open Full Log</strong> opens the log in its own viewer window. The pane shows a bounded tail of a
+		very long log; the viewer shows all of it.</li>
+	<li><strong>Browse Log File</strong> opens any log file on disk in the viewer, for example one copied from
+		another machine or one produced by a CI run.</li>
+</ul>
+<p>Logs are written as <code>.ansi</code> files, plain text with the colour codes the viewer renders, so they can
+	also be read in a terminal or any editor. The <a class="text-accent" href="/framework/logging/">framework
+	reference</a> describes where they are written and how a test logs its own messages.</p>
+
+<h2 id="folding-the-right-pane">Folding the right pane</h2>
+<p>The right pane can be folded away to give the tree the whole window. Click the collapse arrow at the top
+	right of the <strong>Config &amp; Status</strong> title:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/log-frame/right-pane-collapsed.png", "Controller with the right pane collapsed to a narrow vertical strip labelled Config & Status and the execution tree spread across the window", "large") }}
+<p>The pane shrinks to a strip carrying its name, and the tree takes the width, with all its columns in view.
+	Click the strip to bring the pane back. The Execution Status and Git Status frames fold with it, since they
+	share the pane.</p>
+
+<p>The next page, <a class="text-accent" href="/tutorial/execution-status-frame/">Execution Status Frame</a>, looks
+	at the frame below the log, which shows where a run stands while it is running.</p>
