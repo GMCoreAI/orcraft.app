@@ -256,6 +256,18 @@
   max-width: 100%;
 }
 
+/* Several small shots side by side (context menus, chips); each keeps its own width. */
+.docs__article .screenshot-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+  align-items: flex-start;
+}
+
+.docs__article .screenshot-row .zoomable-image {
+  margin-block: 0;
+}
+
 .docs__article .zoomable-image:hover,
 .docs__article .zoomable-image:focus-visible {
   border-color: var(--color-accent);

@@ -42,7 +42,8 @@ description: "The Execution tab is where a session is composed, planned and run:
 <h3 id="configure">Configure</h3>
 <p><strong class="text-accent">Configure</strong> opens the run panel of the session row, the
 	<strong>Multi-Test Selection</strong> layout with every planned test in its grid, from which the whole session
-	is run or exported.</p>
+	is run or exported. Selecting the <strong>Session</strong> row in the tree opens the same panel, as selecting
+	any row opens its own.</p>
 
 <h3 id="dequeue-and-stop">Dequeue and Stop</h3>
 <p>While tests are queued or running, <strong>Dequeue</strong> and <strong>Stop</strong> appear under Configure.
@@ -74,14 +75,18 @@ description: "The Execution tab is where a session is composed, planned and run:
 
 <h2 id="the-action-frame-of-the-selected-row">The action frame of the selected row</h2>
 <p>Below the tree sits a second action frame. It belongs to whatever row is selected and names it with its badge,
-	so the buttons change with the kind of row.</p>
+	so the buttons change with the kind of row. Selecting is itself an action: the configuration form of the
+	selected row opens in the right pane at once, whether the row is the session, a suite, a group, a test, a test
+	run or a set of rows picked with <strong>Ctrl</strong>. A single test gets its run panel; every other scope gets
+	the Multi-Test Selection layout for the tests it covers. <strong class="text-accent">Configure</strong> in the
+	frame brings that form back when another view has taken the pane.</p>
 
 <h3 id="a-test-row">A test row</h3>
 <p>For a test:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/action-frame-test.png", "Action frame of the Status: Fail test with the Configure, Unplan, Details and Clear buttons", "large") }}
 <p><strong class="text-accent">Configure</strong> opens the test's run panel in the right pane, which is also what
 	a click on the row does. <strong>Unplan</strong> takes the test out of the plan, <strong>Details</strong> opens
-	its Details dialog, and <strong class="text-danger">Clear</strong>, present once the test has run, removes its
+	its Details dialog, which a double-click on any row opens as well, and <strong class="text-danger">Clear</strong>, present once the test has run, removes its
 	run rows.</p>
 
 <h3 id="a-run-row">A run row</h3>
@@ -107,8 +112,19 @@ description: "The Execution tab is where a session is composed, planned and run:
 	whole:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/action-frame-selection.png", "Action frame titled Multi-Test Selection with the Configure and Unplan buttons", "large") }}
 <p>Configure opens the Multi-Test Selection panel for the picked rows, the layout used to configure the CI set on
-	the previous page, and Unplan takes all of them out of the plan at once. Every action here is also in the
-	row's right-click menu, together with the ones that need no button of their own, such as Run and Rerun.</p>
+	the previous page, and Unplan takes all of them out of the plan at once.</p>
+
+<h3 id="the-right-click-menu">The right-click menu</h3>
+<p>Every action of the frame is also in the row's context menu, so a right-click on a row does without the trip
+	to the frame. The menu is built for the row under the pointer: a suite offers the full set, a run row only
+	what a run supports:</p>
+<div class="screenshot-row">
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/menu-suite.png", "Context menu of a suite row with Configure, Clear, Reload, Details, Label, Unplan and Remove", "small") }}
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/menu-run.png", "Context menu of a Test Run row with Configure, Details and Remove", "small") }}
+</div>
+<p>A right-click on one row of a Ctrl+click selection opens the selection's menu instead, with the actions the
+	Multi-Test Selection frame shows. Two shortcuts need no menu at all: a click selects the row and opens its
+	form, and a double-click opens its Details dialog.</p>
 
 <h2 id="plan-and-unplan">Plan and unplan</h2>
 <p>An item in the tree is either <strong>planned</strong> or not. Planned items are what the controller runs
