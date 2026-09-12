@@ -24,6 +24,7 @@
     { "label": "Structure and Lifecycle", "slug": "structure-and-lifecycle/" },
     { "label": "Endpoints Management", "slug": "endpoints-management/" },
     { "label": "Endpoints Config Types", "slug": "endpoints-config-types/" },
-    { "label": "Packages Uploading", "slug": "packages-uploading/" }
+    { "label": "Packages Uploading", "slug": "packages-uploading/" },
+    { "label": "Handling Asynchronous Steps", "slug": "asynchronous-steps/" }
   ]
 }

@@ -1,0 +1,175 @@
+---
+title: Tutorial · Handling Asynchronous Steps
+key: tutorial
+description: "Start long-running work on an endpoint in one step, do other things, and collect the outcome in a later step through a reference to the live object."
+---
+{% import "partials/copy-command.njk" as cmd %}
+{% import "partials/code-block.njk" as codeblock %}
+{% import "partials/zoomable-image.njk" as media %}
+<h1>Handling Asynchronous Steps</h1>
+<p>A step runs to completion before the flow continues. That is deliberate: the order of the steps in a flow is
+	the order in which things happen, which is what keeps the log and the results tree readable. Some work does not
+	fit that shape, though. A process that must keep running while other steps proceed, a background thread that
+	collects measurements, a connection that must stay open: none of these can be finished inside one step.</p>
+<p>Orcraft's answer is to split such work into two steps. A <strong>start</strong> step launches the work and
+	returns at once, and a later <strong>read</strong> step collects its outcome. Between the two the flow does
+	whatever must overlap, on the same endpoint or elsewhere. The thing that ties the two steps together is the
+	object the start step created, a thread or a process handle, which it puts on its result. Such an object has no
+	meaning off the machine that made it, so it does not travel to the controller. It stays on the endpoint, and the
+	flow receives a <strong>reference</strong> to it. Handing that reference to a later step on the same endpoint
+	gives that step the live object back. The framework reference calls these
+	<a class="text-accent" href="/framework/steps/#remote-objects">non-transferable values</a>.</p>
+<p>The <strong>Remote Thread Example</strong> test of the <strong>Endpoints</strong> group shows the pattern with a
+	background thread that keeps solving mazes on an endpoint while the flow waits.</p>
+
+<h2 id="the-three-steps">The start, wait and read steps</h2>
+<p>Source directory:</p>
+{{ cmd.copyPath("orcraft-test-suite-tutorial/test_group_endpoints/test_remote_thread_example/") }}
+<p>The start step builds a small task record with a counter, a list of results, a lock and a stop event, starts a
+	daemon thread that solves mazes until the event is set, and puts the record on its result:</p>
+{{ codeblock.block('def _run_step(self) -> OrcraftTestStepResult:
+	self.result = StepStartMazeThreadResult()
+
+	exe_folder = normalize_long_path(self.config.maze_executable_folder)
+	width = int(self.config.width)
+	height = int(self.config.height)
+
+	task = {
+		"count": 0,
+		"results": [],
+		"lock": threading.Lock(),
+		"stop_event": threading.Event(),
+	}
+
+	def _worker() -> None:
+		while not task["stop_event"].is_set():
+			try:
+				result = MazeApp(exe_folder, "solve", width=width, height=height).run_silent()
+				if result.solved:
+					with task["lock"]:
+						task["count"] += 1
+						task["results"].append(result)
+			except Exception:
+				pass
+
+	thread = threading.Thread(target=_worker, daemon=True)
+	task["thread"] = thread
+	thread.start()
+
+	Logger.log(
+		f"Started background maze-generation thread (width={width}, height={height})",
+		module_tag=False,
+	)
+
+	self.result.task = task
+	self.result.status = OrcraftStatus.PASS
+	return self.result') }}
+<p><code>task</code> is a plain attribute of the result, not a declared result field, because it is meant for the
+	flow and not for a column in the controller. It holds a thread and a lock, so it cannot be copied off the
+	endpoint; what reaches the flow is a reference that stands for it.</p>
+<p>The read step receives the task through a plain attribute of its config, which arrives as the live object
+	again because the step runs on the same endpoint. It stops the thread, joins it, and turns the collected
+	results into declared result fields:</p>
+{{ codeblock.block('def _run_step(self) -> OrcraftTestStepResult:
+	self.result = StepReadMazeThreadResult()
+
+	task = self.config.task
+	if task is None:
+		self.result.status = OrcraftStatus.ERROR
+		self.result.error_description = "Task object is missing"
+		return self.result
+
+	task["stop_event"].set()
+
+	task["thread"].join(timeout=float(self.config.join_timeout_sec))
+	if task["thread"].is_alive():
+		self.result.status = OrcraftStatus.ERROR
+		self.result.error_description = "Background maze thread did not stop in time"
+		return self.result
+
+	with task["lock"]:
+		count = int(task["count"])
+		results = list(task["results"])
+
+	step_counts = [result.steps for result in results]
+	avg_steps = round(sum(step_counts) / len(step_counts), 1) if step_counts else 0
+
+	self.result.mazes_generated = count
+	self.result.avg_path_steps = avg_steps
+	self.result.stopped = True') }}
+<p>Between the two sits a wait step that only sleeps for the configured number of seconds. In a real test this is
+	where the work that has to overlap with the thread would go.</p>
+
+<h3 id="the-flow">The flow</h3>
+<p>The flow runs the three steps on the test endpoint and passes the start step's <code>task</code> to the read
+	step:</p>
+{{ codeblock.block('def _run_flow(self) -> None:
+	# Step 1: Start background maze-solving thread on test endpoint
+	step_1_result = self.run_step(
+		StepStartMazeThread,
+		endpoint=self.config.test_endpoint,
+		maze_executable_folder=self.config.maze_executable_folder,
+		width=self.config.width,
+		height=self.config.height,
+	)
+
+	if self.handle_errors(step_1_result, self.result):
+		return
+
+	# Step 2: Wait - thread keeps running, task object is held in step_1_result
+	step_2_result = self.run_step(
+		StepWait,
+		endpoint=self.config.test_endpoint,
+		wait_sec=self.config.wait_sec,
+	)
+
+	if self.handle_errors(step_2_result, self.result):
+		self.run_step(
+			StepReadMazeThread,
+			endpoint=self.config.test_endpoint,
+			task=step_1_result.task,
+		)
+		return
+
+	# Step 3: Stop thread and collect results - using task from Step 1
+	step_3_result = self.run_step(
+		StepReadMazeThread,
+		endpoint=self.config.test_endpoint,
+		task=step_1_result.task,
+	)
+
+	if self.handle_errors(step_3_result, self.result):
+		return
+
+	self.result.mazes_generated = step_3_result.mazes_generated
+	self.result.avg_path_steps = step_3_result.avg_path_steps') }}
+<p>Note what happens when the wait step fails: the flow still runs the read step before returning, so the thread
+	is stopped rather than left running on the endpoint. Whatever a start step launches, some step must always end
+	it, on the failure path as well as on the happy one.</p>
+
+<h2 id="running-the-example">Running the example</h2>
+<p>Select the <strong>Remote Thread Example</strong> test, set its <strong>Maze Executable Folder</strong>, choose
+	the Linux machine as the <strong>Test Endpoint</strong>, and raise <strong>Wait Sec</strong> from 2 to 5 to give
+	the thread more time:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/asynchronous-steps/remote-thread-config.png", "Remote Thread Example run panel with Test Endpoint set to GMG-TEST-3, the Maze Executable Folder set, Width 5, Height 8 and Wait Sec changed to 5", "large") }}
+<p>Click <strong class="text-accent">Update Plan</strong>, then <strong class="text-purple">Run</strong> and
+	confirm. When the run finishes, search the log for <code>Background maze thread stopped</code>:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/asynchronous-steps/remote-thread-in-log.png", "Log of the Remote Thread Example run showing the Start Maze Thread step finishing in 0.000 s after logging that the background thread started, the Wait step waiting 5 seconds, and the Read Maze Thread step reporting the background thread stopped with 20 mazes generated", "large") }}
+<p>The timings tell the story. <strong>Start Maze Thread</strong> finished in no time at all, because it only
+	launched the thread. <strong>Wait</strong> took its five seconds, while the thread kept solving mazes on the
+	endpoint. <strong>Read Maze Thread</strong> then stopped the thread and reported 20 mazes generated, and the
+	log goes on to print each of them.</p>
+<p>Click <strong>Details</strong> for the run:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/asynchronous-steps/remote-thread-details.png", "Remote Thread Example Details view with the three steps on GMG-TEST-3, the Start Maze Thread step elapsed 0.048 s, the Wait step 5.050 s and the Read Maze Thread step 0.241 s, and the run reporting 20 mazes generated with an average path of 22.8 steps", "large") }}
+<p>The three steps ran on <strong>GMG-TEST-3</strong>, and the values the read step declared,
+	<strong>Mazes Generated</strong> and <strong>Avg Path Steps</strong>, are carried up to the flow and the run as
+	<a class="text-accent" href="/tutorial/result-fields/">result fields</a>. The thread itself never appears
+	anywhere: it lived and died on the endpoint, and the flow only ever held a reference to it.</p>
+<p>The same pattern serves a process started with <code>Popen</code>, an open socket, or any resource that must
+	outlive one step. The reference is valid only on the endpoint that created it; passing it to a step on
+	another machine, or to a local step, raises an error rather than silently copying something that cannot be
+	copied.</p>
+
+<p>The thread reference is a value the framework refuses to copy. The next page,
+	<a class="text-accent" href="/tutorial/remote-type-fidelity/">Remote Type Fidelity</a>, is about the values it
+	does copy, and how they keep their Python types on the way to an endpoint and back.</p>
