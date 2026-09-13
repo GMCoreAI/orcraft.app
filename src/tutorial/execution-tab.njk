@@ -162,7 +162,7 @@ description: "The Execution tab is where a session is composed, planned and run:
 
 <h2 id="filters-above-the-tree">Filters above the tree</h2>
 <p>The row above the tree narrows what it shows without changing what is loaded. It holds status chips, the CI
-	toggle and the level chips, followed by the collapse and expand buttons.</p>
+	and H toggles and the level chips, followed by the collapse and expand buttons.</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/status-chips.png", "The Test Explorer with the Warn 1, Fail 1, Error 1, Not Run 62 and All 65 status chips, the round S, G and T level chips and the minus and plus buttons above the tree", "large") }}
 <p>A <strong>status chip</strong> shows how many tests are in a state and hides the rest of the tree when
 	clicked. There is one chip per state a test can be in, Running, Queued, Pass, Warn, Fail, Error, Dequeued,
@@ -172,7 +172,10 @@ description: "The Execution tab is where a session is composed, planned and run:
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/status-chip-fail.png", "The tree filtered by the Fail chip: only the Orcraft Tutorial suite, the Statuses and Results group, the Status: Fail test and its run row are shown", "large") }}
 <p>A filter that runs out of tests, for example a Fail filter after the failing runs were cleared, drops by
 	itself. The <strong>CI</strong> toggle, shown when the session holds tests configured for CI export, narrows
-	the tree to those tests and combines with the status chips; the CI page shows it on a loaded batch.</p>
+	the tree to those tests and combines with the status chips; the CI page shows it on a loaded batch. The
+	<strong>H</strong> toggle beside it, shown when the session holds runs brought in from a run history file,
+	narrows the tree to those runs; the <a class="text-accent" href="/tutorial/run-history/">Run History</a>
+	page shows it.</p>
 <p>The round <strong>level chips</strong> collapse the tree to one level. <strong>G</strong> keeps the suites
 	open and folds every group, which is the view used to pick groups for an export:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/execution-tab/level-groups.png", "The Test Explorer with the Not Run and All chips and the level chips above the tree collapsed to group level: the Orcraft Tutorial and Demo suites open showing their groups folded, then the Structure and Lifecycle group item and the Hello World test item", "large") }}

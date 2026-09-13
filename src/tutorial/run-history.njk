@@ -1,0 +1,129 @@
+---
+title: Tutorial · Run History
+key: tutorial
+description: "Every run writes a run history file next to its logs; this page adds the regression snapshot's history to the tree as a node of its own, attaches a second run to it, narrows the tree to the history, and looks at the files the controller writes for its own runs."
+---
+{% import "partials/copy-command.njk" as cmd %}
+{% import "partials/code-block.njk" as codeblock %}
+{% import "partials/zoomable-image.njk" as media %}
+<h1>Run History</h1>
+<p>A run started from the controller shows in the tree as it goes: a run row under each test, its status, its
+	times, its endpoints, and the results behind it in the
+	<a class="text-accent" href="/tutorial/details-dialog/">Details dialog</a>. A run made from the command line,
+	the CI snapshot of the <a class="text-accent" href="/tutorial/exporting-test-batch-for-ci/">previous page</a>,
+	a suite run by a script, a test run by an <a class="text-accent" href="/ai-agents/running/">AI agent</a>,
+	leaves logs and nothing else: there is no tree to show it in. The <strong>run history</strong> closes that
+	gap. Every run writes, next to its logs, a file that holds what the controller would have shown, and
+	<strong class="text-cyan">Add Item</strong> opens that file the way it opens a batch: the run's items appear in the tree with a run
+	row per test, statuses, times, endpoints and results included, as if the run had been started here.</p>
+<p>The file goes into a <code>Run_History</code> folder next to the <code>Logs</code> folder of the run, named after
+	the run's root and the moment it started, <code>Batch__regression__2026-09-13__14-23-45.647.orcraft-run</code>
+	for the regression snapshot. The root is whatever was run, a batch, a suite, a group or a single test, and
+	the file is written as the run goes, record by record: the root and its source file first, then each test's
+	process as it starts, its progress and results as they arrive, its outcome when it ends, and the root's
+	outcome last. A run that is killed leaves a readable file, and the tests it never finished come into the tree
+	as stopped.</p>
+<p>Like a session file, the history does not copy the suites. It records where the root came from, the
+	<code>batch.py</code> of the snapshot here, and the controller loads the items from that source when the file is
+	added, so the tree shows the tests as they are, with the run's rows beneath them. The file has to be added on
+	a machine that can reach that source.</p>
+
+<h2 id="the-history-of-the-snapshot-run">The history of the snapshot run</h2>
+<p>The <code>python ci_run.py</code> run of the previous page wrote its history beside the snapshot's logs:</p>
+{{ codeblock.block('C:\\orcraft\\ci\\regression\\
+  Logs\\
+  Run_History\\
+    Batch__regression__2026-09-13__14-23-45.647.orcraft-run', "text") }}
+<p>The file is a sequence of JSON records, one per line. Its first record names the root; a <code>leaf</code>
+	record opens each test process with its place in the batch, its lineage of names below the root and the
+	endpoints it worked on; the payloads the framework sends a controller follow under that leaf; and a
+	<code>leaf_end</code> closes it with the outcome. The records of one test look like this, shortened:</p>
+{{ codeblock.block('{"record":"header","format":1,"kind":"batch","name":"Test Batch: regression","class_name":"Batch","source_path":"C:\\\\orcraft\\\\ci\\\\regression\\\\batch.py","started":"2026-09-13  14:23:45.647",...}
+{"record":"leaf","path":[0,0,0],"lineage":[["Test Suite: Orcraft Tutorial","suite"],["Test Group: Intro","group"],["Test: Hello World","test"]],"endpoints":["localhost"],"started":"2026-09-13  14:23:46.222"}
+{"record":"ipc","path":[0,0,0],"payload":{"type":"run_config","config_updates":{"name":"Test: Hello World",...}}}
+{"record":"ipc","path":[0,0,0],"payload":{"type":"log_path","path":"C:\\\\orcraft\\\\ci\\\\regression\\\\Logs\\\\...\\\\Test__Hello_World__2026-09-13__14-23-46.324.ansi"}}
+{"record":"ipc","path":[0,0,0],"payload":{"type":"progress_batch","items":[...]}}
+{"record":"leaf_end","path":[0,0,0],"status":"pass","elapsed_time":"0.005 s","warnings":false,"finished":"2026-09-13  14:23:46.636"}', "text") }}
+<p>Nothing in it needs to be read by hand: the file exists to be opened by the controller. The
+	<code>run_config</code> payload carries the values the test ran with, the <code>log_path</code> the log it
+	wrote, and the progress payloads the cases, flows and steps with their statuses and results, the same
+	stream a controller receives from a test it runs itself.</p>
+
+<h2 id="adding-the-history-to-the-tree">Adding the history to the tree</h2>
+<p>Start a new session and click <strong class="text-cyan">Add Item</strong>. The file dialog lists <code>.orcraft-run</code> files
+	alongside Python files; pick the history from the <code>Run_History</code> folder. The controller loads the
+	batch from the source the file names, and attaches the recorded runs:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/run-history/history-in-tree.png", "Execution tree with a Test Batch row named regression carrying a brown History badge, the Orcraft Tutorial suite beneath it with its Intro group open, the Hello World test carrying the cyan CI badge and a Test Run row beneath it carrying the History badge, reading Pass on localhost with its start time, finish time and elapsed time", "large") }}
+<p>The batch row carries a <strong class="text-brown">History</strong> badge: it was added from a history file, not from a
+	batch file picked by hand. Its tests carry the <strong class="text-cyan">CI</strong> badge as on the previous page, since they
+	come from the snapshot, and each of them holds a <strong class="text-success">Test Run</strong> row with the History badge of its
+	own, the sign that the run was recorded elsewhere and brought in. The row reads exactly what the run
+	produced: the status, the endpoints, the start and finish times, the elapsed time. Selecting it shows the
+	test's log in the <a class="text-accent" href="/tutorial/log-frame/">Log frame</a>, read from the log file
+	the history names, and the <a class="text-accent" href="/tutorial/details-dialog/">Details dialog</a> lays out
+	its cases, flows and steps as for any run. The batch, the suite and the groups tally these runs like the
+	runs they make themselves.</p>
+<p>The values the run used became the test's plan. Open a test's panel and the fields show what the snapshot
+	ran with, in blue as planned values, so a rerun from here runs the same configuration; the run row's own
+	panel shows the same values as the run's.</p>
+
+<h2 id="attaching-to-an-item-already-in-the-session">Attaching to an item already in the session</h2>
+<p>A snapshot that runs every night produces a history every night, and the second one belongs with the first.
+	Click <strong class="text-cyan">Add Item</strong> again and pick the same file. The controller finds that the run's batch is
+	already in the session, the same <code>batch.py</code>, and asks:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/run-history/attach-question.png", "Add Run History dialog stating that Test Batch: regression is already in this session and asking whether to attach the recorded runs to it or add the run as a separate node, with Attach to Existing, Add Separately and Cancel buttons", "small") }}
+<p><strong class="text-accent">Attach to Existing</strong> puts the recorded runs under the tests that are already there. Each test
+	gets one more run row with the History badge, and its earlier row is dimmed as superseded, exactly as when a
+	test is run twice from the controller. The batch keeps the plan it has; only runs are added:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/run-history/attached-runs.png", "The Hello World test of the regression batch with two Test Run rows beneath it, both carrying the History badge and reading Pass on localhost, the upper one dimmed as superseded and the lower one the latest", "large") }}
+<p><strong class="text-brown">Add Separately</strong> does what the first add did: a second batch node with the History badge, its
+	own tests and its own rows, for a run that should be looked at on its own. The question is asked every
+	time a match exists and nothing is remembered, so one night's run can be attached and the next one kept
+	aside. When nothing in the session matches the file, the run is added as a node without a question, and when
+	the item is in the session more than once, the question lists them by their path, label and the runs they
+	hold; picking one highlights it in the tree, so the row meant is never in doubt.</p>
+<p>The match is made on the source file, at any depth of the tree: a history of a group run finds that group
+	inside a loaded suite as readily as a batch finds a batch. That is also how a test removed from the tree by
+	mistake gets its runs back: reload the suite, add the history, attach.</p>
+
+<h2 id="narrowing-to-the-history">Narrowing to the history</h2>
+<p>Runs from files and runs made here sit side by side, and the row above the tree tells them apart. An
+	<strong class="text-brown">H</strong> toggle appears beside the <strong class="text-cyan">CI</strong> toggle while the session holds history runs.
+	Click it to see only those runs and the tests holding them:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/run-history/history-chip.png", "The Test Explorer with the H chip filled brown beside the CI chip above the tree, and the tree narrowed to the regression batch: its suites, groups and tests with their History run rows, every other row hidden", "large") }}
+<p>The toggle combines with the CI toggle and the status chips, so <strong class="text-brown">H</strong> and <strong>Fail</strong>
+	together show the recorded runs that failed. A second click turns it off, and the whole tree is back.</p>
+
+<h2 id="histories-the-controller-writes">Histories the controller writes</h2>
+<p>The controller runs each test in a process of its own, and that process writes the history of that one test,
+	<code>Test__Hello_World__...orcraft-run</code>, like any framework run. A run over a group, a suite, a batch,
+	the session or a selection is more than its tests, so the controller writes the whole of it too, next to its
+	own <code>Logs</code>:</p>
+{{ codeblock.block('C:\\orcraft\\Run_History\\
+  GUI__Group__Intro__2026-09-13__14-27-12.787.orcraft-run
+  Test__Hello_World__2026-09-13__14-27-13.430.orcraft-run
+  GUI__Suite__Orcraft_Tutorial__2026-09-13__14-27-22.140.orcraft-run
+  GUI__Test__Hello_World__2026-09-13__14-27-22.266.orcraft-run
+  Test__Hello_World__2026-09-13__14-27-22.808.orcraft-run
+  Test__Hello_World__2026-09-13__14-27-22.928.orcraft-run', "text") }}
+<p>The <code>GUI</code> prefix marks a file the controller wrote. Running the <strong>Intro</strong> group from its
+	panel made the first pair: the controller's file with the group as root and one leaf for Hello World, and the
+	test process's own file beside it. A run over the session or over a selection spans several top-level items,
+	and none of them is the root of the others, so such a run makes one file per top-level item its tests belong
+	to. The second set came from a selection of the tutorial suite's Hello World and the Hello World test item
+	added on its own: one file with the suite as root, one with the test item as root, and the two test
+	processes' files. Each file opens on its own, and a fan-out run records one leaf per permutation, as the CI
+	run does.</p>
+<p>These files are what makes a run portable. A run made on one controller can be added to another, a run
+	from a session that was replaced can be brought into the new one, and an AI agent that ran a suite from a
+	script hands over its history for the lab to look at in the tree.</p>
+
+<h2 id="history-runs-in-sessions">History runs in sessions</h2>
+<p>A history run is an ordinary run once it is in the tree. Saving the session records the rows with their
+	badges, and loading it brings them back marked as they were, together with the H toggle. <strong>Clean
+	Up</strong> removes superseded history rows like any other, <strong class="text-danger">Clear</strong> removes them all, and a
+	node added from a history file is reloaded, unplanned or removed like a node added from a batch file.</p>
+
+<p>The snapshot pointed back at two repositories, and the controller keeps an eye on where each of them stands.
+	The next page, <a class="text-accent" href="/tutorial/git-status-frame/">Git Status Frame</a>, shows the panel
+	that does so.</p>
