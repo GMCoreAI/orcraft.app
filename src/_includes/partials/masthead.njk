@@ -24,40 +24,44 @@
   <div class="masthead__principles">
     <div class="container">
       <div class="pillars" data-reveal-group>
-        <article class="pillar reveal">
-          <div class="pillar__head">
+        <details class="pillar reveal">
+          <summary class="pillar__head">
             <span class="pillar__icon">{% icon "stack-2" %}</span>
             <h3 id="test-suite-standardization" class="pillar__title">Test suite standardization</h3>
-          </div>
+            <span class="pillar__marker">{% icon "chevron-right" %}</span>
+          </summary>
           <p class="pillar__text">Every suite has the
             <a class="text-accent" href="/framework/#component-model">same structure</a> in plain Python. An AI
             agent writes it with no API to learn; the controller derives the GUI from it.</p>
-        </article>
-        <article class="pillar reveal">
-          <div class="pillar__head">
+        </details>
+        <details class="pillar reveal">
+          <summary class="pillar__head">
             <span class="pillar__icon">{% icon "code" %}</span>
             <h3 id="continuous-test-development" class="pillar__title">Continuous test development</h3>
-          </div>
+            <span class="pillar__marker">{% icon "chevron-right" %}</span>
+          </summary>
           <p class="pillar__text">The suite grows with the system. On demand or on a schedule, the AI agent adds
             the missing tests, and every fixed bug becomes a test.</p>
-        </article>
-        <article class="pillar reveal">
-          <div class="pillar__head">
+        </details>
+        <details class="pillar reveal">
+          <summary class="pillar__head">
             <span class="pillar__icon">{% icon "hierarchy" %}</span>
             <h3 id="orchestration" class="pillar__title">Orchestration</h3>
-          </div>
+            <span class="pillar__marker">{% icon "chevron-right" %}</span>
+          </summary>
           <p class="pillar__text">When asked or when scheduled, the AI agent picks the machines and runs
             <a class="text-accent" href="/setup/">across the lab</a>. The controller ships the package and
             collects the results.</p>
-        </article>
-        <article class="pillar reveal">
-          <div class="pillar__head">
+        </details>
+        <details class="pillar reveal">
+          <summary class="pillar__head">
             <span class="pillar__icon">{% icon "infinity" %}</span>
             <h3 id="continuous-integration" class="pillar__title">Continuous integration</h3>
-          </div>
+            <span class="pillar__marker">{% icon "chevron-right" %}</span>
+          </summary>
           <p class="pillar__text">The same suite runs unattended in the pipeline, from a snapshot exported from
             the GUI or a batch the AI agent writes, with the same results.</p>
-        </article>
+        </details>
       </div>
     </div>
   </div>

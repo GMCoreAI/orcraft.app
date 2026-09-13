@@ -138,10 +138,12 @@
   }
 }
 
-/* The thesis under the masthead: one pillar per card. */
+/* The thesis under the masthead: one pillar per card. Each card folds: the head
+   is always shown, the text opens on a click, and only the opened card grows. */
 .pillars {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
+  align-items: start;
   gap: var(--space-6);
 }
 
@@ -155,13 +157,43 @@
   background: var(--color-surface-alt);
   box-shadow: var(--shadow-card);
   text-align: left;
+  transition: border-color var(--transition-fast);
+}
+
+.pillar[open],
+.pillar:hover {
+  border-color: var(--color-accent);
 }
 
 .pillar__head {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  margin-bottom: var(--space-4);
+  cursor: pointer;
+  list-style: none;
+}
+
+.pillar__head::-webkit-details-marker {
+  display: none;
+}
+
+.pillar__head:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
+}
+
+.pillar__marker {
+  display: inline-flex;
+  flex: none;
+  margin-left: auto;
+  color: var(--color-text-muted);
+  transition: transform var(--transition-fast);
+}
+
+.pillar[open] .pillar__marker {
+  transform: rotate(90deg);
+  color: var(--color-accent-strong);
 }
 
 .pillar__icon {
@@ -183,7 +215,7 @@
 }
 
 .pillar__text {
-  margin: 0;
+  margin: var(--space-4) 0 0;
   color: var(--color-text-muted);
   font-size: var(--font-size-sm);
   line-height: 1.55;
