@@ -26,10 +26,10 @@ code, to GUI, to CI, with an AI agent at the keyboard.
 ## Visual
 
 - Before the narration: your logo animation and sonic (CapCut, not recorded).
-- "So, what is Orcraft?": the controller with the tutorial session loaded, a slow hold, no cursor movement. `controller open`
+- "So, what is Orcraft?": the controller with the tutorial suite loaded; a group is run and the tree starts moving. `controller open; ~run "Statuses and Results"`
 - "Tests are written in plain Python": cut to a test file in the editor, the test class with its config fields and a dimension. `editor orcraft-test-suite-tutorial/test_group_advanced_configuration_parameters/test_matrix_and_cases/test_matrix_and_cases.py:13`
-- "The controller reads that code and builds the GUI from it": back to the controller, the same test selected, its generated configuration panel filling the right side. `controller select "Matrix and Cases"`
-- "from the GUI, from the command line, or from CI": three quick cuts, a group's panel with its Run button, a terminal running a test from the command line, the run file of a CI snapshot. `controller select "Advanced Configuration Parameters" | terminal 01-cli | editor {ci}/ci_run.py`
+- "The controller reads that code and builds the GUI from it": back to the controller, another group is started, then the matrix test is selected and its generated configuration panel fills the right side. `controller ~run "Structure and Lifecycle"; ~select "Matrix and Cases"`
+- "from the GUI, from the command line, or from CI": three quick cuts, a group's panel with its Run button, a terminal running a test from the command line, the nightly validation runs on GitHub Actions. `controller select "Advanced Configuration Parameters" | terminal 01-cli x2 | browser https://github.com/GMCoreAI/ci-workflows/actions/workflows/nightly-validation.yml "ci-workflows"`
 - "on a fleet of remote machines": the Endpoints group selected, the fleet cards below. `controller select "Endpoints"`
-- "And an AI agent can do all of it": a terminal with an AI agent request typed in, a few lines of its answer. `terminal 01-agent`
-- "In the next few minutes": back to the controller, hold until the narration ends. `controller select "Matrix and Cases"`
+- "And an AI agent can do all of it": a terminal with an AI agent request typed in; the agent writes a run file and runs a test on GMG-LEGACY for real. `terminal 01-agent`
+- "In the next few minutes": back to the controller, the suite selected with the results of the runs, hold until the narration ends. `controller select "Orcraft Tutorial"`

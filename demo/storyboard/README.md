@@ -23,13 +23,21 @@ pace and are replaced by the generated clip lengths.
 
 The shot vocabulary:
 
-- `controller open` - the tutorial suite loaded with the fleet endpoints.
-- `controller select "<node>"` - that tree node selected, its panel shown.
+- `controller <step>; <step>` - the controller window after the steps. A step
+  prefixed with `~` happens during the recording, so the viewer sees it. Steps:
+  `open` (the tutorial suite loaded with the fleet endpoints and the maze
+  folder configured), `select "<node>"` (that tree node selected, its panel
+  shown), `run "<node>"` (Run pressed on that node and confirmed).
 - `controller` - the controller as the previous cut left it.
 - `editor <path>[:<line>]` - the file open in VS Code, path relative to
   `C:\orcraft`; `{ci}` stands for its newest CI snapshot folder.
-- `terminal <name>` - the demo terminal playing `transcripts/<name>.txt`.
-- Several of these joined with ` | ` are quick cuts sharing the phrase's time.
+- `browser <url> "<title>"` - the page in the default browser's app window,
+  found by a fragment of its title.
+- `terminal <name>` - the demo terminal playing `transcripts/<name>.txt`. A
+  transcript's `!run` runs a real command at build time; the `runs` folder
+  holds the run files an AI agent would write, copied to `C:\orcraft\runs`.
+- Several of these joined with ` | ` are quick cuts sharing the phrase's time;
+  `x2` after a part gives it twice the share.
 
 A new scene is therefore one markdown file here; the runner changes only when
 a scene needs a kind of shot that does not exist yet.
