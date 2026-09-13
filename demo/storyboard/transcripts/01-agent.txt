@@ -1,0 +1,11 @@
+prompt: >
+$ Run the tutorial suite on GMG-TEST-1 and GMG-TEST-3 and tell me what failed.
+~ 0.8
+
+Reading endpoints.json: 9 endpoints, picking GMG-TEST-1 (Windows 11) and GMG-TEST-3 (Linux).
+Writing run_tutorial.py: the suite with both endpoints set on every test.
+Running it...
+~ 1.2
+Done: 64 cases, 62 passed, 2 failed.
+Failed: Status: Fail and Status: Error, both in the Statuses and Results group.
+Both fail on purpose, they demonstrate the statuses. Nothing to fix.

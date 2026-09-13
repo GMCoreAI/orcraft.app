@@ -1,0 +1,4 @@
+prompt: PS C:\orcraft\orcraft-test-suite-tutorial\test_group_intro\test_hello_world>
+cwd: C:\orcraft\orcraft-test-suite-tutorial\test_group_intro\test_hello_world
+$ python test_hello_world.py
+!run
