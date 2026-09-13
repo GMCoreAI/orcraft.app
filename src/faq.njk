@@ -23,14 +23,17 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
     <details class="faq__item">
       <summary class="faq__question"><h3 class="faq__title" id="what-is-orcraft">What is Orcraft?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
-        <p>Orcraft is the platform for test development and orchestration that lets you and your AI agents run the entire testing operation. It has two halves: a plain-Python
-          <a class="text-accent" href="/framework/">test framework</a> that gives suites a defined structure, and
-          a controller that runs those suites from a GUI, the command line or a CI pipeline, on the local machine
-          or across remote endpoints, and collects the logs and results in one place.</p>
-        <p>An <a class="text-accent" href="/ai-agents/">AI agent</a> works with both halves. It writes suites in
-          the framework's structure, runs them on the machines registered in the controller and reads the logs
-          the runs leave behind. The person decides what to test, reviews what the AI agent wrote in the
-          controller GUI, runs it and corrects it.</p>
+        <p>Orcraft is the platform for test development and orchestration that lets you and your AI agents run the entire testing operation.
+          A plain-Python <a class="text-accent" href="/framework/">test framework</a> gives suites a defined structure.
+          A controller runs those suites from a GUI, the command line or a CI pipeline and collects the logs and
+          results in one place. An <a class="text-accent" href="/setup/endpoints/">endpoint application</a> on each
+          test machine lets the controller run tests there, so a run covers the local machine or a fleet of remote
+          machines with the same suites.</p>
+        <p><a class="text-accent" href="/ai-agents/">AI agents</a> work across all of them. They write suites in
+          the framework's structure, run them on the machines registered in the controller and read the logs
+          the runs leave behind. The person decides what to test, reviews what the AI agents wrote in the
+          controller GUI, runs it and corrects it, unless the whole loop is handed to the AI agents and runs
+          fully automated.</p>
       </div>
     </details>
 

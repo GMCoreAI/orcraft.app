@@ -5,7 +5,11 @@
    scroll restoration finds the wrong page and gives up. The router stamps
    every history entry with an id, remembers where each one was scrolled to,
    and restores that on Back/Forward - across pages and between headings of
-   the same page alike. A fresh jump to a heading is left to the browser. */
+   the same page alike. A fresh jump to a heading is left to the browser.
+
+   The page hooks run before the position is restored, so anything they open
+   on arrival (an FAQ answer named by the hash) is already in the layout when
+   the reader is put back where they left. */
 
 import { qs, qsa, on } from "../core/dom.js";
 
@@ -29,7 +33,7 @@ function markCurrent(pathname) {
   });
 }
 
-async function loadPage(url, { push, scrollY }) {
+async function loadPage(url, { push, scrollY, onSwapped }) {
   const container = qs(CONTENT_SELECTOR);
   if (!container) return;
 
@@ -50,6 +54,7 @@ async function loadPage(url, { push, scrollY }) {
   const target = new URL(url, window.location.origin);
   if (push) window.history.pushState({ entry: newEntryId() }, "", target);
   markCurrent(target.pathname);
+  onSwapped?.(document.body.dataset.page);
 
   const anchored = target.hash && document.getElementById(target.hash.slice(1));
   if (typeof scrollY === "number") {
@@ -91,11 +96,10 @@ export function initRouter(onPageLoaded) {
   on(window, "scroll", () => positions.set(currentEntry, window.scrollY), { passive: true });
 
   const navigate = (url, options) =>
-    loadPage(url, options)
-      .then((page) => {
+    loadPage(url, { ...options, onSwapped: onPageLoaded })
+      .then(() => {
         currentPath = window.location.pathname;
         currentEntry = stampEntry();
-        onPageLoaded?.(page);
       })
       .catch(() => {
         window.location.href = url;

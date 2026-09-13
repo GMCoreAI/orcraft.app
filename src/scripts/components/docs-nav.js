@@ -22,6 +22,10 @@ function revealHeading(hash) {
 
 function markCurrentHeading() {
   revealHeading(window.location.hash);
+  markCurrentLink();
+}
+
+function markCurrentLink() {
   const current = window.location.pathname + window.location.hash;
 
   qsa(".docs-nav__link").forEach((link) => {
@@ -34,8 +38,33 @@ function markCurrentHeading() {
   });
 }
 
+/* An answer opened by hand names itself in the URL hash, without a scroll and
+   without a new history entry, so the page comes back with that answer open
+   after a link in it was followed and the reader pressed Back. The router
+   keeps its own entry id in the history state, so the state is carried over. */
+function rememberOpenAnswer(details) {
+  const heading = qs("[id]", details);
+  if (!heading) return;
+
+  const hash = `#${heading.id}`;
+  const url = window.location.pathname + window.location.search;
+  if (details.open) {
+    if (window.location.hash === hash) return;
+    window.history.replaceState(window.history.state, "", url + hash);
+  } else if (window.location.hash === hash) {
+    window.history.replaceState(window.history.state, "", url);
+  } else {
+    return;
+  }
+  markCurrentLink();
+}
+
 export function initDocsNav() {
   if (!qs(".docs-nav")) return;
+
+  qsa(".faq details").forEach((details) => {
+    on(details, "toggle", () => rememberOpenAnswer(details));
+  });
 
   qsa(".docs-nav__toggle[aria-expanded]").forEach((toggle) => {
     on(toggle, "click", () => {
