@@ -16,10 +16,23 @@ protocol); a scene is built with `python orcraft-controller/scripts/demo/build.p
 and lands in `demo/build`, which is not versioned.
 
 One file per scene, numbered in playing order. Each file has a Narration
-section (what Mark says, sent as is to ElevenLabs) and a Visual section (what
-the controller does on screen while he says it, driven by the runner).
-Timings are estimates at Mark's pace and are replaced by the generated clip
-lengths.
+section (what Mark says, sent as is to ElevenLabs) and a Visual section: one
+bullet per cut, opening with the narration phrase the cut lands on, then what
+the viewer sees, then the shot in backticks. Timings are estimates at Mark's
+pace and are replaced by the generated clip lengths.
+
+The shot vocabulary:
+
+- `controller open` - the tutorial suite loaded with the fleet endpoints.
+- `controller select "<node>"` - that tree node selected, its panel shown.
+- `controller` - the controller as the previous cut left it.
+- `editor <path>[:<line>]` - the file open in VS Code, path relative to
+  `C:\orcraft`; `{ci}` stands for its newest CI snapshot folder.
+- `terminal <name>` - the demo terminal playing `transcripts/<name>.txt`.
+- Several of these joined with ` | ` are quick cuts sharing the phrase's time.
+
+A new scene is therefore one markdown file here; the runner changes only when
+a scene needs a kind of shot that does not exist yet.
 
 ## Scenes
 

@@ -26,17 +26,10 @@ code, to GUI, to CI, with an AI agent at the keyboard.
 ## Visual
 
 - Before the narration: your logo animation and sonic (CapCut, not recorded).
-- "So, what is Orcraft?": the controller with the tutorial session loaded,
-  a slow hold, no cursor movement.
-- "Tests are written in plain Python": cut to a test file in the editor, the
-  test class with its config fields and a dimension.
-- "The controller reads that code and builds the GUI from it": back to the
-  controller, the same test selected, its generated configuration panel
-  filling the right side.
-- "from the GUI, from the command line, or from CI": three quick cuts, the
-  Run button, a terminal running the CLI, the CI export dialog.
-- "on a fleet of remote machines": the Endpoints panel with the fleet cards.
-- "And an AI agent can do all of it": a terminal with an AI agent request
-  typed in, a few lines of its answer.
-- "In the next few minutes": back to the controller, hold until the narration
-  ends.
+- "So, what is Orcraft?": the controller with the tutorial session loaded, a slow hold, no cursor movement. `controller open`
+- "Tests are written in plain Python": cut to a test file in the editor, the test class with its config fields and a dimension. `editor orcraft-test-suite-tutorial/test_group_advanced_configuration_parameters/test_matrix_and_cases/test_matrix_and_cases.py:13`
+- "The controller reads that code and builds the GUI from it": back to the controller, the same test selected, its generated configuration panel filling the right side. `controller select "Matrix and Cases"`
+- "from the GUI, from the command line, or from CI": three quick cuts, a group's panel with its Run button, a terminal running a test from the command line, the run file of a CI snapshot. `controller select "Advanced Configuration Parameters" | terminal 01-cli | editor {ci}/ci_run.py`
+- "on a fleet of remote machines": the Endpoints group selected, the fleet cards below. `controller select "Endpoints"`
+- "And an AI agent can do all of it": a terminal with an AI agent request typed in, a few lines of its answer. `terminal 01-agent`
+- "In the next few minutes": back to the controller, hold until the narration ends. `controller select "Matrix and Cases"`
