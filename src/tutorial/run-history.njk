@@ -118,6 +118,16 @@ description: "Every run writes a run history file next to its logs; this page ad
 	from a session that was replaced can be brought into the new one, and an AI agent that ran a suite from a
 	script hands over its history for the lab to look at in the tree.</p>
 
+<h2 id="a-run-from-another-machine">A run from another machine</h2>
+<p>The paths inside a history file are the machine's that wrote it. A pipeline's run comes back as an
+	artifact: the run's working folder, with <code>Logs</code> and <code>Run_History</code> side by side, downloaded
+	and unzipped anywhere. Add the <code>.orcraft-run</code> file from it as before. The controller does not find the
+	batch file at the recorded path, so it asks where that file is on this machine, with a file dialog opened on
+	the file's name; point it at the checkout that holds the snapshot. The logs it finds on its own: a run
+	writes them beside its history, and the artifact keeps them there, so every run row opens its log from the
+	unzipped folder. The runs then show as they do for a run made here, with the pipeline's endpoints, times
+	and results.</p>
+
 <h2 id="history-runs-in-sessions">History runs in sessions</h2>
 <p>A history run is an ordinary run once it is in the tree. Saving the session records the rows with their
 	badges, and loading it brings them back marked as they were, together with the H toggle. <strong>Clean
