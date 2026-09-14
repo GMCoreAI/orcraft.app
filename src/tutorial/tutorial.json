@@ -19,7 +19,6 @@
     { "label": "Matrix Dimensions Randomization", "slug": "matrix-dimensions-randomization/" },
     { "label": "Matrix Lambda Dimensions", "slug": "matrix-lambda-dimensions/" },
     { "label": "Orcraft Statuses", "slug": "orcraft-statuses/" },
-    { "label": "Calling exit() in a Suite", "slug": "calling-exit/" },
     { "label": "Checkpoints", "slug": "checkpoints/" },
     { "label": "Result Fields", "slug": "result-fields/" },
     { "label": "Structure and Lifecycle", "slug": "structure-and-lifecycle/" },

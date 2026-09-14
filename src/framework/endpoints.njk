@@ -285,7 +285,7 @@ if self.wait_for_endpoint_state(
   from <a class="text-accent" href="/setup/endpoints/#secure-endpoint-connection">how the endpoint was
   registered with the controller</a>. Tests do not handle credentials: the security
   context follows the endpoint field, and flows and steps - including those called from
-  <a class="text-accent" href="/framework/lifecycle-hooks/">lifecycle hooks</a> - inherit it
+  <a class="text-accent" href="/framework/setup-teardown-exit/">setup and teardown methods</a> - inherit it
   automatically.</p>
 
 <p><code>secure_enabled</code> on an endpoint field overrides the negotiated setting for that field, which

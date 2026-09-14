@@ -10,7 +10,7 @@ description: "Compose a test body from flows and steps, and add the setup and te
 <p>The tests so far did their work inside <code>_run_case</code>. A real test is usually built from smaller parts:
 	<a class="text-accent" href="/framework/steps/">steps</a> that each do one thing, and
 	<a class="text-accent" href="/framework/flows/">flows</a> that run steps in order. Around the cases, optional
-	<a class="text-accent" href="/framework/lifecycle-hooks/">lifecycle hooks</a> prepare and release what the cases
+	<a class="text-accent" href="/framework/setup-teardown-exit/">lifecycle hooks</a> prepare and release what the cases
 	share. The <strong>Structure and Lifecycle</strong> group shows both, one test at a time: <strong>Steps and
 	Flows</strong> composes a test body, and the three setup and teardown tests each add one lifecycle scope to the
 	previous one.</p>
@@ -320,7 +320,7 @@ def _case_teardown(self, case: OrcraftTestCase, test_cycle_index: int) -> None:
 	and so on outward again. Each hook row holds the flow and step it ran, so a failure in a hook is placed as
 	precisely as a failure in a case.</p>
 <p>The hooks and the order they run in are listed in the
-	<a class="text-accent" href="/framework/lifecycle-hooks/">framework reference</a>, together with what happens
+	<a class="text-accent" href="/framework/setup-teardown-exit/">framework reference</a>, together with what happens
 	when a hook raises at each scope.</p>
 
 <p>Every step on this page ran on the local machine. The next group, <strong>Endpoints</strong>, sends steps to

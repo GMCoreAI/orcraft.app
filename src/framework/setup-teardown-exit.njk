@@ -1,18 +1,18 @@
 ---
-title: Framework · Orcraft Lifecycle Hooks
+title: Framework · Orcraft Setup, Teardown and Exit
 key: framework
-description: "The six optional setup and teardown hooks around a test, its cycles and its cases."
+description: "The optional setup and teardown methods around a test, its cycles and its cases, and what a raise or an exit() ends at each scope."
 ---
 {% import "partials/code-block.njk" as codeblock %}
-<h1>Orcraft Lifecycle Hooks</h1>
+<h1>Orcraft Setup, Teardown and Exit</h1>
 <p>Work that has to happen around the cases rather than inside them - launching an application, opening a
-  connection, generating shared inputs - belongs in a lifecycle hook. A test can hook three scopes, each
-  with a setup and a teardown, and every one of them is optional.</p>
+  connection, generating shared inputs - belongs in a setup or teardown method. A test can bracket three
+  scopes, each with a setup and a teardown, and every one of them is optional.</p>
 
 <table>
   <thead>
     <tr>
-      <th>Hook</th>
+      <th>Method</th>
       <th>Runs</th>
       <th>Typical use</th>
     </tr>
@@ -56,9 +56,9 @@ description: "The six optional setup and teardown hooks around a test, its cycle
   share - an application process, a device connection - belongs in <code>_setup</code>. Something that
   must be pristine at the start of each pass through the matrix belongs in
   <code>_test_cycle_setup</code>. Something derived from the case parameters belongs in
-  <code>_case_setup</code>, which is the only hook that receives the case.</p>
+  <code>_case_setup</code>, which is the only one that receives the case.</p>
 
-<p>The framework knows which hooks a test overrides and shows them in the run plan, so the extra
+<p>The framework knows which of these methods a test overrides and shows them in the run plan, so the extra
   lifecycle work is visible before the run rather than a surprise in the log.</p>
 
 <h2 id="test-scope">Test scope</h2>
@@ -89,7 +89,7 @@ def _teardown(self) -> None:
 		MyCleanupFlowConfig(workspace_folder=self._workspace_folder())
 	).run()') }}
 
-<p>Flows and steps called from a hook inherit the same endpoint and RPC security context as a case body,
+<p>Flows and steps called from a setup or teardown inherit the same endpoint and RPC security context as a case body,
   so setup work can reuse the very flows the cases use. That is worth leaning on: preparing inputs with
   the same flow that a case exercises keeps one implementation instead of two.</p>
 
@@ -108,9 +108,9 @@ def _case_teardown(self, case: OrcraftTestCase, test_cycle_index: int) -> None:
   so a case that repeats three times gets one setup, three executions and one teardown, not three of
   each.</p>
 
-<h2 id="failures">Hook failures</h2>
-<p>Raising from a setup hook is how you say the work it was guarding must not proceed. Raising from a teardown
-  hook says the scope could not be closed cleanly. Either way the blast radius follows the scope of the hook,
+<h2 id="failures">Setup and teardown failures</h2>
+<p>Raising from a setup is how you say the work it was guarding must not proceed. Raising from a teardown
+  says the scope could not be closed cleanly. Either way the blast radius follows the scope of the method,
   and the run goes on with the next scope of the same kind:</p>
 
 <table>
@@ -150,19 +150,69 @@ def _case_teardown(self, case: OrcraftTestCase, test_cycle_index: int) -> None:
 
 <p>When a setup raises, the matching teardown is skipped, because there is nothing to unwind - a setup that
   did not complete did not acquire what its teardown would release. The scope's error description names the
-  hook, as in "Case setup failed: ..." or "Test cycle teardown failed: ...", followed by the message.</p>
+  method, as in "Case setup failed: ..." or "Test cycle teardown failed: ...", followed by the message.</p>
 
-<p>A call to <code>exit()</code> inside a hook has the same effect as raising from it, with
-  "exit() called by user" as the message. The tutorial's
-  <a class="text-accent" href="/tutorial/calling-exit/">Calling exit() in a Suite</a> page goes through every
-  place an exit can happen.</p>
+<p>A call to <code>exit()</code> inside a setup or teardown has the same effect as raising from it, with
+  "exit() called by user" as the message; <a class="text-accent" href="#calling-exit">Calling exit()</a> below
+  goes through every place an exit can happen.</p>
 
 <p>The mirror-image guarantee holds for the success path: once a setup completes, its teardown runs even
-  if the work between them raised. Resources acquired in a hook are released whether the cases passed,
+  if the work between them raised. Resources acquired in a setup are released whether the cases passed,
   failed or errored.</p>
 
-<h2 id="checkpoints-in-hooks">Checkpoints in hooks</h2>
-<p>Inside a hook, a failing
+<h2 id="calling-exit">Calling exit()</h2>
+<p>Python's <code>exit()</code> and <code>sys.exit()</code> raise <code>SystemExit</code>, and a plain script ends
+  the moment one is raised. In a suite that would be the wrong outcome: one case giving up must not take the
+  rest of the run with it. So the framework treats an exit exactly like an uncaught exception. The component the
+  call happened in ends with <code class="status-error">ERROR</code> and the error description
+  <code>exit() called by user</code>, no traceback is logged, and the run goes on with whatever comes next at
+  that level. The exit's own code is discarded: a test run from the command line exits with the framework's
+  error code, the same one an exception produces.</p>
+
+<p>An exit in the case body ends that case. The case cycle it happened in is reported as
+  <code class="status-error">ERROR</code>, the case is counted as one executed, errored case, its remaining case
+  cycles still run, its <code>_case_teardown</code> still runs, and the next case starts as usual.</p>
+
+<p>An exit inside <code>_run_step</code> ends that step, whether the step runs locally or on an endpoint. On an
+  endpoint the step's result comes back to the runner like any other result, and the endpoint application keeps
+  serving. The flow that ran the step receives the errored step result and, if it hands it on with
+  <code>handle_errors</code>, ends with the same description; the case that ran the flow does the same, and the run
+  continues with the next case. An exit directly inside <code>_run_flow</code> ends the flow the same way.</p>
+
+{{ codeblock.block('def _run_flow(self) -> OrcraftTestFlowResult:
+	step_result = self.run_step(StepLaunchApp, app_folder=self.config.app_folder)
+	# An exit inside the step arrives here as an ERROR result, not as an exception.
+	if self.handle_errors(step_result, self.result):
+		return self.result
+	...') }}
+
+<p>An exit in a setup or teardown ends the scope it guards, exactly as raising from it does: the outcome per
+  method is the <a class="text-accent" href="#failures">Setup and teardown failures</a> table above, with
+  <code>exit() called by user</code> as the message.</p>
+
+<p>The test's own status is the worst of what happened inside it, so a test with one errored case, cycle, setup or teardown
+  reads <code class="status-error">ERROR</code> even when everything else passed, and its error description is
+  the first one recorded. The counters still tell the full story: the cases that ran and passed are counted as
+  passed, the errored ones as errors, and none of them as done.</p>
+
+<p>A group or a suite has no code of its own that runs; it holds tests, and each test runs in its own process,
+  so an exit anywhere inside one test ends at most that test. The group or suite records it as
+  <code class="status-error">ERROR</code> and runs its other members as planned.</p>
+
+<p>The one place an exit is meant to end the process is the script that runs the suite, after <code>run()</code>
+  has returned. That is how a CI job or a script written by an
+  <a class="text-accent" href="/ai-agents/running/">AI agent</a> turns the result into a process exit code:</p>
+
+{{ codeblock.block('if __name__ == "__main__":
+	result = MyTest().run()
+	sys.exit(0 if result.status is OrcraftStatus.PASS else 1)') }}
+
+<p>Inside a component, reach for a checkpoint with <code>is_error=True</code> or assign
+  <code>error_description</code> instead of calling <code>exit()</code>: the outcome is the same error, with a
+  message that says why.</p>
+
+<h2 id="checkpoints-in-setup-and-teardown">Checkpoints in setup and teardown</h2>
+<p>Inside a setup or teardown, a failing
   <a class="text-accent" href="/framework/statuses/#checkpoints"><code>checkpoint</code></a>
   is always treated as an <code class="status-error">ERROR</code>, whether or not <code>is_error</code> was passed:</p>
 
@@ -174,7 +224,7 @@ def _case_teardown(self, case: OrcraftTestCase, test_cycle_index: int) -> None:
 	)') }}
 
 <p>In a case body the same call would record a failure and carry on, because a case is expected to report
-  every problem it finds. In a hook it aborts the scope instead - a precondition that does not hold is
+  every problem it finds. In a setup or teardown it aborts the scope instead - a precondition that does not hold is
   not a finding about the system under test, it is a reason not to test it yet. The failure is rendered
   as a clean error message rather than a traceback, since a lifecycle assertion failing is an expected
   outcome, not a crash.</p>

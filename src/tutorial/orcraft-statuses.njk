@@ -115,9 +115,9 @@ description: "How a case reports pass, pass with warning, fail or error, and how
 	result to count.</p>
 <p>The error ends the case, not the test. Its cause may belong to that one case, or be sporadic and gone by the
 	next one, so the framework goes on with the next case and lets it report its own outcome. The same holds for a
-	call to <code>exit()</code> anywhere in a test; the
-	<a class="text-accent" href="/tutorial/calling-exit/">Calling exit() in a Suite</a> page goes through every
-	place it can happen. Open the Details dialog:</p>
+	call to <code>exit()</code> anywhere in a test; the framework reference's
+	<a class="text-accent" href="/framework/setup-teardown-exit/#calling-exit">Calling exit()</a> section goes through
+	every place it can happen. Open the Details dialog:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/orcraft-statuses/error-details.png", "Status: Error Details view with the two v3.0.0 cases reading Pass and the two v4.0.0 cases reading Error with their error description, the summary reading 4 planned, 2 done and 2 passed, and an Items Filter offering Pass and Error chips", "large") }}
 <p>The two <code>v3.0.0</code> cases passed and both <code>v4.0.0</code> cases errored, each with the message in
 	its <strong>Error Description</strong> column. Every case was reached, but the errored ones are missing from

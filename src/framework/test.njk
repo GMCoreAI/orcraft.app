@@ -412,7 +412,7 @@ if __name__ == "__main__":
 
 <p>Cycles are a test-level idea. Suites, groups, flows and steps have no cycle counter of their own: a
   suite repeats because the tests inside it do, and a flow repeats because the case that calls it does.
-  <a class="text-accent" href="/framework/lifecycle-hooks/">Lifecycle hooks</a> gives each cycle scope its
+  <a class="text-accent" href="/framework/setup-teardown-exit/">Orcraft Setup, Teardown and Exit</a> gives each cycle scope its
   own setup and teardown when per-cycle state has to be rebuilt.</p>
 
 <h2 id="lifecycle">Setup and teardown</h2>
@@ -427,7 +427,7 @@ if __name__ == "__main__":
 def _teardown(self) -> None:
 	self.app.stop()') }}
 
-<p>Every hook is optional. <a class="text-accent" href="/framework/lifecycle-hooks/">Orcraft Lifecycle Hooks</a>
+<p>Every hook is optional. <a class="text-accent" href="/framework/setup-teardown-exit/">Orcraft Setup, Teardown and Exit</a>
   covers all six of them and what happens when one fails.</p>
 
 <h2 id="standalone">Standalone execution</h2>

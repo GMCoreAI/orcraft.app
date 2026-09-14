@@ -12,7 +12,7 @@
     { "label": "Orcraft Test Step", "slug": "steps/" },
     { "label": "Orcraft Test Flow", "slug": "flows/" },
     { "label": "Orcraft Endpoints", "slug": "endpoints/" },
-    { "label": "Orcraft Lifecycle Hooks", "slug": "lifecycle-hooks/" },
+    { "label": "Orcraft Setup, Teardown and Exit", "slug": "setup-teardown-exit/" },
     { "label": "Orcraft Test Group", "slug": "groups/" },
     { "label": "Orcraft Test Suite", "slug": "suites/" },
     { "label": "Orcraft Test Batch", "slug": "batches/" },

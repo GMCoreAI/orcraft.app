@@ -50,9 +50,9 @@ description: "OrcraftStatus, checkpoints, warnings and how a failure travels up 
 
 <p>An error ends the component it happened in, not the run around it. A case that errors is counted as one
   executed, errored case, and the test goes on with the next case - the cause may be specific to that case, or
-  sporadic and gone by the next one. The tutorial's
-  <a class="text-accent" href="/tutorial/calling-exit/">Calling exit() in a Suite</a> page lists what an
-  error ends at every place it can happen.</p>
+  sporadic and gone by the next one. The Orcraft Setup, Teardown and Exit page's
+  <a class="text-accent" href="/framework/setup-teardown-exit/#calling-exit">Calling exit()</a> section lists what
+  an error ends at every place it can happen.</p>
 
 
 <h3 id="setting-a-status">Setting a status</h3>
@@ -192,7 +192,7 @@ if flow_result.status is OrcraftStatus.ERROR:
   the work would be meaningless - a missing file, an application that did not start - and the component
   is marked <code class="status-error">ERROR</code> and the scope abandoned instead.</p>
 
-<p>Inside a <a class="text-accent" href="/framework/lifecycle-hooks/">setup or teardown hook</a> a failing
+<p>Inside a <a class="text-accent" href="/framework/setup-teardown-exit/">setup or teardown</a> a failing
   checkpoint is always treated as an error, whether or not <code>is_error</code> was passed. A lifecycle
   assertion that does not hold means the work it was guarding should not proceed.</p>
 
