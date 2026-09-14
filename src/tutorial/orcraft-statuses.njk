@@ -9,7 +9,7 @@ description: "How a case reports pass, pass with warning, fail or error, and how
 <h1>Orcraft Statuses</h1>
 <p>Every result in Orcraft carries a <a class="text-accent" href="/framework/statuses/">status</a> that says how the
 	run went. A case starts at <strong class="status-pass">PASS</strong> and is moved from there by what the test
-	reports: a warning that leaves it passing, a failure, or an error that stops it. This page uses the three
+	reports: a warning that leaves it passing, a failure, or an error that ends it without a verdict. This page uses the three
 	<strong>Status</strong> tests of the tutorial suite's <strong>Statuses and Results</strong> group, one per
 	outcome, and shows how each one looks in the execution tree, the log and the Details dialog.</p>
 <p>The three tests share the same shape. Each runs the Maze application over a small matrix that mixes valid inputs
@@ -106,17 +106,22 @@ description: "How a case reports pass, pass with warning, fail or error, and how
 <p>For <code>v4.0.0</code> the folder does not exist, launching the executable raises an exception, and nothing in
 	the test catches it. An uncaught exception is what produces <strong class="status-error">ERROR</strong>: the case
 	could not reach a verdict, so there is no finding about the application, only about the run. Run the test:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/orcraft-statuses/running-error.png", "Completed Status: Error run shown in orange in the execution tree with 4 planned, 2 done and 2 passed, the log showing the exception traceback and the error description, and an Error chip above the tree", "large") }}
-<p>The row turns orange and an <strong>Error</strong> chip joins the others. The log shows the traceback, the
-	case's row in the result table marked <strong class="status-error">ERROR</strong>, and the message as the test's
-	<strong>Error Description</strong>. The counters read 4 planned, 2 done and 2 passed, with progress at 50 %: an
-	errored case does not count as done, because it produced no result to count.</p>
-<p>The exception also ends the test. Open the Details dialog:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/orcraft-statuses/error-details.png", "Status: Error Details view with the two v3.0.0 cases reading Pass, the first v4.0.0 case reading Error with its error description, and the last case reading Not Run", "large") }}
-<p>The two <code>v3.0.0</code> cases passed, the first <code>v4.0.0</code> case errored, and the last case reads
-	<strong>Not Run</strong>: the test stopped at the exception and never reached it. Both the errored and the
-	unreached case are missing from <strong>Done</strong>, which is why the progress stays at 50 % rather than
-	reporting the run as complete.</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/orcraft-statuses/running-error.png", "Completed Status: Error run shown in orange in the execution tree with 4 planned, 2 done and 2 passed, the log showing the Test Matrix results with both v4.0.0 cases marked ERROR and the Errors table beneath them, and an Error chip above the tree", "large") }}
+<p>The row turns orange and an <strong>Error</strong> chip appears above the tree. The log shows the traceback of
+	each failed launch, the <strong>Test Matrix</strong> results with both <code>v4.0.0</code> cases marked
+	<strong class="status-error">ERROR</strong>, the message as the test's <strong>Error Description</strong>, and an
+	<strong>Errors</strong> table that lists the errored cases with their descriptions. The counters read 4 planned,
+	2 done and 2 passed, with progress at 50 %: an errored case does not count as done, because it produced no
+	result to count.</p>
+<p>The error ends the case, not the test. Its cause may belong to that one case, or be sporadic and gone by the
+	next one, so the framework goes on with the next case and lets it report its own outcome. The same holds for a
+	call to <code>exit()</code> anywhere in a test; the
+	<a class="text-accent" href="/tutorial/calling-exit/">Calling exit() in a Suite</a> page goes through every
+	place it can happen. Open the Details dialog:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/orcraft-statuses/error-details.png", "Status: Error Details view with the two v3.0.0 cases reading Pass and the two v4.0.0 cases reading Error with their error description, the summary reading 4 planned, 2 done and 2 passed, and an Items Filter offering Pass and Error chips", "large") }}
+<p>The two <code>v3.0.0</code> cases passed and both <code>v4.0.0</code> cases errored, each with the message in
+	its <strong>Error Description</strong> column. Every case was reached, but the errored ones are missing from
+	<strong>Done</strong>, which is why the progress stays at 50 % rather than reporting the run as complete.</p>
 <p>The distinction between fail and error is the one to keep in mind when writing a test. A failure is expected
 	and means the application is wrong; an error is unexpected and means the test could not do its job. Orcraft
 	counts them separately so that a suite with an infrastructure problem does not look like a suite with a quality

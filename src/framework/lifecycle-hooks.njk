@@ -109,8 +109,9 @@ def _case_teardown(self, case: OrcraftTestCase, test_cycle_index: int) -> None:
   each.</p>
 
 <h2 id="failures">Hook failures</h2>
-<p>Raising from a setup hook is how you say the work it was guarding must not proceed. The blast radius
-  follows the scope of the hook:</p>
+<p>Raising from a setup hook is how you say the work it was guarding must not proceed. Raising from a teardown
+  hook says the scope could not be closed cleanly. Either way the blast radius follows the scope of the hook,
+  and the run goes on with the next scope of the same kind:</p>
 
 <table>
   <thead>
@@ -126,17 +127,35 @@ def _case_teardown(self, case: OrcraftTestCase, test_cycle_index: int) -> None:
     </tr>
     <tr>
       <td><code>_test_cycle_setup</code></td>
-      <td>That cycle fails: its cases do not run and its teardown is skipped. The next test cycle still runs.</td>
+      <td>That cycle errors: its cases do not run and its teardown is skipped. The next test cycle still runs.</td>
     </tr>
     <tr>
       <td><code>_case_setup</code></td>
-      <td>That case fails: its cycles do not run and its teardown is skipped. The next case still runs.</td>
+      <td>That case errors: its cycles do not run and its teardown is skipped. The next case still runs.</td>
+    </tr>
+    <tr>
+      <td><code>_teardown</code></td>
+      <td>The test is marked <code class="status-error">ERROR</code> with the teardown's message; the cases keep the results they produced.</td>
+    </tr>
+    <tr>
+      <td><code>_test_cycle_teardown</code></td>
+      <td>That cycle is marked <code class="status-error">ERROR</code>; its cases keep their results and the next test cycle still runs.</td>
+    </tr>
+    <tr>
+      <td><code>_case_teardown</code></td>
+      <td>That case is marked <code class="status-error">ERROR</code>, whatever its cycles reported, and the next case still runs.</td>
     </tr>
   </tbody>
 </table>
 
-<p>In every instance the matching teardown is skipped, because there is nothing to unwind - a setup that
-  did not complete did not acquire what its teardown would release.</p>
+<p>When a setup raises, the matching teardown is skipped, because there is nothing to unwind - a setup that
+  did not complete did not acquire what its teardown would release. The scope's error description names the
+  hook, as in "Case setup failed: ..." or "Test cycle teardown failed: ...", followed by the message.</p>
+
+<p>A call to <code>exit()</code> inside a hook has the same effect as raising from it, with
+  "exit() called by user" as the message. The tutorial's
+  <a class="text-accent" href="/tutorial/calling-exit/">Calling exit() in a Suite</a> page goes through every
+  place an exit can happen.</p>
 
 <p>The mirror-image guarantee holds for the success path: once a setup completes, its teardown runs even
   if the work between them raised. Resources acquired in a hook are released whether the cases passed,

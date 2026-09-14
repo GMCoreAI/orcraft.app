@@ -45,7 +45,14 @@ description: "OrcraftStatus, checkpoints, warnings and how a failure travels up 
 
 <p>A result starts at <code class="status-pass">PASS</code> and is moved from there - by a failing checkpoint, by an
   assignment to one of the descriptions, or by an uncaught exception, which is what produces
-  <code class="status-error">ERROR</code>.</p>
+  <code class="status-error">ERROR</code>. A call to <code>exit()</code> counts as one: the component reports
+  "exit() called by user" as its error description, without a traceback.</p>
+
+<p>An error ends the component it happened in, not the run around it. A case that errors is counted as one
+  executed, errored case, and the test goes on with the next case - the cause may be specific to that case, or
+  sporadic and gone by the next one. The tutorial's
+  <a class="text-accent" href="/tutorial/calling-exit/">Calling exit() in a Suite</a> page lists what an
+  error ends at every place it can happen.</p>
 
 
 <h3 id="setting-a-status">Setting a status</h3>

@@ -249,8 +249,9 @@ def _teardown(self) -> None:
 	)
 	flow.run()') }}
 <p>A hook can run flows and steps like a case can. The two comments state the rule that matters: a setup that
-	raises aborts the test, because the cases would run without what they need, while a teardown swallows its
-	problems so that a cleanup failure never hides the cases' results. Run the test and open its Details:</p>
+	raises aborts the test, because the cases would run without what they need, while this teardown swallows its
+	problems so that a cleanup failure never hides the cases' results. A teardown that raised instead would mark
+	the test as an error while the cases kept their results. Run the test and open its Details:</p>
 {{ media.zoomableImage("/assets/images/screenshots/tutorial/structure-and-lifecycle/setup-and-teardown-details.png", "Setup and Teardown Details view with a Setup row holding the Generate Maze Files flow and step before Cycle 1, four cases each solving one maze, and a Teardown row holding the Delete Maze Files flow and step after the cycle", "large") }}
 <p><strong>Setup</strong> and <strong>Teardown</strong> are rows of the results tree in their own right, each
 	with the flow and step it ran, placed before and after <strong>Cycle 1</strong>. Their timing is separate from
