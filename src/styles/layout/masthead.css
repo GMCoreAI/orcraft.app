@@ -90,7 +90,10 @@ body:not([data-page="home"]) .masthead {
    keeps the accent so the shared prefix reads as one badge across the three. */
 .principles__chip {
   display: inline-block;
-  padding: 0.1em 0.55em;
+  /* Uppercase text ends at the baseline and the line box keeps the descender
+     space below it, so an even padding leaves the caps sitting high; the
+     extra top padding puts them in the middle of the chip. */
+  padding: 0.16em 0.55em 0.04em;
   margin-inline-end: 0.4em;
   border: 1px solid rgba(230, 233, 239, 0.28);
   border-radius: 999px;
