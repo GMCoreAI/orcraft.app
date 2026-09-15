@@ -16,7 +16,8 @@ description: "A session is the controller's workspace, saved to a file with its 
 <p>A session file is a JSON file in the <code>Sessions</code> folder next to the controller's <code>Logs</code>.
 	It records the loaded items by their paths, the plan and the draft edits of every test, which items are
 	unplanned, the runs and their results, and the shape of the tree. It does not copy the suites: loading a
-	session reads the tests again from their files, so a suite edited in the meantime comes back edited.</p>
+	session reads the tests again from their files, so a suite edited in the meantime comes back edited. An item whose file is gone by then is left out, and
+	the controller says which, so the tree never loses an item in silence.</p>
 
 <h2 id="the-unsaved-session">The unsaved session</h2>
 <p>The tree's top row names the session. A controller starts with <strong>New Session</strong>, and the star after
