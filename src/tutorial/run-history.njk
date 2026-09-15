@@ -34,20 +34,10 @@ description: "Every run writes a run history file next to its logs; this page ad
   Logs\\
   Run_History\\
     Batch__regression__2026-09-13__14-23-45.647.orcraft-run', "text") }}
-<p>The file is a sequence of JSON records, one per line. Its first record names the root; a <code>leaf</code>
-	record opens each test process with its place in the batch, its lineage of names below the root and the
-	endpoints it worked on; the payloads the framework sends a controller follow under that leaf; and a
-	<code>leaf_end</code> closes it with the outcome. The records of one test look like this, shortened:</p>
-{{ codeblock.block('{"record":"header","format":1,"kind":"batch","name":"Test Batch: regression","class_name":"Batch","source_path":"C:\\\\orcraft\\\\ci\\\\regression\\\\batch.py","started":"2026-09-13  14:23:45.647",...}
-{"record":"leaf","path":[0,0,0],"lineage":[["Test Suite: Orcraft Tutorial","suite"],["Test Group: Intro","group"],["Test: Hello World","test"]],"endpoints":["localhost"],"started":"2026-09-13  14:23:46.222"}
-{"record":"ipc","path":[0,0,0],"payload":{"type":"run_config","config_updates":{"name":"Test: Hello World",...}}}
-{"record":"ipc","path":[0,0,0],"payload":{"type":"log_path","path":"C:\\\\orcraft\\\\ci\\\\regression\\\\Logs\\\\...\\\\Test__Hello_World__2026-09-13__14-23-46.324.ansi"}}
-{"record":"ipc","path":[0,0,0],"payload":{"type":"progress_batch","items":[...]}}
-{"record":"leaf_end","path":[0,0,0],"status":"pass","elapsed_time":"0.005 s","warnings":false,"finished":"2026-09-13  14:23:46.636"}', "text") }}
-<p>Nothing in it needs to be read by hand: the file exists to be opened by the controller. The
-	<code>run_config</code> payload carries the values the test ran with, the <code>log_path</code> the log it
-	wrote, and the progress payloads the cases, flows and steps with their statuses and results, the same
-	stream a controller receives from a test it runs itself.</p>
+<p>The file holds everything the controller needs to show the run as if it had made it: the batch file the
+	run started from, and for every test process its place in the batch, the endpoints it worked on, the values it
+	ran with, the log it wrote, its cases, flows and steps with their statuses and results, and its outcome and
+	times. Nothing in it is meant to be read by hand: the file exists to be opened by the controller.</p>
 
 <h2 id="adding-the-history-to-the-tree">Adding the history to the tree</h2>
 <p>Start a new session and click <strong class="text-cyan">Add Item</strong>. The file dialog lists <code>.orcraft-run</code> files
