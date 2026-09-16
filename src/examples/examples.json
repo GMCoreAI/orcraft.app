@@ -5,6 +5,7 @@
   "docsItems": [
     { "label": "Orcraft examples overview", "slug": "" },
     { "label": "Network Suite", "slug": "network-suite/" },
-    { "label": "FTDI Suite", "slug": "ftdi-suite/" }
+    { "label": "FTDI Suite", "slug": "ftdi-suite/" },
+    { "label": "Suite by an AI Agent", "slug": "ai-agent/" }
   ]
 }

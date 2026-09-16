@@ -31,7 +31,9 @@ description: "A network performance example suite: nuttcp traffic between a syst
 </ul>
 
 <h2 id="test-setup">Test setup</h2>
-<p>The setup has two networks. The <strong>control network</strong> is the site LAN: the controller reaches every
+<p>The setup is described in a short technical note that ships in the repository as
+	<code>docs/Orcraft_Network_Test_Setup.pdf</code>; the diagrams on this page are its. The setup has two networks.
+	The <strong>control network</strong> is the site LAN: the controller reaches every
 	endpoint over it for registration, package uploads and step execution. The <strong>test network</strong> is a
 	separate switch with its own subnet, <code>192.168.0.0/24</code>, and only the endpoints' second Ethernet ports
 	are plugged into it. All measured traffic flows there and nowhere else, so control traffic never disturbs a

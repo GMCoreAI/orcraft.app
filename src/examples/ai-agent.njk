@@ -1,0 +1,240 @@
+---
+title: Examples · Suite by an AI Agent
+key: examples
+description: "A real session in which an AI agent builds the network suite from the technical note and the documentation, runs it on the fleet, fixes what fails and takes a development request, with its journal and the controller screenshots."
+---
+{% import "partials/copy-command.njk" as cmd %}
+{% import "partials/code-block.njk" as codeblock %}
+{% import "partials/zoomable-image.njk" as media %}
+<h1>Suite by an AI Agent</h1>
+<p>The two other examples were developed with an AI agent too, as every Orcraft suite can be. This page shows
+	exactly how that goes: an AI agent writes a suite in one session, from the same technical note the
+	<a class="text-accent" href="/examples/network-suite/">Network Suite</a> was built from and from the
+	documentation on this site, following the requests the
+	<a class="text-accent" href="/ai-agents/">AI Agents</a> section describes: a getting started request that creates
+	the suite and runs it, a fix when the run shows a problem, and a development request that changes what the
+	suite exposes. Nothing on this page is staged. The agent kept a journal of every step as it worked, and the
+	quotes below are taken from that journal. The controller screenshots are of the suite it wrote.</p>
+
+<h2 id="inputs">Inputs</h2>
+<p>The agent started in an empty working folder with exactly the inputs the
+	<a class="text-accent" href="/ai-agents/inputs/">AI agent inputs</a> page lists, and nothing else:</p>
+{{ codeblock.block('C:\\orcraft\\agent-example\\
+	instructions.md                        the instructions file
+	docs\\Orcraft_Network_Test_Setup.pdf    the technical note of the setup under test
+	orcraft-runs\\endpoints.json           the machines, saved from the controller\'s Endpoints panel', 'text') }}
+<p>The instructions file is the template from the inputs page with the Paths section filled in for this machine.
+	It names the documentation, the rules, and where things are:</p>
+{{ codeblock.block('# Orcraft
+
+An Orcraft test suite is ordinary Python. The same files run from the controller GUI, from the CLI, from CI and from an AI agent.
+
+## AI Agents documentation
+
+- [AI agents overview](https://orcraft.app/ai-agents/)
+- [AI agent inputs](https://orcraft.app/ai-agents/inputs/)
+- [Endpoints file](https://orcraft.app/ai-agents/endpoints/)
+- [Configuring a run](https://orcraft.app/ai-agents/configuring/)
+- [Running a batch](https://orcraft.app/ai-agents/running/)
+- [Reading the log](https://orcraft.app/ai-agents/results/)
+
+## Framework documentation
+
+- [Orcraft framework overview](https://orcraft.app/framework/)
+- [Orcraft Configuration Fields](https://orcraft.app/framework/configuration-fields/)
+- [Orcraft Statuses](https://orcraft.app/framework/statuses/)
+- [Orcraft Result Fields](https://orcraft.app/framework/result-fields/)
+- [Orcraft Test](https://orcraft.app/framework/test/)
+- [Orcraft Matrix](https://orcraft.app/framework/matrix/)
+- [Orcraft Test Step](https://orcraft.app/framework/steps/)
+- [Orcraft Test Flow](https://orcraft.app/framework/flows/)
+- [Orcraft Endpoints](https://orcraft.app/framework/endpoints/)
+- [Orcraft Setup, Teardown and Exit](https://orcraft.app/framework/setup-teardown-exit/)
+- [Orcraft Test Group](https://orcraft.app/framework/groups/)
+- [Orcraft Test Suite](https://orcraft.app/framework/suites/)
+- [Orcraft Test Batch](https://orcraft.app/framework/batches/)
+- [Orcraft Logger](https://orcraft.app/framework/logging/)
+
+## Rules
+
+- Never edit a test to run it. Configure a run with a subclass that redeclares the fields it needs.
+- Configured copies and their batch go into the run folder, never into a suite repository.
+- Every batch item points `import_roots` and `package_source_path` at the suite repository.
+- A test that imports a package outside the Python standard library adds it to the suite repository\'s `requirements.txt`; the controller installs it on the endpoints.
+- Run the batch from the run folder. After the run, read the log under `Logs/` there and summarize the result.
+
+## Paths
+
+- Suite repositories: `C:\\orcraft\\agent-example\\` (create a new suite repository here as a folder named after the suite)
+- Run folder: `C:\\orcraft\\agent-example\\orcraft-runs`
+- Endpoints file: `C:\\orcraft\\agent-example\\orcraft-runs\\endpoints.json`
+- Nuttcp Package Folder field: `C:\\orcraft\\apps\\NUTTCP\\bin` (holds `windows\\nuttcp.exe`, `linux\\nuttcp` and `macos\\nuttcp`)
+- Python with the orcraft package installed: `C:\\orcraft\\venv\\Scripts\\python.exe`
+- Documents of the system under test: `C:\\orcraft\\agent-example\\docs\\`', 'markdown') }}
+<p>The endpoints file is the lab's four machines as the controller saved them, GMG-TEST-1, GMG-TEST-2, GMG-TEST-3
+	and GMG-TEST-5, in the format the <a class="text-accent" href="/ai-agents/endpoints/">Endpoints file</a> page
+	shows. The note is the same four-page technical note that ships with the Network Suite repository, and the
+	instructions file ships next to it there as <code>docs/instructions.md</code>. The nuttcp package folder is
+	the one the Network Suite page describes.</p>
+
+<h2 id="the-request">The request</h2>
+<p>A getting started request names the source and what to build, and here also where to run it:</p>
+{{ codeblock.block('Create a suite for the network test setup described in docs\\Orcraft_Network_Test_Setup.pdf: a TCP
+Traffic group and a UDP Traffic group, each with a transmit, a receive and a bidirectional
+throughput test, laid out like the tutorial suite. Then run it with GMG-TEST-1 as the SUT and GMG-
+TEST-2 and GMG-TEST-3 as link partners, 10 seconds per case, and report the results from the log.', 'text') }}
+
+<h2 id="what-the-agent-did">What the agent did</h2>
+<p>The agent read the instructions file, then every page it lists, then the note, and wrote down what it took from
+	each. The journal's entry for the note is the shortest way to see that it understood the setup:</p>
+{{ codeblock.block('## 4. Read the SUT document docs\\Orcraft_Network_Test_Setup.pdf
+
+Four pages. The facts the suite must honour:
+
+- Two networks: the control network (site LAN, where the endpoints are registered and where Orcraft
+  dispatches steps) and an isolated test network 192.168.0.0/24 on port B of every endpoint. The
+  controller machine has no test address.
+- Rule: the address Orcraft knows for an endpoint (its control address) must never be used as a
+  nuttcp server or client address. Every traffic step uses test addresses; the test address is
+  discovered on the endpoint itself (a step lists its local IPv4 addresses and keeps the one inside
+  192.168.0.0/24; the step fails if none exists).
+- Roles per run: one SUT (single endpoint chosen by the user) and one or more link partners. The same
+  test set is executed once per endpoint as SUT (this is what EndpointFanout on the SUT field gives).
+- nuttcp: the receiver runs the server, the transmitter runs the client. Servers start before clients.
+  With several partners all partner workers run concurrently.
+- Direction modes relative to the SUT: TX = SUT sends to every partner; RX = every partner sends to
+  the SUT; BX = TX and RX at the same time.', 'markdown') }}
+<p>It also found the Network Suite page of this site and chose not to read it, "since building from a documented
+	finished suite would make this session a copy rather than a build". Then it designed the suite and wrote the
+	design down before writing code:</p>
+{{ codeblock.block('## 7. Suite design
+
+- Two groups, one folder each, file named after the folder as the tutorial does:
+  test_group_tcp_traffic/test_group_tcp_traffic.py -> TestGroupTcpTraffic ("TCP Traffic") and
+  test_group_udp_traffic/... -> TestGroupUdpTraffic ("UDP Traffic").
+- Three tests per group, one folder each: test_tcp_transmit/test_tcp_transmit.py -> TestTcpTransmit
+  ("TCP Transmit"), test_tcp_receive ("TCP Receive"), test_tcp_bidirectional ("TCP Bidirectional");
+  the same for UDP.
+- The six tests are the same procedure with a protocol and a direction fixed, so the shared code lives
+  in a traffic_lib package: base_traffic_test.py (config, result and base test), nuttcp.py (binary per
+  platform, command lines, output parsing, test-address discovery), flows/flow_traffic_run.py and
+  steps/ (five steps). Each test file is the tutorial-style three classes plus main(), and only fixes
+  protocol and direction on the test class.
+- Config fields: sut_endpoint (Endpoint), link_partner_endpoints (MultiSelectEndpoints),
+  nuttcp_package_folder (PackageFolder, required, uploaded to every endpoint), duration_sec (10),
+  test_network ("192.168.0.0/24" from the PDF), base_port (5000), min_throughput_mbps (0 = report
+  only). The UDP tests add udp_rate_mbps (1000) because nuttcp\'s UDP transmit rate must be stated.
+  Protocol and direction are class attributes of the test, not GUI fields, so a person cannot turn
+  "TCP Transmit" into something else from the panel.
+- Procedure: discover the test address on the SUT and on every partner; build the stream list relative
+  to the SUT (TX: SUT -> each partner; RX: each partner -> SUT; BX: both); start one nuttcp server per
+  stream on the receiving machine; start all clients of a transmitting machine in one step, so every
+  stream runs concurrently; wait for the clients and parse their output; stop the servers on every
+  path, success or failure. Servers start before clients, as the PDF says.
+- No requirements.txt: the suite imports only the standard library.', 'markdown') }}
+<p>A test file it wrote reads like one of the tutorial suite's:</p>
+{{ codeblock.block('class TestTcpTransmitConfig(DirectionalTrafficConfig):
+	name = OrcraftConfigField.Text(default="TCP Transmit")
+	description = OrcraftConfigField.Text(
+		default=(
+			"Measures the TCP throughput the SUT\'s test port can transmit.\\n"
+			"A nuttcp server runs on every link partner and the SUT sends to all of them at the same time, one client per partner, for the configured duration.\\n"
+			"The result is the sum of what the partners received, in Mbps."
+		)
+	)
+
+
+class TestTcpTransmit(BaseDirectionalTrafficTest):
+	protocol = Protocol.TCP
+	direction = Direction.TX
+
+	def __init__(self, config: TestTcpTransmitConfig | None = None) -> None:
+		super().__init__(config or TestTcpTransmitConfig())') }}
+<p>To run it, the agent wrote what the <a class="text-accent" href="/ai-agents/configuring/">Configuring a
+	run</a> page describes, in the run folder and not in the repository: a configured copy of every test, group and
+	the suite, each class keeping the name it extends, with the SUT redeclared as a fan-out of one machine, the
+	partners as the two machines, the package folder and the duration filled in; and a batch file with one suite
+	item pointing at the repository. Then it ran the batch and read the log. It took four runs to get a clean
+	result, and each run taught it something about its own code:</p>
+<ul>
+	<li><strong>Run 1</strong>: every test errored with a remote deadline. The agent read the installed framework,
+		found that a remote step's deadline is 30 seconds unless the step declares a <code>duration_sec</code>
+		field, gave its wait step that field, and made stuck nuttcp clients give up in seconds instead of hanging.</li>
+	<li><strong>Run 2</strong>: the servers from run 1 were still holding their ports, so the new servers could not
+		bind. The agent added a step that clears leftover nuttcp on every machine at the start of the flow.</li>
+	<li><strong>Run 3 and 4</strong>: clean failures with real numbers. GMG-TEST-1 to GMG-TEST-3 measured 2372 Mbps
+		TCP and 1000 Mbps UDP, GMG-TEST-2 to GMG-TEST-1 the same, and the other two directions failed with a
+		connection timeout in every test.</li>
+</ul>
+<p>Its report ended with a diagnosis and a request for the person: "traffic to GMG-TEST-2 and from GMG-TEST-3
+	does not pass, while the other directions reach 2372 Mbps TCP and 1000 Mbps UDP. This is almost certainly a
+	host firewall on the test-network interface of those machines; open the nuttcp ports there." The diagnosis was
+	half right, as the next section shows, and the numbers were real.</p>
+
+<h2 id="opening-it-in-the-controller">Opening it in the controller</h2>
+<p>Everything the agent wrote is an ordinary suite, so the next step is the one the AI Agents overview promises: the
+	person adds it to the controller and looks at it. The tree shows the two groups and six tests, and a test's run
+	panel shows the fields the agent chose, the endpoint fields, the package folder, the duration, the test network,
+	the base port, the minimum throughput and, on the UDP tests, the rate:</p>
+{{ media.zoomableImage("/assets/images/screenshots/examples/ai-agent/agent-v1-loaded.png", "Controller with the agent-written Network suite loaded: the TCP Traffic and UDP Traffic groups with their transmit, receive and bidirectional tests in the Test Explorer, and the run panel of UDP Transmit on the right with SUT Endpoint and Link Partner Endpoints at localhost, an empty required Nuttcp Package Folder, Duration 10, Test Network 192.168.0.0/24, Base Port 5000, Min Throughput 0 and UDP Rate 1000", "large") }}
+<p>Configured at suite scope with the same machines and run from the controller, the suite fails exactly as it did
+	for the agent, six tests out of six:</p>
+{{ media.zoomableImage("/assets/images/screenshots/examples/ai-agent/agent-v1-results.png", "Test Explorer after running the agent's suite from the controller: all six tests failed, each run row naming GMG-TEST-1 and its partners, and the suite panel on the right with every test configured with GMG-TEST-1 and GMG-TEST-2 and GMG-TEST-3", "large") }}
+<p>The Details dialog of the bidirectional test shows the agent's flow step by step, the clear, discover, start and
+	stop steps on every machine passing, and the three Wait For Clients steps failing after about 25 seconds, which
+	is the fast failure the agent built in after its first run:</p>
+{{ media.zoomableImage("/assets/images/screenshots/examples/ai-agent/agent-v1-details.png", "Details dialog of the agent's TCP Bidirectional test: the description and the configuration with the run values on the left, and on the right the failed run expanded into the Traffic Run flow with Clear Stale Nuttcp, Discover Test Address, Start Servers and Start Clients passing on GMG-TEST-1, GMG-TEST-2 and GMG-TEST-3, the three Wait For Clients steps failing after 25 seconds, and Stop Servers passing", "large") }}
+<p>The person knows what the agent could not: the lab's firewalls open TCP and UDP 5100 to 5201 for nuttcp on every
+	machine, and the agent's suite put its servers on 5000 and up. That is a one-line request.</p>
+
+<h2 id="the-fix-request">The fix request</h2>
+<p>The request is one sentence, and it is knowledge about the lab rather than about code:</p>
+{{ codeblock.block('The failing directions are not the network. The lab\'s firewalls allow nuttcp only on TCP and UDP
+ports 5100 to 5201, on every machine; port 5000 is also taken on Windows. Use ports in that range
+and run the suite again.', 'text') }}
+<p>The agent's journal records the correction of its own earlier reading, the change, and where the change went:</p>
+{{ codeblock.block('## 16. Follow-up request: use the lab\'s allowed nuttcp ports
+
+So my reading of the failures in sections 14-15 was wrong: the two paths that never passed were the
+ones whose ports fell outside the allowed range or on a port already taken on Windows, not a firewall
+asymmetry. The suite\'s stream plan allocated control/data port pairs upward from base_port = 5000
+(5000/5001, 5002/5003, ...), all outside 5100-5201.
+
+Change (in the suite repository, not in the run file, which does not set the port): the default
+base_port becomes 5100 in traffic_lib/base_traffic_test.py (the test\'s config field) and in
+traffic_lib/flows/flow_traffic_run.py (the flow\'s field), with the port plan stated next to the field:
+stream i uses control port base + 2i and data port base + 2i + 1, so a bidirectional run with N
+partners needs 4N ports and stays inside 5100-5201 for up to 25 partners. The run configuration in
+orcraft-runs\\run_network_suite.py is untouched and inherits the new default.', 'markdown') }}
+<p>Its run then passed, six tests out of six. Reading the log, the agent also noticed that every test had passed
+	with a warning, traced it to its own Stop Servers step flagging the normal exit of a one-shot server, fixed that
+	too, and ran once more to confirm the warnings were gone. Reloaded in the controller and run again from there,
+	the suite passes the same way:</p>
+{{ media.zoomableImage("/assets/images/screenshots/examples/ai-agent/agent-v2-results.png", "Test Explorer after running the fixed agent suite from the controller: all six tests passed, each run row naming GMG-TEST-1 and its partners, and the suite panel on the right with every test configured with GMG-TEST-1 and GMG-TEST-2 and GMG-TEST-3", "large") }}
+{{ media.zoomableImage("/assets/images/screenshots/examples/ai-agent/agent-v2-details.png", "Details dialog of the agent's TCP Bidirectional test after the fix: the configuration with Base Port 5100 on the left, and on the right the passed run expanded into the Traffic Run flow with every step passing on its machine, the Wait For Clients steps taking 10 seconds on GMG-TEST-1 and on GMG-TEST-2 and a few milliseconds on GMG-TEST-3", "large") }}
+<p>The person reviewing the numbers finds one that cannot be true. The bidirectional test reports the SUT receiving
+	3378 Mbps on a 2.5 Gbps port, and the dialog above shows why: the wait on GMG-TEST-2 took its full 10 seconds
+	after the wait on GMG-TEST-1 had already taken 10 seconds, so that partner's stream to the SUT ran alone after
+	the transmit streams were over, at the full rate of the port, and was then summed with them. The agent's
+	"all streams concurrent" was not yet true. That, and a field the suite is missing, become the next request.</p>
+
+<h2 id="from-here-on">From here on</h2>
+<p>The next request is a development request, and it reads like a code review because that is what it is:</p>
+{{ codeblock.block('TCP Bidirectional reports SUT RX 3378 Mbps on a 2.5 Gbps port, and the wait on GMG-TEST-2 takes a
+full 10 seconds after the wait on GMG-TEST-1: the receive stream from GMG-TEST-2 runs alone after
+the transmit streams are over. A bidirectional test must run all its streams at the same time; find
+out why that stream starts late and fix it. Also, the UDP tests report loss but never judge it: add
+a Max Loss Percent field to the UDP tests, default 1, and fail a case whose worst stream loses more.
+Run the suite again and report.', 'text') }}
+<p>The agent took it the same way it took the first two: it read its own logs for the timing of every stream,
+	found that the Windows partner, acting as a server and a client at the same time, ran its two directions one
+	after the other, restructured the flow so that no machine is ever both, added the field, ran the batch and
+	reported: every test passing, the bidirectional figures now under the port's capacity, and the UDP tests
+	judging their loss. The person reloads the suite in the controller, sees the new field in the UDP tests'
+	panels, runs it, and reads the numbers again. That loop is the whole method. A getting started request creates the suite; every later request, whether it corrects a fact
+	about the lab, questions a number, or asks for a field, a case or a group, grows the same repository, and the
+	person keeps the controller as the place where the result is looked at.</p>
+<p>What the person keeps from this session is a suite of two groups and six tests that measures the right thing on
+	the right network, a journal that says why every decision was taken, and a list of what to review: the checkpoints,
+	the minimum throughput still set to report only, and the UDP rate that caps the UDP figures. What the person
+	brought was the request, one fact about the firewalls, and an eye for a number that cannot be true.</p>

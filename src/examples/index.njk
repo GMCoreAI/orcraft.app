@@ -8,7 +8,7 @@ description: "Complete example suites for real test setups: a network performanc
 	The examples go the other way: each is a complete suite for a real kind of test setup, in its own repository, laid
 	out exactly like the tutorial suite, with a page that explains the setup it needs, the design choices it makes and a
 	full run on the lab's machines. Clone one, run it on your own machines, and use it as the starting point of a suite
-	of your own.</p>
+	of your own. The last example is a suite an AI agent built the same way, from the same documents.</p>
 
 <h2 id="network-suite">Network Suite</h2>
 <p>Measures TCP and UDP throughput between a system under test and its link partners with nuttcp, over an isolated
@@ -22,3 +22,9 @@ description: "Complete example suites for real test setups: a network performanc
 	machines over a handful of wires with a handshake. It shows suite requirements installed on the endpoints, a
 	hardware handle opened once and reused by every step of a test, and two endpoints coordinated at wire level.
 	<a class="text-accent" href="/examples/ftdi-suite/">Read the FTDI Suite example</a>.</p>
+
+<h2 id="suite-by-an-ai-agent">Suite by an AI Agent</h2>
+<p>A real session in which an AI agent builds the network suite from the technical note and this documentation,
+	runs it on the fleet, fixes what fails on a one-line request and takes a development request, with its journal
+	and the controller screenshots of what it wrote.
+	<a class="text-accent" href="/examples/ai-agent/">Read the AI agent example</a>.</p>
