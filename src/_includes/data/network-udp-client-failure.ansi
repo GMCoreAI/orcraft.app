@@ -1,0 +1,10 @@
+nuttcp client command: nuttcp -T10 -P5104 -p5105 -u -l1K -w4M -R1G 192.168.0.11
+[00m                        [91mnuttcp-t: v8.1.4: Error: IO: Operation timed out[00m
+[00m                        [91merrno=60[00m
+
+    [93;101m Checkpoint Fail [00m[91m  nuttcp client did not complete.[00m
+
+[00m                            [91m### Checkpoint Failure Details ###[00m
+
+[00m                            [91m nuttcp-t: v8.1.4: Error: IO: Operation timed out[00m
+[00m                            [91m errno=60[00m

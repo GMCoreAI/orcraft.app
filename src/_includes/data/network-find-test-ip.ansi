@@ -1,0 +1,21 @@
+[00m                        [97;48;5;236m             Step: Find Test IP | Configuration            [00m
+
+Parameter       | Value
+-----------------------------------------------------------
+Start Time      | 2026-09-16  14:06:26.057
+Target Endpoint | GMG-TEST-1:50051 [92m[Secure][00m [92m(v0.1.0.dev218)[00m
+Network         | 192.168.0.0/24
+
+Test IP on 192.168.0.0/24: 192.168.0.11
+
+    [30;102m Checkpoint Pass [00m[92m  This endpoint is on 192.168.0.0/24 as 192.168.0.11.[00m
+
+
+[00m                        [97;48;5;236m      Step: Find Test IP | Result      [00m
+
+Parameter    | Value
+---------------------------------------
+Name         | Step: Find Test IP
+Status       | [92mPASS[00m
+Finish Time  | 2026-09-16  14:06:26.093
+Elapsed Time | 0.036 s

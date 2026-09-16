@@ -1,0 +1,296 @@
+---
+title: Tutorial · Network Suite Example
+key: tutorial
+description: "A network performance example suite: nuttcp traffic between a system under test and its link partners on an isolated test network, with the setup, the suite's design and a full run explained."
+---
+{% import "partials/copy-command.njk" as cmd %}
+{% import "partials/code-block.njk" as codeblock %}
+{% import "partials/zoomable-image.njk" as media %}
+<h1>Network Suite Example</h1>
+<p>The tutorial suite runs one program on one machine at a time. A network test is a different shape of work:
+	several machines have to act together, at the same moment, on a link that is not the one the controller uses to
+	talk to them. The <strong>Network Performance</strong> example suite is a small suite of that kind. It measures
+	TCP and UDP throughput between a <strong>system under test</strong> (the SUT) and its <strong>link
+	partners</strong> with <a class="text-accent" href="https://nuttcp.net/">nuttcp</a>, a network measurement tool,
+	with the SUT transmitting, receiving, or both at once.</p>
+<p>The suite is a separate repository laid out exactly like the tutorial suite. Clone it next to the tutorial suite
+	and add its entry point, <code>test_suite_network.py</code>, to the controller the same way the
+	<a class="text-accent" href="/setup/getting-started/">Getting started</a> guide adds the tutorial suite:</p>
+{{ cmd.copyCommand("git clone https://github.com/GMCoreAI/orcraft-test-suite-network.git") }}
+<p class="text-danger">This repository is currently private; the link above will be updated once it is public.</p>
+<p>Beyond what the tutorial suite shows, this one demonstrates:</p>
+<ul>
+	<li><strong>A multi-select endpoint field that drives concurrent work</strong>: the link partners are chosen
+		as a set, and every test opens one traffic stream per partner, all running at the same time.</li>
+	<li><strong>Discovery on the endpoint instead of configuration</strong>: each machine finds its own address on
+		the test network when the test runs, so no address is typed into the controller.</li>
+	<li><strong>A third-party tool shipped as a package</strong>: the nuttcp binaries for every operating system
+		travel to the endpoints in one package folder.</li>
+	<li><strong>Measurements aggregated across machines</strong>: the SUT's throughput is the sum over its
+		partners, with the per-partner breakdown kept next to it.</li>
+</ul>
+
+<h2 id="test-setup">Test setup</h2>
+<p>The setup has two networks. The <strong>control network</strong> is the site LAN: the controller reaches every
+	endpoint over it for registration, package uploads and step execution. The <strong>test network</strong> is a
+	separate switch with its own subnet, <code>192.168.0.0/24</code>, and only the endpoints' second Ethernet ports
+	are plugged into it. All measured traffic flows there and nowhere else, so control traffic never disturbs a
+	measurement and a measurement can never break control:</p>
+{{ media.zoomableImage("/assets/images/Diagrams/Network-Test-Setup.png", "Diagram of the network test setup: the controller machine with one port on the control network, four endpoint machines each with port A on the control network and port B on the test network switch 192.168.0.0/24, one endpoint marked as the SUT of the run and the others as link partners", "large") }}
+<p>Every endpoint therefore has two addresses. The control address is the one the endpoint is registered with in the
+	controller, a host name or a LAN address, and it is never used for traffic. The test address is static, has no
+	gateway, and is not known to the controller at all:</p>
+{{ media.zoomableImage("/assets/images/Diagrams/Network-Two-Addresses.png", "Diagram of one endpoint machine with port A on the control network, carrying the control address the controller knows, and port B on the test network, carrying the static test address that the endpoint discovers on itself and uses for all nuttcp traffic", "large") }}
+<p>The machines of this page's run are the lab's fleet:</p>
+<table>
+	<thead>
+		<tr><th>Machine</th><th>Platform</th><th>Test address</th><th>Role in this run</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>GMG-TEST-1</td><td>Windows</td><td><code>192.168.0.11</code></td><td>SUT</td></tr>
+		<tr><td>GMG-TEST-2</td><td>Windows</td><td><code>192.168.0.12</code></td><td>link partner</td></tr>
+		<tr><td>GMG-TEST-3</td><td>Linux</td><td><code>192.168.0.13</code></td><td>link partner</td></tr>
+		<tr><td>GMG-TEST-5</td><td>macOS</td><td><code>192.168.0.15</code></td><td>link partner</td></tr>
+	</tbody>
+</table>
+<p>The roles are chosen per run. Because the endpoints run on different platforms, the same suite is run once with
+	each machine as the SUT, and the others as its partners, which gives a per-platform picture of every test
+	port:</p>
+{{ media.zoomableImage("/assets/images/Diagrams/Network-Rotate-SUT.png", "Diagram of the run plan: in each run a different endpoint is the SUT whose test port is measured, and all the other endpoints are its link partners", "large") }}
+
+<h2 id="the-nuttcp-package">The nuttcp package</h2>
+<p>nuttcp is a single executable, built separately for each operating system. The suite expects one folder that
+	holds the build for every platform of the fleet, and ships it to the endpoints as a package folder:</p>
+{{ codeblock.block('NUTTCP/bin/
+	windows/nuttcp.exe
+	linux/nuttcp
+	macos/nuttcp', 'text') }}
+<p>The <strong>Nuttcp Package Folder</strong> field is a <code>PackageFolder</code>, so the folder is uploaded to
+	every endpoint a test uses and each step gets the path where it landed on its own machine. The step then picks
+	the binary for the operating system it is running on, and gives an uploaded Unix binary its execute bit back,
+	which package uploads do not keep. The default points at <code>C:\Orcraft\apps\NUTTCP\bin</code>; browse to your
+	own copy if it lives elsewhere.</p>
+<p>The one thing to prepare on the machines is the firewall. The receiver of a stream runs a one-shot nuttcp
+	server on a control port and a data port, and both must be open for TCP and UDP:</p>
+<table>
+	<thead>
+		<tr><th>Machine</th><th>Ports</th><th>Notes</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Link partner</td><td>5200 and 5201</td><td>One server per partner, on its own machine, so every partner uses the same ports.</td></tr>
+		<tr><td>SUT</td><td>5100 and 5101, 5102 and 5103, and so on</td><td>One server per link partner, two ports apart, so the partners can send at the same time.</td></tr>
+	</tbody>
+</table>
+<p>Opening the range 5100 to 5201 on every machine covers both roles, whichever machine is the SUT of a run.</p>
+
+<h2 id="suite-structure">Suite structure</h2>
+<p>The repository follows the tutorial suite's layout, with two groups of three tests that share one flow:</p>
+{{ codeblock.block('orcraft-test-suite-network/
+	test_suite_network.py
+	common/
+		nuttcp_app.py            the nuttcp executable: server, client, output parsing
+		test_network.py          the test network and the lookup of a machine\'s address on it
+		traffic_test_config.py   the configuration every traffic test shares
+		flows/flow_run_traffic.py
+		steps/                   verify nuttcp, find test IP, start server, start client,
+		                         wait client, stop server
+	test_group_tcp/
+		test_tcp_tx/  test_tcp_rx/  test_tcp_bx/
+	test_group_udp/
+		test_udp_tx/  test_udp_rx/  test_udp_bx/', 'text') }}
+
+<h3 id="shared-configuration">Shared configuration</h3>
+<p>Source file:</p>
+{{ cmd.copyPath("orcraft-test-suite-network/common/traffic_test_config.py") }}
+<p>Every traffic test takes the same fields, declared once in a base configuration class. The SUT is a single
+	<code>Endpoint</code>; the link partners are a <code>MultiSelectEndpoints</code>, the field type from
+	<a class="text-accent" href="/tutorial/endpoints-config-types/">Endpoints Config Types</a> that holds a set of
+	machines:</p>
+{{ codeblock.block('class TrafficTestConfig(OrcraftTestConfig):
+	sut_endpoint = OrcraftConfigField.Endpoint(default="localhost", label="SUT Endpoint")
+	link_partner_endpoints = OrcraftConfigField.MultiSelectEndpoints(
+		default=("localhost",),
+		label="Link Partner Endpoints",
+	)
+
+	nuttcp_package_folder = OrcraftConfigField.PackageFolder(
+		default=r"C:\\Orcraft\\apps\\NUTTCP\\bin",
+		label="Nuttcp Package Folder",
+		required=True,
+		layout=OrcraftConfigField.Layout.NewRow,
+	)
+
+	duration_sec = OrcraftConfigField.Numeric(
+		default=10,
+		label="Duration Sec",
+		layout=OrcraftConfigField.Layout.NewRow,
+	)
+	min_throughput_mbps = OrcraftConfigField.Numeric(default=100, label="Min Throughput Mbps")') }}
+<p>There is no field for the test addresses. The address a machine has on the test network is a fact about that
+	machine, so the suite asks the machine:</p>
+{{ codeblock.block('# The network under test. Every machine of the setup has one address on it, separate from
+# the address the controller uses to reach the machine, and the tests find that address by
+# themselves: nothing about it is configured in the controller.
+TEST_NETWORK = "192.168.0.0/24"
+
+
+def find_test_ip(network: str = TEST_NETWORK) -> str:
+	"""The IPv4 address this machine has on the given network, or empty when it has none."""
+	wanted = ipaddress.ip_network(network, strict=False)
+	for candidate in _local_ipv4_addresses(wanted):
+		try:
+			if ipaddress.ip_address(candidate) in wanted:
+				return candidate
+		except ValueError:
+			continue
+	return ""') }}
+<p>The <strong>Find Test IP</strong> step runs this on the SUT and on every partner before any traffic, and fails
+	with a plain message when a machine has no address on the network, which is how a cable left unplugged shows
+	up.</p>
+
+<h3 id="one-stream-per-partner">One stream per partner</h3>
+<p>Source file:</p>
+{{ cmd.copyPath("orcraft-test-suite-network/common/flows/flow_run_traffic.py") }}
+<p>The flow turns the direction and the partner set into streams. A stream is one nuttcp transfer between the SUT
+	and one partner: the receiver runs a one-shot server, the transmitter runs the client. With the SUT
+	transmitting, the servers sit on the partners; with the SUT receiving, every partner gets its own server on the
+	SUT, on its own ports:</p>
+{{ codeblock.block('def _build_streams(self, partners: tuple, *, sut_ip: str, partner_ips: list[str]) -> list[TrafficStream]:
+	direction = str(self.config.direction).upper()
+
+	streams: list[TrafficStream] = []
+	for index, (partner, partner_ip) in enumerate(zip(partners, partner_ips)):
+		name = endpoint_name(partner)
+
+		# The SUT transmits: the server sits on the partner, one per machine, on the partner port
+		if direction in {"TX", "BX"}:
+			streams.append(
+				TrafficStream(
+					direction="TX",
+					partner=name,
+					transmitter=self.config.sut_endpoint,
+					receiver=partner,
+					target_ip=partner_ip,
+					control_port=LINK_PARTNER_CONTROL_PORT,
+				)
+			)
+
+		# The SUT receives: every partner gets its own server on the SUT, on its own ports
+		if direction in {"RX", "BX"}:
+			streams.append(
+				TrafficStream(
+					direction="RX",
+					partner=name,
+					transmitter=partner,
+					receiver=self.config.sut_endpoint,
+					target_ip=sut_ip,
+					control_port=sut_control_port(index),
+				)
+			)
+
+	return streams') }}
+<p>The streams then run together. The flow starts a server for every stream, starts a client for every stream, and
+	only then waits for the clients one by one. A client is started in a background thread on its machine and its
+	task is carried on the step result, the pattern from
+	<a class="text-accent" href="/tutorial/asynchronous-steps/">Handling Asynchronous Steps</a>, so starting the
+	next client does not wait for the previous one to finish. With three partners the SUT carries three streams at
+	once, and a bidirectional test carries six.</p>
+<p>Everything is measured at the SUT's port. A UDP rate limit is the load offered at that port, so with several
+	partners each stream gets an equal share of it, 1 Gbps to three partners becoming three streams of
+	333 Mbps; without the split, two partners at 2 Gbps would offer 4 Gbps to a 2.5 Gbps port and the loss would
+	measure the overload, not the port. When the clients are done, the flow sums each direction over the partners
+	into the SUT's numbers and keeps the per-partner breakdown as text. The pass criteria stay per stream: each
+	partner has to reach the minimum throughput by itself, and for UDP keep its loss within the limit.</p>
+
+<h2 id="traffic-directions">Traffic directions</h2>
+<p>Directions are relative to the SUT. <strong>TX</strong> means the SUT transmits to every partner,
+	<strong>RX</strong> means every partner transmits to the SUT, and <strong>BX</strong> runs both at the same
+	time:</p>
+{{ media.zoomableImage("/assets/images/Diagrams/Network-Traffic-Directions.png", "Diagram of the three traffic modes: in the TX test the SUT's client sends through the test switch to servers on the link partners, in the RX test the partners' clients send to a server on the SUT, and in the BX test both happen at once", "large") }}
+<p>Each group has one test per direction. The TCP tests sweep nuttcp's buffer length and socket window size; the
+	UDP tests sweep the datagram length and the transmit rate, and check the datagram loss as well as the
+	throughput:</p>
+<table>
+	<thead>
+		<tr><th>Group</th><th>Test</th><th>Matrix</th><th>Pass criteria per stream</th></tr>
+	</thead>
+	<tbody>
+		<tr><td rowspan="3">TCP Traffic</td><td>TCP Transmit</td><td rowspan="3">buffer length 64K, 1M; window 256K, 4M</td><td rowspan="3">throughput reaches the minimum</td></tr>
+		<tr><td>TCP Receive</td></tr>
+		<tr><td>TCP Bidirectional</td></tr>
+		<tr><td rowspan="3">UDP Traffic</td><td>UDP Transmit</td><td rowspan="3">datagram 1K, 8K; rate 1G, 2G at the SUT's port</td><td rowspan="3">throughput reaches the minimum and loss stays within the limit</td></tr>
+		<tr><td>UDP Receive</td></tr>
+		<tr><td>UDP Bidirectional</td></tr>
+	</tbody>
+</table>
+
+<h2 id="running-the-suite">Running the suite</h2>
+<p>Add the suite to a session that has the fleet's endpoints registered. Every test comes up with
+	<code>localhost</code> in both endpoint fields and the default package folder, so a reader with a single
+	machine sees the panels at once, but a run needs the real machines:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/network-suite-example/suite-loaded.png", "Controller with the Network Performance suite loaded: the TCP Traffic and UDP Traffic groups with their three tests each in the Test Explorer, the run panel of TCP Transmit on the right with SUT Endpoint and Link Partner Endpoints at localhost, the Nuttcp Package Folder, Duration Sec and Min Throughput Mbps fields, and the four buffer length and window size cases, and the four fleet machines in the Endpoints strip", "large") }}
+<p>The endpoints are the same for every test, so they are set once at suite scope. Select the suite, click
+	<strong class="text-purple">Configure</strong>, set <strong>SUT Endpoint</strong> to GMG-TEST-1 and tick
+	GMG-TEST-2, GMG-TEST-3 and GMG-TEST-5 under <strong>Link Partner Endpoints</strong> on one test, then apply each
+	column to all tests from its header. The table shows the whole suite configured, and the page of the selected
+	test below it:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/network-suite-example/suite-configuration.png", "Suite panel of Network Performance with a table of the six tests, each with SUT Endpoint GMG-TEST-1 and Link Partner Endpoints GMG-TEST-2, GMG-TEST-3 and GMG-TEST-5, and below it the page of TCP Transmit showing the same endpoints, the multi-select listing the three partners on separate lines", "large") }}
+<p>Selecting a test shows its own run panel with the endpoints it will use and its cases:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/network-suite-example/tcp-transmit-run-panel.png", "Run panel of TCP Transmit with SUT Endpoint GMG-TEST-1, Link Partner Endpoints GMG-TEST-2, GMG-TEST-3 and GMG-TEST-5, the Nuttcp Package Folder, Duration Sec 10, Min Throughput Mbps 100 and the four cases of buffer length 64K and 1M by window size 256K and 4M", "large") }}
+<p>Click <strong class="text-purple">Run</strong> on the suite panel and confirm. The tests queue up and run
+	one after the other, each locking the SUT and the three partners for its duration.</p>
+
+<h3 id="the-run-in-the-log">The run in the log</h3>
+<p>Each test starts by locking its four machines and uploading the suite and the nuttcp package to each of them in
+	parallel. The flow then verifies nuttcp on every machine and asks each one for its test address:</p>
+{% ansiOutput "network-find-test-ip.ansi" %}
+<p>The servers start, the clients start, and every client's wait step reports the nuttcp command it ran and the
+	summary line nuttcp prints when the transfer ends, with the throughput, the CPU load on both sides and, for
+	TCP, the round-trip time:</p>
+{% ansiOutput "network-client-summary.ansi" %}
+<p>The flow ends with one checkpoint per stream and the result table, where the SUT's numbers are the sum over its
+	partners and the breakdown sits next to them. Here the SUT's port carried its full 2.5 Gbps while feeding three
+	partners at once:</p>
+{% ansiOutput "network-flow-result.ansi" %}
+
+<h3 id="results">Results</h3>
+<p>When the suite finishes, the tree carries a run row under every test with its endpoints and status, and the
+	group and suite rows sum their cases:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/network-suite-example/suite-run-results.png", "Test Explorer after the suite run: the TCP Traffic group with its three tests passed, the UDP Traffic group with UDP Transmit passed and UDP Receive and UDP Bidirectional failed, every run row naming GMG-TEST-1 and its partners, and the suite row summing 24 cases with 16 passed and 8 failed", "large") }}
+<p>The Details dialog of a test lists every step with the machine it ran on, which is where the concurrency of the
+	flow becomes visible: the servers on three machines, the clients on the fourth, and the waits going back to each
+	client's machine. The dialog is too wide for one picture, so here it is in two halves. The left half holds the
+	description, the configuration, the cases and the run tree with the endpoint of every step:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/network-suite-example/tcp-bidirectional-details-left.png", "Left half of the Details dialog of TCP Bidirectional: the description, the configuration table with default, plan and run values, the case list, and the passed run expanded into cases, flows and steps with the endpoint and elapsed time of every step: Verify Nuttcp and Find Test IP on all four machines, Start Nuttcp Server alternating between a partner and GMG-TEST-1, Start Nuttcp Client and Wait Nuttcp Client on the transmitters, and Stop Nuttcp Server on the receivers", "large") }}
+<p>The right half continues the same rows with the result columns. Every result field of the flow and of the steps is
+	a column of its own: the flow rows carry the SUT's TX and RX throughput, transferred megabytes, retransmissions
+	and the per-partner breakdown, the Verify Nuttcp rows the binary's place in the package and the nuttcp version,
+	the Find Test IP rows the test addresses, the Start Nuttcp Server rows the server PIDs, and the Wait Nuttcp Client
+	rows each client's throughput, duration, retransmissions and CPU load:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/network-suite-example/tcp-bidirectional-details-right.png", "Right half of the same Details dialog: the result columns of the rows, with SUT TX and RX throughput of about 2.3 Gbps each, transferred megabytes, retransmissions and the per-partner breakdown on the flow rows, the executable and version on the Verify Nuttcp rows, the test addresses on the Find Test IP rows, the PIDs on the Start Nuttcp Server rows, and each client's throughput, duration, retransmissions and CPU load on the Wait Nuttcp Client rows", "large") }}
+<p>Numbers in a dialog are a start, not an analysis. The two buttons at the bottom take the whole scope out:
+	<strong class="text-accent">Export to XLSX</strong> writes a workbook with the summary, the configurations and
+	this results tree, every column included, for pivoting the throughput by partner, direction and window size (see
+	<a class="text-accent" href="/tutorial/details-dialog/#export-to-xlsx">Export to XLSX</a>), and
+	<strong class="text-accent">Export for Agents</strong> writes the summary and the run logs as plain text so an
+	<a class="text-accent" href="/ai-agents/results/#export-for-agents">AI agent</a> can read the whole run and
+	explain a slow partner or a lossy case (see
+	<a class="text-accent" href="/tutorial/details-dialog/#export-for-agents">Export for Agents</a>).</p>
+
+<h3 id="reading-a-failure">Reading a failure</h3>
+<p>Two UDP tests of this run failed, and the suite says exactly where. In both, the streams from GMG-TEST-2 and
+	GMG-TEST-3 completed, and the one from GMG-TEST-5 to the SUT did not: the nuttcp client on the macOS machine sent
+	for the whole duration and then reported that nothing had arrived, while the SUT's server for that partner was
+	still waiting:</p>
+{% ansiOutput "network-udp-client-failure.ansi" %}
+<p>The same machine receives UDP without loss in the UDP Transmit test and carries TCP in both directions, so this
+	is the test port of that one machine failing to deliver UDP, not the link and not the suite. That is the kind
+	of finding the suite exists for. Select the UDP Traffic group, take GMG-TEST-5 out of its link partners on the
+	group panel, and run the group. While it runs, the tree shows the running test with its progress bars, the
+	queued one behind it, and the machines it holds marked busy in the Endpoints strip:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/network-suite-example/udp-group-running.png", "Test Explorer during the second run of the UDP Traffic group with GMG-TEST-2 and GMG-TEST-3 as link partners: UDP Transmit already passed a second time, UDP Receive running with its progress bars, UDP Bidirectional queued, and the endpoint cards of GMG-TEST-1, GMG-TEST-2 and GMG-TEST-3 shown as Busy", "large") }}
+<p>With the two partners whose ports do send UDP, the group passes in full:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/network-suite-example/udp-group-rerun-results.png", "Test Explorer after the UDP Traffic group ran with GMG-TEST-2 and GMG-TEST-3 as the link partners: the three UDP tests with passing run rows naming GMG-TEST-1 and GMG-TEST-2, the group row with all twelve cases passed, the TCP group not run in this session, and the group panel on the right listing the two partners", "large") }}
+
+<p>The next page, <a class="text-accent" href="/tutorial/ftdi-suite-example/">FTDI Suite Example</a>, moves from
+	the network to the bench: hardware on a breadboard, driven from two machines over a handful of wires.</p>

@@ -36,6 +36,7 @@
     { "label": "Details Dialog", "slug": "details-dialog/" },
     { "label": "Log Frame", "slug": "log-frame/" },
     { "label": "Execution Status Frame", "slug": "execution-status-frame/" },
+    { "label": "Network Suite Example", "slug": "network-suite-example/" },
     { "label": "FTDI Suite Example", "slug": "ftdi-suite-example/" }
   ]
 }

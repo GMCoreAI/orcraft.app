@@ -7,9 +7,9 @@ description: "A hardware example suite: FT2232H modules driven as GPIO from the 
 {% import "partials/code-block.njk" as codeblock %}
 {% import "partials/zoomable-image.njk" as media %}
 <h1>FTDI Suite Example</h1>
-<p>Everything in the tutorial so far ran against the Maze application, a program. A test lab usually has hardware
-	on the bench too: a board wired to the machine that talks to it, sometimes to two machines that have to act
-	together. The <strong>FTDI GPIO</strong> example suite is a small suite of that kind. It drives the
+<p>The tutorial suite ran against the Maze application, a program, and the previous page moved to the network
+	between machines. A test lab usually has hardware on the bench too: a board wired to the machine that talks to
+	it, sometimes to two machines that have to act together. The <strong>FTDI GPIO</strong> example suite is a small suite of that kind. It drives the
 	<strong>FT2232H Mini Module</strong>, an inexpensive USB board from FTDI, as a set of GPIO pins from the
 	endpoints: one module on one machine blinks LEDs and reads its own pins back, and two modules on two machines,
 	wired to each other, carry text messages across a handful of wires with a handshake.</p>

@@ -1,0 +1,27 @@
+    [30;102m Checkpoint Pass [00m[92m  SUT TX to GMG-TEST-2 throughput 858.5 Mbps reaches the minimum of 100.0 Mbps.[00m
+
+
+    [30;102m Checkpoint Pass [00m[92m  SUT TX to GMG-TEST-3 throughput 859.5 Mbps reaches the minimum of 100.0 Mbps.[00m
+
+
+    [30;102m Checkpoint Pass [00m[92m  SUT TX to GMG-TEST-5 throughput 713.7 Mbps reaches the minimum of 100.0 Mbps.[00m
+
+
+[00m                    [97;48;5;240m                            Flow: Run Traffic | Result                           [00m
+
+Parameter               | Value
+---------------------------------------------------------------------------------
+Name                    | Flow: Run Traffic
+Status                  | [92mPASS[00m
+Finish Time             | 2026-09-16  14:06:40.362
+Elapsed Time            | 16.419 s
+SUT TX Throughput Mbps  | 2431.7
+SUT TX Transferred MB   | 2902.9
+SUT TX Retransmissions  | -
+SUT TX Loss Percent     | -
+SUT TX Per Partner Mbps | GMG-TEST-2: 858.5; GMG-TEST-3: 859.5; GMG-TEST-5: 713.7
+SUT RX Throughput Mbps  | -
+SUT RX Transferred MB   | -
+SUT RX Retransmissions  | -
+SUT RX Loss Percent     | -
+SUT RX Per Partner Mbps | -

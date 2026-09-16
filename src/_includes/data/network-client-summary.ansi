@@ -1,0 +1,12 @@
+[00m                        [97;48;5;236m          Step: Wait Nuttcp Client | Configuration         [00m
+
+Parameter       | Value
+-----------------------------------------------------------
+Start Time      | 2026-09-16  14:06:30.223
+Target Endpoint | GMG-TEST-1:50051 [92m[Secure][00m [92m(v0.1.0.dev218)[00m
+Duration Sec    | 10
+
+nuttcp client command: nuttcp.exe -T10 -P5200 -p5201 -l64K -w256K 192.168.0.12
+1024.9375 MB /  10.02 sec =  858.4523 Mbps 3 %TX 20 %RX 0.62 msRTT
+
+    [30;102m Checkpoint Pass [00m[92m  nuttcp client completed: 1024.9375 MB /  10.02 sec =  858.4523 Mbps 3 %TX 20 %RX 0.62 msRTT[00m
