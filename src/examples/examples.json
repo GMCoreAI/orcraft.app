@@ -1,0 +1,10 @@
+{
+  "layout": "layouts/docs.njk",
+  "docsTitle": "Examples",
+  "docsBase": "/examples/",
+  "docsItems": [
+    { "label": "Orcraft examples overview", "slug": "" },
+    { "label": "Network Suite", "slug": "network-suite/" },
+    { "label": "FTDI Suite", "slug": "ftdi-suite/" }
+  ]
+}

@@ -25,6 +25,9 @@
   <nav class="docs-nav" aria-label="{{ docsTitle }}">
     <ul class="docs-nav__list docs-nav__list--root">
       {%- for item in docsItems %}
+      {%- if item.heading %}
+      <li class="docs-nav__heading">{{ item.heading }}</li>
+      {%- else %}
       {%- set itemUrl = docsBase + item.slug %}
       {%- set headings = docsHeadings[itemUrl] %}
       {%- set isCurrent = page.url == itemUrl %}
@@ -41,6 +44,7 @@
         {{ headingNodes(headings, itemUrl, not isCurrent) }}
         {%- endif %}
       </li>
+      {%- endif %}
       {%- endfor %}
     </ul>
   </nav>

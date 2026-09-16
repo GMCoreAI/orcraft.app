@@ -66,6 +66,17 @@
   font-weight: 500;
 }
 
+/* A section label between pages: not a page, not a heading of one, just where a run of pages begins. */
+.docs-nav__heading {
+  margin: var(--space-4) 0 var(--space-1);
+  padding-left: calc(16px + var(--space-1));
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
 .docs-nav__link[aria-current="page"] {
   color: var(--color-text);
 }

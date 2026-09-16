@@ -1,12 +1,12 @@
 ---
-title: Tutorial · Network Suite Example
-key: tutorial
+title: Examples · Network Suite
+key: examples
 description: "A network performance example suite: nuttcp traffic between a system under test and its link partners on an isolated test network, with the setup, the suite's design and a full run explained."
 ---
 {% import "partials/copy-command.njk" as cmd %}
 {% import "partials/code-block.njk" as codeblock %}
 {% import "partials/zoomable-image.njk" as media %}
-<h1>Network Suite Example</h1>
+<h1>Network Suite</h1>
 <p>The tutorial suite runs one program on one machine at a time. A network test is a different shape of work:
 	several machines have to act together, at the same moment, on a link that is not the one the controller uses to
 	talk to them. The <strong>Network Performance</strong> example suite is a small suite of that kind. It measures
@@ -228,15 +228,15 @@ def find_test_ip(network: str = TEST_NETWORK) -> str:
 <p>Add the suite to a session that has the fleet's endpoints registered. Every test comes up with
 	<code>localhost</code> in both endpoint fields and the default package folder, so a reader with a single
 	machine sees the panels at once, but a run needs the real machines:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/network-suite-example/suite-loaded.png", "Controller with the Network Performance suite loaded: the TCP Traffic and UDP Traffic groups with their three tests each in the Test Explorer, the run panel of TCP Transmit on the right with SUT Endpoint and Link Partner Endpoints at localhost, the Nuttcp Package Folder, Duration Sec and Min Throughput Mbps fields, and the four buffer length and window size cases, and the four fleet machines in the Endpoints strip", "large") }}
+{{ media.zoomableImage("/assets/images/screenshots/examples/network-suite/suite-loaded.png", "Controller with the Network Performance suite loaded: the TCP Traffic and UDP Traffic groups with their three tests each in the Test Explorer, the run panel of TCP Transmit on the right with SUT Endpoint and Link Partner Endpoints at localhost, the Nuttcp Package Folder, Duration Sec and Min Throughput Mbps fields, and the four buffer length and window size cases, and the four fleet machines in the Endpoints strip", "large") }}
 <p>The endpoints are the same for every test, so they are set once at suite scope. Select the suite, click
 	<strong class="text-purple">Configure</strong>, set <strong>SUT Endpoint</strong> to GMG-TEST-1 and tick
 	GMG-TEST-2, GMG-TEST-3 and GMG-TEST-5 under <strong>Link Partner Endpoints</strong> on one test, then apply each
 	column to all tests from its header. The table shows the whole suite configured, and the page of the selected
 	test below it:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/network-suite-example/suite-configuration.png", "Suite panel of Network Performance with a table of the six tests, each with SUT Endpoint GMG-TEST-1 and Link Partner Endpoints GMG-TEST-2, GMG-TEST-3 and GMG-TEST-5, and below it the page of TCP Transmit showing the same endpoints, the multi-select listing the three partners on separate lines", "large") }}
+{{ media.zoomableImage("/assets/images/screenshots/examples/network-suite/suite-configuration.png", "Suite panel of Network Performance with a table of the six tests, each with SUT Endpoint GMG-TEST-1 and Link Partner Endpoints GMG-TEST-2, GMG-TEST-3 and GMG-TEST-5, and below it the page of TCP Transmit showing the same endpoints, the multi-select listing the three partners on separate lines", "large") }}
 <p>Selecting a test shows its own run panel with the endpoints it will use and its cases:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/network-suite-example/tcp-transmit-run-panel.png", "Run panel of TCP Transmit with SUT Endpoint GMG-TEST-1, Link Partner Endpoints GMG-TEST-2, GMG-TEST-3 and GMG-TEST-5, the Nuttcp Package Folder, Duration Sec 10, Min Throughput Mbps 100 and the four cases of buffer length 64K and 1M by window size 256K and 4M", "large") }}
+{{ media.zoomableImage("/assets/images/screenshots/examples/network-suite/tcp-transmit-run-panel.png", "Run panel of TCP Transmit with SUT Endpoint GMG-TEST-1, Link Partner Endpoints GMG-TEST-2, GMG-TEST-3 and GMG-TEST-5, the Nuttcp Package Folder, Duration Sec 10, Min Throughput Mbps 100 and the four cases of buffer length 64K and 1M by window size 256K and 4M", "large") }}
 <p>Click <strong class="text-purple">Run</strong> on the suite panel and confirm. The tests queue up and run
 	one after the other, each locking the SUT and the three partners for its duration.</p>
 
@@ -256,18 +256,18 @@ def find_test_ip(network: str = TEST_NETWORK) -> str:
 <h3 id="results">Results</h3>
 <p>When the suite finishes, the tree carries a run row under every test with its endpoints and status, and the
 	group and suite rows sum their cases:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/network-suite-example/suite-run-results.png", "Test Explorer after the suite run: the TCP Traffic group with its three tests passed, the UDP Traffic group with UDP Transmit passed and UDP Receive and UDP Bidirectional failed, every run row naming GMG-TEST-1 and its partners, and the suite row summing 24 cases with 16 passed and 8 failed", "large") }}
+{{ media.zoomableImage("/assets/images/screenshots/examples/network-suite/suite-run-results.png", "Test Explorer after the suite run: the TCP Traffic group with its three tests passed, the UDP Traffic group with UDP Transmit passed and UDP Receive and UDP Bidirectional failed, every run row naming GMG-TEST-1 and its partners, and the suite row summing 24 cases with 16 passed and 8 failed", "large") }}
 <p>The Details dialog of a test lists every step with the machine it ran on, which is where the concurrency of the
 	flow becomes visible: the servers on three machines, the clients on the fourth, and the waits going back to each
 	client's machine. The dialog is too wide for one picture, so here it is in two halves. The left half holds the
 	description, the configuration, the cases and the run tree with the endpoint of every step:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/network-suite-example/tcp-bidirectional-details-left.png", "Left half of the Details dialog of TCP Bidirectional: the description, the configuration table with default, plan and run values, the case list, and the passed run expanded into cases, flows and steps with the endpoint and elapsed time of every step: Verify Nuttcp and Find Test IP on all four machines, Start Nuttcp Server alternating between a partner and GMG-TEST-1, Start Nuttcp Client and Wait Nuttcp Client on the transmitters, and Stop Nuttcp Server on the receivers", "large") }}
+{{ media.zoomableImage("/assets/images/screenshots/examples/network-suite/tcp-bidirectional-details-left.png", "Left half of the Details dialog of TCP Bidirectional: the description, the configuration table with default, plan and run values, the case list, and the passed run expanded into cases, flows and steps with the endpoint and elapsed time of every step: Verify Nuttcp and Find Test IP on all four machines, Start Nuttcp Server alternating between a partner and GMG-TEST-1, Start Nuttcp Client and Wait Nuttcp Client on the transmitters, and Stop Nuttcp Server on the receivers", "large") }}
 <p>The right half continues the same rows with the result columns. Every result field of the flow and of the steps is
 	a column of its own: the flow rows carry the SUT's TX and RX throughput, transferred megabytes, retransmissions
 	and the per-partner breakdown, the Verify Nuttcp rows the binary's place in the package and the nuttcp version,
 	the Find Test IP rows the test addresses, the Start Nuttcp Server rows the server PIDs, and the Wait Nuttcp Client
 	rows each client's throughput, duration, retransmissions and CPU load:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/network-suite-example/tcp-bidirectional-details-right.png", "Right half of the same Details dialog: the result columns of the rows, with SUT TX and RX throughput of about 2.3 Gbps each, transferred megabytes, retransmissions and the per-partner breakdown on the flow rows, the executable and version on the Verify Nuttcp rows, the test addresses on the Find Test IP rows, the PIDs on the Start Nuttcp Server rows, and each client's throughput, duration, retransmissions and CPU load on the Wait Nuttcp Client rows", "large") }}
+{{ media.zoomableImage("/assets/images/screenshots/examples/network-suite/tcp-bidirectional-details-right.png", "Right half of the same Details dialog: the result columns of the rows, with SUT TX and RX throughput of about 2.3 Gbps each, transferred megabytes, retransmissions and the per-partner breakdown on the flow rows, the executable and version on the Verify Nuttcp rows, the test addresses on the Find Test IP rows, the PIDs on the Start Nuttcp Server rows, and each client's throughput, duration, retransmissions and CPU load on the Wait Nuttcp Client rows", "large") }}
 <p>Numbers in a dialog are a start, not an analysis. The two buttons at the bottom take the whole scope out:
 	<strong class="text-accent">Export to XLSX</strong> writes a workbook with the summary, the configurations and
 	this results tree, every column included, for pivoting the throughput by partner, direction and window size (see
@@ -288,9 +288,9 @@ def find_test_ip(network: str = TEST_NETWORK) -> str:
 	of finding the suite exists for. Select the UDP Traffic group, take GMG-TEST-5 out of its link partners on the
 	group panel, and run the group. While it runs, the tree shows the running test with its progress bars, the
 	queued one behind it, and the machines it holds marked busy in the Endpoints strip:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/network-suite-example/udp-group-running.png", "Test Explorer during the second run of the UDP Traffic group with GMG-TEST-2 and GMG-TEST-3 as link partners: UDP Transmit already passed a second time, UDP Receive running with its progress bars, UDP Bidirectional queued, and the endpoint cards of GMG-TEST-1, GMG-TEST-2 and GMG-TEST-3 shown as Busy", "large") }}
+{{ media.zoomableImage("/assets/images/screenshots/examples/network-suite/udp-group-running.png", "Test Explorer during the second run of the UDP Traffic group with GMG-TEST-2 and GMG-TEST-3 as link partners: UDP Transmit already passed a second time, UDP Receive running with its progress bars, UDP Bidirectional queued, and the endpoint cards of GMG-TEST-1, GMG-TEST-2 and GMG-TEST-3 shown as Busy", "large") }}
 <p>With the two partners whose ports do send UDP, the group passes in full:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/network-suite-example/udp-group-rerun-results.png", "Test Explorer after the UDP Traffic group ran with GMG-TEST-2 and GMG-TEST-3 as the link partners: the three UDP tests with passing run rows naming GMG-TEST-1 and GMG-TEST-2, the group row with all twelve cases passed, the TCP group not run in this session, and the group panel on the right listing the two partners", "large") }}
+{{ media.zoomableImage("/assets/images/screenshots/examples/network-suite/udp-group-rerun-results.png", "Test Explorer after the UDP Traffic group ran with GMG-TEST-2 and GMG-TEST-3 as the link partners: the three UDP tests with passing run rows naming GMG-TEST-1 and GMG-TEST-2, the group row with all twelve cases passed, the TCP group not run in this session, and the group panel on the right listing the two partners", "large") }}
 
-<p>The next page, <a class="text-accent" href="/tutorial/ftdi-suite-example/">FTDI Suite Example</a>, moves from
+<p>The next page, <a class="text-accent" href="/examples/ftdi-suite/">FTDI Suite</a>, moves from
 	the network to the bench: hardware on a breadboard, driven from two machines over a handful of wires.</p>

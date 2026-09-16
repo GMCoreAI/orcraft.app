@@ -1,12 +1,12 @@
 ---
-title: Tutorial · FTDI Suite Example
-key: tutorial
+title: Examples · FTDI Suite
+key: examples
 description: "A hardware example suite: FT2232H modules driven as GPIO from the endpoints, with the module setup, the wiring, the driver preparation and the tests explained."
 ---
 {% import "partials/copy-command.njk" as cmd %}
 {% import "partials/code-block.njk" as codeblock %}
 {% import "partials/zoomable-image.njk" as media %}
-<h1>FTDI Suite Example</h1>
+<h1>FTDI Suite</h1>
 <p>The tutorial suite ran against the Maze application, a program, and the previous page moved to the network
 	between machines. A test lab usually has hardware on the bench too: a board wired to the machine that talks to
 	it, sometimes to two machines that have to act together. The <strong>FTDI GPIO</strong> example suite is a small suite of that kind. It drives the
@@ -68,7 +68,7 @@ description: "A hardware example suite: FT2232H modules driven as GPIO from the 
 	<strong>Verify Module</strong> step fails with <em>Module auto was not found on this endpoint</em>. Without
 	J2 to J5 the module is found and opens, but every pin stays low whatever is written to it, so
 	<strong>LED Blink</strong> fails with the pin not following the written level:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/ftdi-suite-example/led-blink-unpowered-bank.png", "Log of an LED Blink run on a module without the V3V3 to VIO jumpers: the test result lists eight failed cases and the failures table shows every case of pin 0 to 3 with the description Pin did not follow the written level", "large") }}
+{{ media.zoomableImage("/assets/images/screenshots/examples/ftdi-suite/led-blink-unpowered-bank.png", "Log of an LED Blink run on a module without the V3V3 to VIO jumpers: the test result lists eight failed cases and the failures table shows every case of pin 0 to 3 with the description Pin did not follow the written level", "large") }}
 
 <h3 id="channel-a-pins">Channel A pins</h3>
 <p>The suite uses channel A of the chip only, the pins printed <strong>AD0</strong> to <strong>AD7</strong> on
@@ -94,7 +94,7 @@ description: "A hardware example suite: FT2232H modules driven as GPIO from the 
 <p>Every test runs on one wiring. The LEDs group uses a module on its own; the GPIO Link group joins two such
 	modules with straight wires, and the same LEDs then show the traffic. Build the LED side on each module
 	first, then join the modules.</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/ftdi-suite-example/bench-setup.jpg", "The bench setup: two FT2232H Mini Modules on their USB cables behind a breadboard that carries the six LEDs in a row with their series resistors, three of the LEDs lit in the middle of a transfer", "large") }}
+{{ media.zoomableImage("/assets/images/screenshots/examples/ftdi-suite/bench-setup.jpg", "The bench setup: two FT2232H Mini Modules on their USB cables behind a breadboard that carries the six LEDs in a row with their series resistors, three of the LEDs lit in the middle of a transfer", "large") }}
 
 <h3 id="leds-on-one-module">LEDs on one module</h3>
 <p>From each of <code>AD0</code> to <code>AD5</code>, an LED with its own series resistor to <code>GND</code>: the
@@ -147,7 +147,7 @@ libusb-package', 'text') }}
 <p>When a Mini Module is plugged into a Windows machine, Windows binds FTDI's own serial driver to it and offers
 	two COM ports. That driver does not let libusb open the device, so the first run on such an endpoint stops at
 	the <strong>Verify Module</strong> step:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/ftdi-suite-example/verify-module-needs-winusb.png", "Verify Module step result in the log with status FAIL and the failure description The module cannot be opened through libusb, on Windows switch its interfaces to the WinUSB driver with Zadig, on Linux give the user access to the USB device", "large") }}
+{{ media.zoomableImage("/assets/images/screenshots/examples/ftdi-suite/verify-module-needs-winusb.png", "Verify Module step result in the log with status FAIL and the failure description The module cannot be opened through libusb, on Windows switch its interfaces to the WinUSB driver with Zadig, on Linux give the user access to the USB device", "large") }}
 <p>The fix is a one-time driver switch with <a class="text-accent" href="https://zadig.akeo.ie/">Zadig</a>, a
 	small tool that replaces the driver of one USB interface with WinUSB, the generic driver libusb works with. On
 	the endpoint machine, with the module plugged in:</p>
@@ -165,11 +165,11 @@ libusb-package', 'text') }}
 	interface on WinUSB and the other still on the FTDI driver does not always enumerate the same way after a
 	replug or a reboot, and then the open fails again with the same message. With both on WinUSB the module is
 	stable.</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/ftdi-suite-example/zadig-replace-driver.png", "Zadig with Dual RS232-HS (Interface 0) selected, the current driver FTDIBUS on the left, WinUSB as the target driver on the right, and the Replace Driver button", "large") }}
+{{ media.zoomableImage("/assets/images/screenshots/examples/ftdi-suite/zadig-replace-driver.png", "Zadig with Dual RS232-HS (Interface 0) selected, the current driver FTDIBUS on the left, WinUSB as the target driver on the right, and the Replace Driver button", "large") }}
 <p>Zadig takes a few seconds per interface. When an interface is selected again afterwards, both sides show WinUSB
 	and the button reads <strong>Reinstall Driver</strong>, which is how a prepared machine looks for Interface 0
 	and for Interface 1 alike:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/ftdi-suite-example/zadig-winusb-installed.png", "Zadig with Dual RS232-HS (Interface 0) selected after the switch, WinUSB shown as both the current and the target driver, and the button reading Reinstall Driver", "large") }}
+{{ media.zoomableImage("/assets/images/screenshots/examples/ftdi-suite/zadig-winusb-installed.png", "Zadig with Dual RS232-HS (Interface 0) selected after the switch, WinUSB shown as both the current and the target driver, and the button reading Reinstall Driver", "large") }}
 <p>Run the test again; it now opens the module. The switch holds across reboots and applies to that module on that
 	machine, so a second module or a second machine needs its own pass. The module no longer appears as a COM port
 	while it has the WinUSB driver; to give it back to FTDI's driver, uninstall the device in the Device Manager
@@ -371,7 +371,7 @@ Aux to test: AD0 -> AD0; AD1 -> AD1; AD2 -> AD2; AD3 -> AD3; AD4 -> AD4; AD5 -> 
 	thread to finish and reads the message it collected. Select <strong>Send Message</strong>, set the two
 	endpoints, click <strong class="text-accent">Update Plan</strong>, <strong class="text-purple">Run</strong>,
 	and follow the flow in the log:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/ftdi-suite-example/transfer-message-log.png", "Log of the Transfer Message flow with the Sender Endpoint GMG-TEST-1 and the Receiver Endpoint GMG-TEST-2, the Start Receiver step on GMG-TEST-2 passing at once with the line Receiver listening on ftdi://ftdi:2232h/1 for up to 60 s, and the Send Message step on GMG-TEST-1 passing with the checkpoint Message sent: 19 bytes in 2.116 s", "large") }}
+{{ media.zoomableImage("/assets/images/screenshots/examples/ftdi-suite/transfer-message-log.png", "Log of the Transfer Message flow with the Sender Endpoint GMG-TEST-1 and the Receiver Endpoint GMG-TEST-2, the Start Receiver step on GMG-TEST-2 passing at once with the line Receiver listening on ftdi://ftdi:2232h/1 for up to 60 s, and the Send Message step on GMG-TEST-1 passing with the checkpoint Message sent: 19 bytes in 2.116 s", "large") }}
 <p>The sender reports 19 bytes for an 18-character message, the length byte plus the text, at a pace of 50 ms
 	per nibble. The flow ends with a checkpoint that compares the received text with the sent one, and the test's
 	result carries the <strong>Received Message</strong> and the <strong>Bytes Per Sec</strong>. A transfer that
@@ -380,7 +380,7 @@ Aux to test: AD0 -> AD0; AD1 -> AD1; AD2 -> AD2; AD3 -> AD3; AD4 -> AD4; AD5 -> 
 <p>With both machines prepared and the wiring in place, the whole suite runs green. Each LEDs test names the one
 	machine its module is on, each link test names both, and the run panel on the right shows the same
 	endpoint and module fields the tests were configured with:</p>
-{{ media.zoomableImage("/assets/images/screenshots/tutorial/ftdi-suite-example/full-suite-run.png", "Test Explorer with the FTDI GPIO suite fully passed: 22 planned, done and passed cases, the LEDs group with LED Blink and LED Pattern on GMG-TEST-1, the GPIO Link group with Wire Map, Send Message, Receive Message and Exchange Messages on GMG-TEST-1 and GMG-TEST-2, and the run panel of LED Blink on the right with the Test Endpoint, Module Serial auto, Blinks 5 and the twelve pin and period cases", "large") }}
+{{ media.zoomableImage("/assets/images/screenshots/examples/ftdi-suite/full-suite-run.png", "Test Explorer with the FTDI GPIO suite fully passed: 22 planned, done and passed cases, the LEDs group with LED Blink and LED Pattern on GMG-TEST-1, the GPIO Link group with Wire Map, Send Message, Receive Message and Exchange Messages on GMG-TEST-1 and GMG-TEST-2, and the run panel of LED Blink on the right with the Test Endpoint, Module Serial auto, Blinks 5 and the twelve pin and period cases", "large") }}
 
 <p>This suite is the shape of a lab test: hardware on the bench, driven from the machines it is plugged into,
 	with the framework moving the code, the requirements and the results. An

@@ -153,7 +153,7 @@ consume_result = self.run_step(
   that file with pip, once per uploaded package; a package the endpoint already holds costs one short
   check. The outcome appears in the log next to the upload lines and names the requirements. When the
   install fails, the test errors before any step runs and the log carries pip's message.</p>
-<p>The FTDI GPIO example suite drives FT2232H modules through pyftdi, which needs a libusb library that
+<p>The <a class="text-accent" href="/examples/ftdi-suite/">FTDI example suite</a> drives FT2232H modules through pyftdi, which needs a libusb library that
   Windows does not ship, so its file lists both:</p>
 {{ codeblock.block('pyftdi
 libusb-package', 'text') }}

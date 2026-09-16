@@ -3,6 +3,7 @@
     { "label": "Home", "url": "/" },
     { "label": "Setup", "url": "/setup/" },
     { "label": "Tutorial", "url": "/tutorial/" },
+    { "label": "Examples", "url": "/examples/" },
     { "label": "Framework", "url": "/framework/" },
     { "label": "AI Agents", "url": "/ai-agents/" },
     { "label": "Demo", "url": "/demo/" },

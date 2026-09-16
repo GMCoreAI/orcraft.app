@@ -68,7 +68,7 @@ export default function (eleventyConfig) {
   // Sidebar data of every docs section, for pages that list the whole documentation
   // (the AI agents instructions snippet).
   eleventyConfig.addGlobalData("docsSections", () =>
-    ["ai-agents/ai-agents", "framework/framework", "setup/setup", "tutorial/tutorial"].map((name) =>
+    ["ai-agents/ai-agents", "examples/examples", "framework/framework", "setup/setup", "tutorial/tutorial"].map((name) =>
       JSON.parse(readFileSync(`src/${name}.json`, "utf8"))
     )
   );

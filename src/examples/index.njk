@@ -1,0 +1,24 @@
+---
+title: Orcraft examples overview
+key: examples
+description: "Complete example suites for real test setups: a network performance suite and a hardware suite, each with its setup, its design and a full run explained."
+---
+<h1>Orcraft examples overview</h1>
+<p>The <a class="text-accent" href="/tutorial/">tutorial</a> builds one suite step by step to teach the framework.
+	The examples go the other way: each is a complete suite for a real kind of test setup, in its own repository, laid
+	out exactly like the tutorial suite, with a page that explains the setup it needs, the design choices it makes and a
+	full run on the lab's machines. Clone one, run it on your own machines, and use it as the starting point of a suite
+	of your own.</p>
+
+<h2 id="network-suite">Network Suite</h2>
+<p>Measures TCP and UDP throughput between a system under test and its link partners with nuttcp, over an isolated
+	test network. It shows a multi-select endpoint field driving concurrent streams on several machines, addresses
+	discovered on the endpoints instead of configured, a third-party tool shipped as a package, and results aggregated
+	across machines.
+	<a class="text-accent" href="/examples/network-suite/">Read the Network Suite example</a>.</p>
+
+<h2 id="ftdi-suite">FTDI Suite</h2>
+<p>Drives FT2232H modules as GPIO from the endpoints: LEDs on a breadboard, and text messages carried between two
+	machines over a handful of wires with a handshake. It shows suite requirements installed on the endpoints, a
+	hardware handle opened once and reused by every step of a test, and two endpoints coordinated at wire level.
+	<a class="text-accent" href="/examples/ftdi-suite/">Read the FTDI Suite example</a>.</p>
