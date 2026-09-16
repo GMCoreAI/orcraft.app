@@ -1,0 +1,388 @@
+---
+title: Tutorial · FTDI Suite Example
+key: tutorial
+description: "A hardware example suite: FT2232H modules driven as GPIO from the endpoints, with the module setup, the wiring, the driver preparation and the tests explained."
+---
+{% import "partials/copy-command.njk" as cmd %}
+{% import "partials/code-block.njk" as codeblock %}
+{% import "partials/zoomable-image.njk" as media %}
+<h1>FTDI Suite Example</h1>
+<p>Everything in the tutorial so far ran against the Maze application, a program. A test lab usually has hardware
+	on the bench too: a board wired to the machine that talks to it, sometimes to two machines that have to act
+	together. The <strong>FTDI GPIO</strong> example suite is a small suite of that kind. It drives the
+	<strong>FT2232H Mini Module</strong>, an inexpensive USB board from FTDI, as a set of GPIO pins from the
+	endpoints: one module on one machine blinks LEDs and reads its own pins back, and two modules on two machines,
+	wired to each other, carry text messages across a handful of wires with a handshake.</p>
+<p>The suite is a separate repository laid out exactly like the tutorial suite. Clone it next to the tutorial suite
+	and add its entry point, <code>test_suite_ftdi.py</code>, to the controller the same way the
+	<a class="text-accent" href="/setup/getting-started/">Getting started</a> guide adds the tutorial suite:</p>
+{{ cmd.copyCommand("git clone https://github.com/GMCoreAI/orcraft-test-suite-ftdi.git") }}
+<p class="text-danger">This repository is currently private; the link above will be updated once it is public.</p>
+<p>Beyond what the tutorial suite shows, this one demonstrates:</p>
+<ul>
+	<li><strong>Suite requirements</strong>: the Python packages the suite needs are installed on the endpoints
+		by the controller, from a <code>requirements.txt</code> at the root of the repository.</li>
+	<li><strong>One hardware handle for a whole test</strong>: the module is opened once in <code>_setup()</code>,
+		kept open on the endpoint, handed to every step of every case, and closed in <code>_teardown()</code>.</li>
+	<li><strong>Two endpoints coordinated at wire level</strong>: a receiver waits in the background on one
+		machine while a sender drives the wires from the other, and the flow collects what arrived.</li>
+</ul>
+
+<h2 id="hardware">Hardware</h2>
+<p>The LEDs group needs one module on one endpoint; the GPIO Link group needs a second module on a second
+	endpoint. The same wiring serves every test, so build it once:</p>
+<table>
+	<thead>
+		<tr><th>Part</th><th>Quantity</th><th>Notes</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>FT2232H Mini Module</td><td>1 or 2</td><td>One for the LEDs group, two for the GPIO Link group.</td></tr>
+		<tr><td>USB mini-B cable</td><td>1 per module</td><td>The module is powered from USB.</td></tr>
+		<tr><td>Breadboard</td><td>1 per module</td><td>Holds the LEDs and resistors.</td></tr>
+		<tr><td>LED</td><td>6 per module</td><td>One on each of AD0 to AD5.</td></tr>
+		<tr><td>Resistor, 330 to 470 ohm</td><td>6 per module, plus 6 for the link</td><td>One in series with each LED, and one in series with each wire between the modules.</td></tr>
+		<tr><td>Jumper wires</td><td>a handful</td><td>Five short ones per module for its power jumpers, seven between the modules.</td></tr>
+	</tbody>
+</table>
+
+<h2 id="module-setup">Module setup</h2>
+<p>The Mini Module has two 26-pin headers, <strong>CN2</strong> and <strong>CN3</strong>, and ships with nothing
+	connected between its power rails. The chip enumerates on USB only once the USB 5 V (<strong>VBUS</strong>) is
+	jumpered to the regulator input (<strong>VCC</strong>), and its pins only go high once the regulator's 3.3 V
+	output (<strong>V3V3</strong>) is jumpered to every I/O bank supply input (<strong>VIO</strong>). Five short
+	jumper wires do that:</p>
+{{ media.zoomableImage("/assets/images/Diagrams/FTDI-Module-Jumpers.svg", "Schematic top view of the FT2232H Mini Module with headers CN2 and CN3 drawn pin by pin, the five power jumpers J1 to J5 drawn between VBUS and VCC and between the V3V3 and VIO pins, and the channel A pins AD0 to AD7 marked", "large") }}
+<table>
+	<thead>
+		<tr><th>Jumper</th><th>From</th><th>To</th><th>Purpose</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>J1</td><td>CN3-1 (VBUS)</td><td>CN3-3 (VCC)</td><td>Powers the module from the USB port.</td></tr>
+		<tr><td>J2</td><td>CN2-1 (V3V3)</td><td>CN2-11 (VIO)</td><td>Feeds an I/O bank from the 3.3 V regulator.</td></tr>
+		<tr><td>J3</td><td>CN2-3 (V3V3)</td><td>CN2-21 (VIO)</td><td>Feeds an I/O bank from the 3.3 V regulator.</td></tr>
+		<tr><td>J4</td><td>CN2-5 (V3V3)</td><td>CN3-12 (VIO)</td><td>Feeds an I/O bank from the 3.3 V regulator.</td></tr>
+		<tr><td>J5</td><td>CN3-12 (VIO)</td><td>CN3-22 (VIO)</td><td>Chains the last I/O bank to the same supply.</td></tr>
+	</tbody>
+</table>
+<p>The suite tells the two mistakes apart. Without J1 the module never appears on the USB bus and the
+	<strong>Verify Module</strong> step fails with <em>Module auto was not found on this endpoint</em>. Without
+	J2 to J5 the module is found and opens, but every pin stays low whatever is written to it, so
+	<strong>LED Blink</strong> fails with the pin not following the written level:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/ftdi-suite-example/led-blink-unpowered-bank.png", "Log of an LED Blink run on a module without the V3V3 to VIO jumpers: the test result lists eight failed cases and the failures table shows every case of pin 0 to 3 with the description Pin did not follow the written level", "large") }}
+
+<h3 id="channel-a-pins">Channel A pins</h3>
+<p>The suite uses channel A of the chip only, the pins printed <strong>AD0</strong> to <strong>AD7</strong> on
+	CN2; channel B stays free. The pin numbers zigzag because the odd pins sit in one row of the header and the
+	even pins in the other:</p>
+<table>
+	<thead>
+		<tr><th>Signal</th><th>CN2 pin</th><th>LEDs group</th><th>GPIO Link group</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><code>AD0</code></td><td>7</td><td>LED 1</td><td>DATA0</td></tr>
+		<tr><td><code>AD1</code></td><td>10</td><td>LED 2</td><td>DATA1</td></tr>
+		<tr><td><code>AD2</code></td><td>9</td><td>LED 3</td><td>DATA2</td></tr>
+		<tr><td><code>AD3</code></td><td>12</td><td>LED 4</td><td>DATA3</td></tr>
+		<tr><td><code>AD4</code></td><td>14</td><td>LED 5</td><td>REQ</td></tr>
+		<tr><td><code>AD5</code></td><td>13</td><td>LED 6</td><td>ACK</td></tr>
+		<tr><td><code>AD6</code>, <code>AD7</code></td><td>16, 15</td><td>unused</td><td>unused</td></tr>
+		<tr><td><code>GND</code></td><td>2, 4 or 6</td><td>LED return</td><td>common ground</td></tr>
+	</tbody>
+</table>
+
+<h2 id="wiring">Wiring</h2>
+<p>Every test runs on one wiring. The LEDs group uses a module on its own; the GPIO Link group joins two such
+	modules with straight wires, and the same LEDs then show the traffic. Build the LED side on each module
+	first, then join the modules.</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/ftdi-suite-example/bench-setup.jpg", "The bench setup: two FT2232H Mini Modules on their USB cables behind a breadboard that carries the six LEDs in a row with their series resistors, three of the LEDs lit in the middle of a transfer", "large") }}
+
+<h3 id="leds-on-one-module">LEDs on one module</h3>
+<p>From each of <code>AD0</code> to <code>AD5</code>, an LED with its own series resistor to <code>GND</code>: the
+	LED's anode to the pin, its cathode through the resistor to ground. A freshly plugged module sits in its UART
+	mode, in which <code>AD0</code>, <code>AD2</code> and <code>AD4</code> idle high, so LEDs 1, 3 and 5 are lit
+	until the suite opens the module; that is expected. The suite closes the module with every pin as an input, so
+	after a run all LEDs are dark.</p>
+
+<h3 id="link-between-two-modules">Link between two modules</h3>
+<p>The two modules are wired pin to pin, <code>AD0</code> to <code>AD0</code> and so on up to <code>AD5</code>,
+	plus the two grounds joined. Which side drives which wire follows who is sending, so the same wires carry
+	messages both ways:</p>
+{{ media.zoomableImage("/assets/images/Diagrams/FTDI-GPIO-Link.svg", "Wiring diagram of the test module on the test endpoint and the aux module on the aux endpoint: AD0 to AD5 run straight across through a series resistor each, DATA0 to DATA3 and REQ driven by the sender, ACK driven by the receiver, an LED with its own resistor from every signal wire to ground, and a dashed common ground wire", "large") }}
+<table>
+	<thead>
+		<tr><th>Test module</th><th>Aux module</th><th>Signal</th><th>Driven by</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><code>AD0</code> to <code>AD3</code></td><td><code>AD0</code> to <code>AD3</code></td><td>DATA, one nibble</td><td>the sending side</td></tr>
+		<tr><td><code>AD4</code></td><td><code>AD4</code></td><td>REQ, a nibble is ready</td><td>the sending side</td></tr>
+		<tr><td><code>AD5</code></td><td><code>AD5</code></td><td>ACK, nibble taken</td><td>the receiving side</td></tr>
+		<tr><td><code>GND</code></td><td><code>GND</code></td><td>common ground</td><td>always</td></tr>
+	</tbody>
+</table>
+<p>Put a 330 to 470 ohm resistor in series with each of the six signal wires. A freshly plugged module drives
+	<code>AD0</code>, <code>AD2</code> and <code>AD4</code> high in its UART mode, and until the suite opens both
+	modules two outputs can face each other on one wire; the resistor keeps that clash under 10 mA, which the pins
+	tolerate, while an input still reads the level cleanly. The LEDs on the wires make a transfer visible: the four
+	data LEDs show each nibble as it lands and the REQ and ACK LEDs show the handshake. At a slow pace the message
+	can be read off the board.</p>
+
+<h2 id="endpoint-preparation">Endpoint preparation</h2>
+<p>An endpoint that runs this suite needs two things the tutorial suite never asked for: Python packages that talk
+	to the module, and an operating system that lets those packages reach the USB device.</p>
+
+<h3 id="suite-requirements">Suite requirements</h3>
+<p>The suite drives the module through <code>pyftdi</code>, which speaks to the chip over libusb. Windows ships no
+	libusb, so the suite also lists <code>libusb-package</code>, a wheel that carries the library. Both are named in
+	the <code>requirements.txt</code> at the root of the repository:</p>
+{{ codeblock.block('pyftdi
+libusb-package', 'text') }}
+<p>Nothing is installed by hand. After the suite package is uploaded to an endpoint, the controller has the
+	endpoint application's Python install the file with pip, once per uploaded package, and reports the outcome in
+	the log next to the upload lines. The mechanism is described in the framework's
+	<a class="text-accent" href="/framework/endpoints/#suite-requirements">Suite requirements</a> section. A test
+	that runs on <code>localhost</code> uses the controller's own Python, where the packages must be installed by
+	hand.</p>
+
+<h3 id="winusb-driver-on-windows">WinUSB driver on Windows</h3>
+<p>When a Mini Module is plugged into a Windows machine, Windows binds FTDI's own serial driver to it and offers
+	two COM ports. That driver does not let libusb open the device, so the first run on such an endpoint stops at
+	the <strong>Verify Module</strong> step:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/ftdi-suite-example/verify-module-needs-winusb.png", "Verify Module step result in the log with status FAIL and the failure description The module cannot be opened through libusb, on Windows switch its interfaces to the WinUSB driver with Zadig, on Linux give the user access to the USB device", "large") }}
+<p>The fix is a one-time driver switch with <a class="text-accent" href="https://zadig.akeo.ie/">Zadig</a>, a
+	small tool that replaces the driver of one USB interface with WinUSB, the generic driver libusb works with. On
+	the endpoint machine, with the module plugged in:</p>
+<ol>
+	<li>Download and start Zadig. It needs no installation.</li>
+	<li>Open <strong>Options</strong> and tick <strong>List All Devices</strong>, so devices that already have a
+		driver are shown.</li>
+	<li>Pick <strong>Dual RS232-HS (Interface 0)</strong> in the device list; the USB ID reads
+		<code>0403 6010</code>.</li>
+	<li>Leave <strong>WinUSB</strong> as the target driver and click <strong>Replace Driver</strong>.</li>
+	<li>Pick <strong>Dual RS232-HS (Interface 1)</strong> and click <strong>Replace Driver</strong> again.</li>
+</ol>
+<p><strong>Switch both interfaces, not only Interface 0.</strong> The suite uses channel A, but the two channels
+	of one module are two interfaces of one USB device, and libusb opens the device as a whole. A module with one
+	interface on WinUSB and the other still on the FTDI driver does not always enumerate the same way after a
+	replug or a reboot, and then the open fails again with the same message. With both on WinUSB the module is
+	stable.</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/ftdi-suite-example/zadig-replace-driver.png", "Zadig with Dual RS232-HS (Interface 0) selected, the current driver FTDIBUS on the left, WinUSB as the target driver on the right, and the Replace Driver button", "large") }}
+<p>Zadig takes a few seconds per interface. When an interface is selected again afterwards, both sides show WinUSB
+	and the button reads <strong>Reinstall Driver</strong>, which is how a prepared machine looks for Interface 0
+	and for Interface 1 alike:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/ftdi-suite-example/zadig-winusb-installed.png", "Zadig with Dual RS232-HS (Interface 0) selected after the switch, WinUSB shown as both the current and the target driver, and the button reading Reinstall Driver", "large") }}
+<p>Run the test again; it now opens the module. The switch holds across reboots and applies to that module on that
+	machine, so a second module or a second machine needs its own pass. The module no longer appears as a COM port
+	while it has the WinUSB driver; to give it back to FTDI's driver, uninstall the device in the Device Manager
+	with its driver and plug it in again.</p>
+
+<h3 id="usb-access-on-linux">USB access on Linux</h3>
+<p>Linux needs no driver change, because <code>pyftdi</code> detaches the kernel's serial driver from the
+	interface by itself. What it needs is permission: by default only root may open a USB device, and the endpoint
+	application runs as an ordinary user. A udev rule opens the FTDI devices to every user:</p>
+{{ codeblock.block('SUBSYSTEM=="usb", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6010", MODE="0666"', 'text') }}
+<p>Save it as <code>/etc/udev/rules.d/99-ftdi.rules</code>, reload the rules and plug the module in again:</p>
+{{ cmd.copyCommand("sudo udevadm control --reload-rules && sudo udevadm trigger") }}
+
+<h2 id="suite-structure">Suite structure</h2>
+<p>The repository follows the tutorial suite's layout: one file per suite, group and test, the flows of a test
+	under its folder, and everything several tests share under <code>common</code>:</p>
+{{ codeblock.block('orcraft-test-suite-ftdi/
+	requirements.txt
+	test_suite_ftdi.py
+	common/
+		ftdi_gpio.py          the module as eight GPIO pins, through pyftdi
+		gpio_link.py          the nibble protocol: frame, REQ/ACK handshake, sender and receiver
+		module_test.py        base test for one module on one endpoint
+		link_test.py          base test for two modules on two endpoints
+		flows/                open module, close module, transfer message
+		steps/                verify, open, close, blink, drive pattern, set and read pins,
+		                      start receiver, send message, wait receiver
+	test_group_leds/
+		test_led_blink/
+		test_led_pattern/
+	test_group_link/
+		test_wire_map/
+		test_send_message/
+		test_receive_message/
+		test_exchange_messages/', 'text') }}
+
+<h3 id="one-handle-for-the-whole-test">One handle for the whole test</h3>
+<p>Source file:</p>
+{{ cmd.copyPath("orcraft-test-suite-ftdi/common/module_test.py") }}
+<p>Opening a USB device is slow and disturbs the pins, so a test does it once. The base class of the LEDs tests
+	opens the module in <code>_setup()</code>, keeps the handle for every case, and closes it in
+	<code>_teardown()</code>. No step opens or closes the module itself:</p>
+{{ codeblock.block('class ModuleTest(OrcraftTest):
+	direction = 0x00
+
+	def __init__(self, config: ModuleTestConfig) -> None:
+		super().__init__(config)
+		self.gpio = None
+
+	def _setup(self) -> None:
+		flow = FlowOpenModule(
+			FlowOpenModuleConfig(
+				endpoint=self.config.test_endpoint,
+				module_serial=self.config.module_serial,
+				direction=self.direction,
+			)
+		)
+		flow_result = flow.run()
+
+		# Raising from _setup aborts the test: no cases run and _teardown is skipped.
+		if self.handle_errors(flow_result, self.result):
+			raise RuntimeError(self.result.error_description or "Setup could not open the module.")
+
+		self.gpio = flow_result.gpio
+
+	def _teardown(self) -> None:
+		flow = FlowCloseModule(
+			FlowCloseModuleConfig(
+				endpoint=self.config.test_endpoint,
+				gpio=self.gpio,
+			)
+		)
+		flow.run()') }}
+<p>The handle never leaves the endpoint. The <strong>Open Module</strong> step creates it there and puts it on its
+	result, and from then on the test passes that object to every step that targets the same endpoint, the way it
+	passes any other value. What travels to the controller is a reference to the object, valid for as long as the
+	test holds the endpoint, so a later step receives the very same open handle and works with it directly:</p>
+{{ codeblock.block('def _run_flow(self) -> None:
+	step_1_result = self.run_step(
+		StepBlinkLed,
+		endpoint=self.config.endpoint,
+		gpio=self.config.gpio,
+		pin=self.config.pin,
+		period_ms=self.config.period_ms,
+		blinks=self.config.blinks,
+	)
+
+	self.result.blinks_done = step_1_result.blinks_done
+
+	self.handle_errors(step_1_result, self.result)') }}
+<p>A step that needs the pins the other way round, an input where the previous step drove an output, changes the
+	direction on the open handle instead of reopening it. That is what lets the link tests turn a module from the
+	receiving side into the sending side between two flows without touching the wiring.</p>
+
+<h2 id="leds-group">LEDs group</h2>
+<p>Both tests of the group take one endpoint and one module. Select the test, set <strong>Test Endpoint</strong> to
+	the machine the module is plugged into and leave <strong>Module Serial</strong> at <code>auto</code>, which
+	takes the first FT2232H found on that machine. With two modules on one machine, the log of the
+	<strong>Verify Module</strong> step lists every module it found, by serial number or, for a module with a
+	blank EEPROM, by its USB position such as <code>bus 1 address 2</code>; either name can be entered as the
+	serial.</p>
+
+<h3 id="led-blink">LED Blink</h3>
+<p>Source directory:</p>
+{{ cmd.copyPath("orcraft-test-suite-ftdi/test_group_leds/test_led_blink/") }}
+<p>The test opens the module with every pin as an output and blinks one LED per case, with a matrix of the pin and
+	the period:</p>
+{{ codeblock.block('blinks = OrcraftConfigField.Numeric(default=5, label="Blinks")
+
+matrix = OrcraftConfigField.Matrix(
+	OrcraftConfigField.Dimension("pin", (0, 1, 2, 3, 4, 5)),
+	OrcraftConfigField.Dimension("period_ms", (200, 500)),
+)') }}
+<p>Each case drives its pin high and low for the number of blinks and reads the pin back after every write. The
+	LED on the bench blinks, and the case passes when the module reported the level it was told to set every
+	time. That read-back is what turns a demonstration into a test: the failure at the top of this page, a module
+	whose I/O banks had no power, was found by it.</p>
+
+<h3 id="led-pattern">LED Pattern</h3>
+<p>Source directory:</p>
+{{ cmd.copyPath("orcraft-test-suite-ftdi/test_group_leds/test_led_pattern/") }}
+<p>The second test drives all six LEDs at once and walks patterns over them, one sequence per case at one of two
+	periods: a <em>walking one</em> lights each LED in turn, a <em>walking zero</em> darkens each in turn, and a
+	<em>count</em> shows the numbers 0 to 63 in binary. Every pattern is read back after it is written, exactly as
+	in LED Blink.</p>
+
+<h2 id="gpio-link-group">GPIO Link group</h2>
+<p>The link group needs both modules. Every test takes the <strong>Test Endpoint</strong> and the
+	<strong>Aux Endpoint</strong>, the two machines, a <strong>Module Serial</strong> for each, the
+	<strong>Message</strong> to send and a <strong>Pace ms</strong> that holds each nibble on the wires a little
+	longer so the LEDs stay readable; set it to 0 for the fastest transfer. Both modules are opened in
+	<code>_setup()</code> with every pin as an input, so nothing drives the shared wires until a flow assigns the
+	roles.</p>
+<p>A message crosses the wires one nibble at a time, with a four-phase handshake:</p>
+<ol>
+	<li>The sender puts the nibble on DATA0 to DATA3 and raises REQ.</li>
+	<li>The receiver reads the nibble and raises ACK.</li>
+	<li>The sender lowers REQ.</li>
+	<li>The receiver lowers ACK, and the sender may put the next nibble on the wires.</li>
+</ol>
+<p>Each machine polls its USB port at its own speed, and the handshake means neither side can outrun the other. A
+	frame is one length byte followed by the UTF-8 bytes of the message, so the receiver knows when the message is
+	complete.</p>
+
+<h3 id="wire-map">Wire Map</h3>
+<p>Source directory:</p>
+{{ cmd.copyPath("orcraft-test-suite-ftdi/test_group_link/test_wire_map/") }}
+<p>Run this test first, before any message. One module raises each of <code>AD0</code> to <code>AD5</code> in
+	turn while the other reads all its pins, then the roles swap. A correct link maps every pin to the same pin on
+	the other side and nothing else, and the test's <strong>Wire Map</strong> result spells the mapping out, pin by
+	pin, in both directions:</p>
+{{ codeblock.block('Test to aux: AD0 -> AD0; AD1 -> AD1; AD2 -> AD2; AD3 -> AD3; AD4 -> AD4; AD5 -> AD5
+Aux to test: AD0 -> AD0; AD1 -> AD1; AD2 -> AD2; AD3 -> AD3; AD4 -> AD4; AD5 -> AD5', 'text') }}
+<p>A swapped, missing or shorted wire shows up by name: a missing wire maps to <em>nothing</em>, a swapped pair
+	maps each pin to the other, and a short between two pins of the driving module is reported as that module
+	raising its own second pin.</p>
+
+<h3 id="send-receive-and-exchange">Send, Receive and Exchange</h3>
+<p>Source directory:</p>
+{{ cmd.copyPath("orcraft-test-suite-ftdi/test_group_link/test_send_message/") }}
+<p>The three message tests share one flow, <strong>Transfer Message</strong>, and differ only in who sends.
+	<strong>Send Message</strong> sends from the test endpoint to the aux endpoint, <strong>Receive Message</strong>
+	the other way round, and <strong>Exchange Messages</strong> runs the flow twice on the same two handles: the
+	message one way, then a <strong>Reply</strong> back. The flow has three steps:</p>
+{{ codeblock.block('def _run_flow(self) -> None:
+	# Step 1: start listening on the receiver; the step returns at once
+	step_1_result = self.run_step(
+		StepStartReceiver,
+		endpoint=self.config.receiver_endpoint,
+		gpio=self.config.receiver_gpio,
+		timeout_sec=RECEIVE_TIMEOUT_SEC,
+	)
+
+	if self.handle_errors(step_1_result, self.result):
+		return
+
+	# Step 2: send the message from the sender
+	step_2_result = self.run_step(
+		StepSendMessage,
+		endpoint=self.config.sender_endpoint,
+		gpio=self.config.sender_gpio,
+		message=self.config.message,
+		pace_ms=self.config.pace_ms,
+	)
+
+	# Step 3: collect what the receiver got, even when the sender reported trouble
+	step_3_result = self.run_step(
+		StepWaitReceiver,
+		endpoint=self.config.receiver_endpoint,
+		task=step_1_result.task,
+		duration_sec=WAIT_AFTER_SEND_SEC,
+	)') }}
+<p>The receiver has to be listening before the first nibble arrives, so the flow starts it first.
+	<strong>Start Receiver</strong> makes its handle the receiving side, ACK as the only output, starts a thread
+	on the aux endpoint that waits for REQ, and returns at once with the running task on its result, the pattern
+	from <a class="text-accent" href="/tutorial/asynchronous-steps/">Handling Asynchronous Steps</a>.
+	<strong>Send Message</strong> then makes the other handle the sending side, DATA and REQ as outputs, and
+	drives the message. <strong>Wait Receiver</strong> goes back to the aux endpoint with the task, waits for the
+	thread to finish and reads the message it collected. Select <strong>Send Message</strong>, set the two
+	endpoints, click <strong class="text-accent">Update Plan</strong>, <strong class="text-purple">Run</strong>,
+	and follow the flow in the log:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/ftdi-suite-example/transfer-message-log.png", "Log of the Transfer Message flow with the Sender Endpoint GMG-TEST-1 and the Receiver Endpoint GMG-TEST-2, the Start Receiver step on GMG-TEST-2 passing at once with the line Receiver listening on ftdi://ftdi:2232h/1 for up to 60 s, and the Send Message step on GMG-TEST-1 passing with the checkpoint Message sent: 19 bytes in 2.116 s", "large") }}
+<p>The sender reports 19 bytes for an 18-character message, the length byte plus the text, at a pace of 50 ms
+	per nibble. The flow ends with a checkpoint that compares the received text with the sent one, and the test's
+	result carries the <strong>Received Message</strong> and the <strong>Bytes Per Sec</strong>. A transfer that
+	stalls fails with what the receiver had collected by then, nibble by nibble, so a wiring fault points at the
+	wire.</p>
+<p>With both machines prepared and the wiring in place, the whole suite runs green. Each LEDs test names the one
+	machine its module is on, each link test names both, and the run panel on the right shows the same
+	endpoint and module fields the tests were configured with:</p>
+{{ media.zoomableImage("/assets/images/screenshots/tutorial/ftdi-suite-example/full-suite-run.png", "Test Explorer with the FTDI GPIO suite fully passed: 22 planned, done and passed cases, the LEDs group with LED Blink and LED Pattern on GMG-TEST-1, the GPIO Link group with Wire Map, Send Message, Receive Message and Exchange Messages on GMG-TEST-1 and GMG-TEST-2, and the run panel of LED Blink on the right with the Test Endpoint, Module Serial auto, Blinks 5 and the twelve pin and period cases", "large") }}
+
+<p>This suite is the shape of a lab test: hardware on the bench, driven from the machines it is plugged into,
+	with the framework moving the code, the requirements and the results. An
+	<a class="text-accent" href="/ai-agents/">AI agent</a> can extend it the same way it extends any suite, from
+	the files the controller exports.</p>

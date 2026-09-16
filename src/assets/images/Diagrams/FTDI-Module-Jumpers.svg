@@ -1,0 +1,176 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 660" width="780" height="660" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="12" role="img" aria-label="FT2232H Mini Module headers CN2 and CN3 with the five power jumpers and the channel A pins marked">
+<rect width="780" height="660" fill="#ffffff"/>
+<rect x="88" y="34" width="632" height="556" rx="10" fill="#f4f6f8" stroke="#3b4652" stroke-width="1.5"/>
+<text x="404" y="60" text-anchor="middle" font-size="14" font-weight="600" fill="#1f2328">FT2232H Mini Module, schematic top view</text>
+<text x="157" y="84" text-anchor="middle" font-size="13" font-weight="600" fill="#1f2328">CN2</text>
+<text x="643" y="84" text-anchor="middle" font-size="13" font-weight="600" fill="#1f2328">CN3</text>
+<rect x="160" y="96" width="44" height="30" rx="3" fill="#ffe08a" stroke="#6b7480" stroke-width="1"/>
+<text x="164" y="107" font-size="9" fill="#5d6470">1</text>
+<text x="182.0" y="120" text-anchor="middle" font-size="10.5" font-weight="600" font-family="Consolas, Menlo, monospace" fill="#1f2328">V3V3</text>
+<rect x="110" y="96" width="44" height="30" rx="3" fill="#d6d6d6" stroke="#6b7480" stroke-width="1"/>
+<text x="114" y="107" font-size="9" fill="#5d6470">2</text>
+<text x="132.0" y="120" text-anchor="middle" font-size="10.5" font-weight="600" font-family="Consolas, Menlo, monospace" fill="#1f2328">GND</text>
+<rect x="160" y="133" width="44" height="30" rx="3" fill="#ffe08a" stroke="#6b7480" stroke-width="1"/>
+<text x="164" y="144" font-size="9" fill="#5d6470">3</text>
+<text x="182.0" y="157" text-anchor="middle" font-size="10.5" font-weight="600" font-family="Consolas, Menlo, monospace" fill="#1f2328">V3V3</text>
+<rect x="110" y="133" width="44" height="30" rx="3" fill="#d6d6d6" stroke="#6b7480" stroke-width="1"/>
+<text x="114" y="144" font-size="9" fill="#5d6470">4</text>
+<text x="132.0" y="157" text-anchor="middle" font-size="10.5" font-weight="600" font-family="Consolas, Menlo, monospace" fill="#1f2328">GND</text>
+<rect x="160" y="170" width="44" height="30" rx="3" fill="#ffe08a" stroke="#6b7480" stroke-width="1"/>
+<text x="164" y="181" font-size="9" fill="#5d6470">5</text>
+<text x="182.0" y="194" text-anchor="middle" font-size="10.5" font-weight="600" font-family="Consolas, Menlo, monospace" fill="#1f2328">V3V3</text>
+<rect x="110" y="170" width="44" height="30" rx="3" fill="#d6d6d6" stroke="#6b7480" stroke-width="1"/>
+<text x="114" y="181" font-size="9" fill="#5d6470">6</text>
+<text x="132.0" y="194" text-anchor="middle" font-size="10.5" font-weight="600" font-family="Consolas, Menlo, monospace" fill="#1f2328">GND</text>
+<rect x="160" y="207" width="44" height="30" rx="3" fill="#b7e7dc" stroke="#6b7480" stroke-width="1"/>
+<text x="164" y="218" font-size="9" fill="#5d6470">7</text>
+<text x="182.0" y="231" text-anchor="middle" font-size="10.5" font-weight="600" font-family="Consolas, Menlo, monospace" fill="#1f2328">AD0</text>
+<rect x="110" y="207" width="44" height="30" rx="3" fill="#ffffff" stroke="#6b7480" stroke-width="1"/>
+<text x="114" y="218" font-size="9" fill="#5d6470">8</text>
+<rect x="160" y="244" width="44" height="30" rx="3" fill="#b7e7dc" stroke="#6b7480" stroke-width="1"/>
+<text x="164" y="255" font-size="9" fill="#5d6470">9</text>
+<text x="182.0" y="268" text-anchor="middle" font-size="10.5" font-weight="600" font-family="Consolas, Menlo, monospace" fill="#1f2328">AD2</text>
+<rect x="110" y="244" width="44" height="30" rx="3" fill="#b7e7dc" stroke="#6b7480" stroke-width="1"/>
+<text x="114" y="255" font-size="9" fill="#5d6470">10</text>
+<text x="132.0" y="268" text-anchor="middle" font-size="10.5" font-weight="600" font-family="Consolas, Menlo, monospace" fill="#1f2328">AD1</text>
+<rect x="160" y="281" width="44" height="30" rx="3" fill="#ffc9b0" stroke="#6b7480" stroke-width="1"/>
+<text x="164" y="292" font-size="9" fill="#5d6470">11</text>
+<text x="182.0" y="305" text-anchor="middle" font-size="10.5" font-weight="600" font-family="Consolas, Menlo, monospace" fill="#1f2328">VIO</text>
+<rect x="110" y="281" width="44" height="30" rx="3" fill="#b7e7dc" stroke="#6b7480" stroke-width="1"/>
+<text x="114" y="292" font-size="9" fill="#5d6470">12</text>
+<text x="132.0" y="305" text-anchor="middle" font-size="10.5" font-weight="600" font-family="Consolas, Menlo, monospace" fill="#1f2328">AD3</text>
+<rect x="160" y="318" width="44" height="30" rx="3" fill="#b7e7dc" stroke="#6b7480" stroke-width="1"/>
+<text x="164" y="329" font-size="9" fill="#5d6470">13</text>
+<text x="182.0" y="342" text-anchor="middle" font-size="10.5" font-weight="600" font-family="Consolas, Menlo, monospace" fill="#1f2328">AD5</text>
+<rect x="110" y="318" width="44" height="30" rx="3" fill="#b7e7dc" stroke="#6b7480" stroke-width="1"/>
+<text x="114" y="329" font-size="9" fill="#5d6470">14</text>
+<text x="132.0" y="342" text-anchor="middle" font-size="10.5" font-weight="600" font-family="Consolas, Menlo, monospace" fill="#1f2328">AD4</text>
+<rect x="160" y="355" width="44" height="30" rx="3" fill="#e3ebf2" stroke="#6b7480" stroke-width="1"/>
+<text x="164" y="366" font-size="9" fill="#5d6470">15</text>
+<text x="182.0" y="379" text-anchor="middle" font-size="10.5" font-weight="600" font-family="Consolas, Menlo, monospace" fill="#1f2328">AD7</text>
+<rect x="110" y="355" width="44" height="30" rx="3" fill="#e3ebf2" stroke="#6b7480" stroke-width="1"/>
+<text x="114" y="366" font-size="9" fill="#5d6470">16</text>
+<text x="132.0" y="379" text-anchor="middle" font-size="10.5" font-weight="600" font-family="Consolas, Menlo, monospace" fill="#1f2328">AD6</text>
+<rect x="160" y="392" width="44" height="30" rx="3" fill="#ffffff" stroke="#6b7480" stroke-width="1"/>
+<text x="164" y="403" font-size="9" fill="#5d6470">17</text>
+<rect x="110" y="392" width="44" height="30" rx="3" fill="#ffffff" stroke="#6b7480" stroke-width="1"/>
+<text x="114" y="403" font-size="9" fill="#5d6470">18</text>
+<rect x="160" y="429" width="44" height="30" rx="3" fill="#ffffff" stroke="#6b7480" stroke-width="1"/>
+<text x="164" y="440" font-size="9" fill="#5d6470">19</text>
+<rect x="110" y="429" width="44" height="30" rx="3" fill="#ffffff" stroke="#6b7480" stroke-width="1"/>
+<text x="114" y="440" font-size="9" fill="#5d6470">20</text>
+<rect x="160" y="466" width="44" height="30" rx="3" fill="#ffc9b0" stroke="#6b7480" stroke-width="1"/>
+<text x="164" y="477" font-size="9" fill="#5d6470">21</text>
+<text x="182.0" y="490" text-anchor="middle" font-size="10.5" font-weight="600" font-family="Consolas, Menlo, monospace" fill="#1f2328">VIO</text>
+<rect x="110" y="466" width="44" height="30" rx="3" fill="#ffffff" stroke="#6b7480" stroke-width="1"/>
+<text x="114" y="477" font-size="9" fill="#5d6470">22</text>
+<rect x="160" y="503" width="44" height="30" rx="3" fill="#ffffff" stroke="#6b7480" stroke-width="1"/>
+<text x="164" y="514" font-size="9" fill="#5d6470">23</text>
+<rect x="110" y="503" width="44" height="30" rx="3" fill="#ffffff" stroke="#6b7480" stroke-width="1"/>
+<text x="114" y="514" font-size="9" fill="#5d6470">24</text>
+<rect x="160" y="540" width="44" height="30" rx="3" fill="#ffffff" stroke="#6b7480" stroke-width="1"/>
+<text x="164" y="551" font-size="9" fill="#5d6470">25</text>
+<rect x="110" y="540" width="44" height="30" rx="3" fill="#ffffff" stroke="#6b7480" stroke-width="1"/>
+<text x="114" y="551" font-size="9" fill="#5d6470">26</text>
+<rect x="646" y="96" width="44" height="30" rx="3" fill="#ffb3b3" stroke="#6b7480" stroke-width="1"/>
+<text x="650" y="107" font-size="9" fill="#5d6470">1</text>
+<text x="668.0" y="120" text-anchor="middle" font-size="10.5" font-weight="600" font-family="Consolas, Menlo, monospace" fill="#1f2328">VBUS</text>
+<rect x="596" y="96" width="44" height="30" rx="3" fill="#d6d6d6" stroke="#6b7480" stroke-width="1"/>
+<text x="600" y="107" font-size="9" fill="#5d6470">2</text>
+<text x="618.0" y="120" text-anchor="middle" font-size="10.5" font-weight="600" font-family="Consolas, Menlo, monospace" fill="#1f2328">GND</text>
+<rect x="646" y="133" width="44" height="30" rx="3" fill="#ffb3b3" stroke="#6b7480" stroke-width="1"/>
+<text x="650" y="144" font-size="9" fill="#5d6470">3</text>
+<text x="668.0" y="157" text-anchor="middle" font-size="10.5" font-weight="600" font-family="Consolas, Menlo, monospace" fill="#1f2328">VCC</text>
+<rect x="596" y="133" width="44" height="30" rx="3" fill="#d6d6d6" stroke="#6b7480" stroke-width="1"/>
+<text x="600" y="144" font-size="9" fill="#5d6470">4</text>
+<text x="618.0" y="157" text-anchor="middle" font-size="10.5" font-weight="600" font-family="Consolas, Menlo, monospace" fill="#1f2328">GND</text>
+<rect x="646" y="170" width="44" height="30" rx="3" fill="#ffffff" stroke="#6b7480" stroke-width="1"/>
+<text x="650" y="181" font-size="9" fill="#5d6470">5</text>
+<rect x="596" y="170" width="44" height="30" rx="3" fill="#ffffff" stroke="#6b7480" stroke-width="1"/>
+<text x="600" y="181" font-size="9" fill="#5d6470">6</text>
+<rect x="646" y="207" width="44" height="30" rx="3" fill="#ffffff" stroke="#6b7480" stroke-width="1"/>
+<text x="650" y="218" font-size="9" fill="#5d6470">7</text>
+<rect x="596" y="207" width="44" height="30" rx="3" fill="#ffffff" stroke="#6b7480" stroke-width="1"/>
+<text x="600" y="218" font-size="9" fill="#5d6470">8</text>
+<rect x="646" y="244" width="44" height="30" rx="3" fill="#ffffff" stroke="#6b7480" stroke-width="1"/>
+<text x="650" y="255" font-size="9" fill="#5d6470">9</text>
+<rect x="596" y="244" width="44" height="30" rx="3" fill="#ffffff" stroke="#6b7480" stroke-width="1"/>
+<text x="600" y="255" font-size="9" fill="#5d6470">10</text>
+<rect x="646" y="281" width="44" height="30" rx="3" fill="#ffffff" stroke="#6b7480" stroke-width="1"/>
+<text x="650" y="292" font-size="9" fill="#5d6470">11</text>
+<rect x="596" y="281" width="44" height="30" rx="3" fill="#ffc9b0" stroke="#6b7480" stroke-width="1"/>
+<text x="600" y="292" font-size="9" fill="#5d6470">12</text>
+<text x="618.0" y="305" text-anchor="middle" font-size="10.5" font-weight="600" font-family="Consolas, Menlo, monospace" fill="#1f2328">VIO</text>
+<rect x="646" y="318" width="44" height="30" rx="3" fill="#ffffff" stroke="#6b7480" stroke-width="1"/>
+<text x="650" y="329" font-size="9" fill="#5d6470">13</text>
+<rect x="596" y="318" width="44" height="30" rx="3" fill="#ffffff" stroke="#6b7480" stroke-width="1"/>
+<text x="600" y="329" font-size="9" fill="#5d6470">14</text>
+<rect x="646" y="355" width="44" height="30" rx="3" fill="#ffffff" stroke="#6b7480" stroke-width="1"/>
+<text x="650" y="366" font-size="9" fill="#5d6470">15</text>
+<rect x="596" y="355" width="44" height="30" rx="3" fill="#ffffff" stroke="#6b7480" stroke-width="1"/>
+<text x="600" y="366" font-size="9" fill="#5d6470">16</text>
+<rect x="646" y="392" width="44" height="30" rx="3" fill="#ffffff" stroke="#6b7480" stroke-width="1"/>
+<text x="650" y="403" font-size="9" fill="#5d6470">17</text>
+<rect x="596" y="392" width="44" height="30" rx="3" fill="#ffffff" stroke="#6b7480" stroke-width="1"/>
+<text x="600" y="403" font-size="9" fill="#5d6470">18</text>
+<rect x="646" y="429" width="44" height="30" rx="3" fill="#ffffff" stroke="#6b7480" stroke-width="1"/>
+<text x="650" y="440" font-size="9" fill="#5d6470">19</text>
+<rect x="596" y="429" width="44" height="30" rx="3" fill="#ffffff" stroke="#6b7480" stroke-width="1"/>
+<text x="600" y="440" font-size="9" fill="#5d6470">20</text>
+<rect x="646" y="466" width="44" height="30" rx="3" fill="#ffffff" stroke="#6b7480" stroke-width="1"/>
+<text x="650" y="477" font-size="9" fill="#5d6470">21</text>
+<rect x="596" y="466" width="44" height="30" rx="3" fill="#ffc9b0" stroke="#6b7480" stroke-width="1"/>
+<text x="600" y="477" font-size="9" fill="#5d6470">22</text>
+<text x="618.0" y="490" text-anchor="middle" font-size="10.5" font-weight="600" font-family="Consolas, Menlo, monospace" fill="#1f2328">VIO</text>
+<rect x="646" y="503" width="44" height="30" rx="3" fill="#ffffff" stroke="#6b7480" stroke-width="1"/>
+<text x="650" y="514" font-size="9" fill="#5d6470">23</text>
+<rect x="596" y="503" width="44" height="30" rx="3" fill="#ffffff" stroke="#6b7480" stroke-width="1"/>
+<text x="600" y="514" font-size="9" fill="#5d6470">24</text>
+<rect x="646" y="540" width="44" height="30" rx="3" fill="#ffffff" stroke="#6b7480" stroke-width="1"/>
+<text x="650" y="551" font-size="9" fill="#5d6470">25</text>
+<rect x="596" y="540" width="44" height="30" rx="3" fill="#ffffff" stroke="#6b7480" stroke-width="1"/>
+<text x="600" y="551" font-size="9" fill="#5d6470">26</text>
+<path d="M204,185.0 C404,185.0 396,296.0 596,296.0" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
+<path d="M204,185.0 C404,185.0 396,296.0 596,296.0" fill="none" stroke="#d97706" stroke-width="3" stroke-linecap="round"/>
+<rect x="389" y="220.5" width="22" height="14" rx="3" fill="#ffffff" stroke="#d97706" stroke-width="1"/>
+<text x="400" y="231.5" text-anchor="middle" font-size="10" font-weight="600" fill="#d97706">J4</text>
+<path d="M204,111.0 Q300,203.5 204,296.0" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
+<path d="M204,111.0 Q300,203.5 204,296.0" fill="none" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/>
+<rect x="219" y="119.0" width="22" height="14" rx="3" fill="#ffffff" stroke="#dc2626" stroke-width="1"/>
+<text x="230" y="130.0" text-anchor="middle" font-size="10" font-weight="600" fill="#dc2626">J2</text>
+<path d="M204,148.0 Q360,314.5 204,481.0" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
+<path d="M204,148.0 Q360,314.5 204,481.0" fill="none" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/>
+<rect x="275" y="308.5" width="22" height="14" rx="3" fill="#ffffff" stroke="#dc2626" stroke-width="1"/>
+<text x="286" y="319.5" text-anchor="middle" font-size="10" font-weight="600" fill="#dc2626">J3</text>
+<path d="M596,296.0 Q500,388.5 596,481.0" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
+<path d="M596,296.0 Q500,388.5 596,481.0" fill="none" stroke="#d97706" stroke-width="3" stroke-linecap="round"/>
+<rect x="533" y="382.5" width="22" height="14" rx="3" fill="#ffffff" stroke="#d97706" stroke-width="1"/>
+<text x="544" y="393.5" text-anchor="middle" font-size="10" font-weight="600" fill="#d97706">J5</text>
+<path d="M690,111.0 Q734,129.5 690,148.0" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round"/>
+<path d="M690,111.0 Q734,129.5 690,148.0" fill="none" stroke="#7c3aed" stroke-width="3" stroke-linecap="round"/>
+<rect x="709" y="123.5" width="22" height="14" rx="3" fill="#ffffff" stroke="#7c3aed" stroke-width="1"/>
+<text x="720" y="134.5" text-anchor="middle" font-size="10" font-weight="600" fill="#7c3aed">J1</text>
+<text x="300" y="430" font-size="12" font-weight="600" fill="#1f2328">Jumper wires for USB bus power</text>
+<line x1="300" y1="448" x2="322" y2="448" stroke="#7c3aed" stroke-width="3" stroke-linecap="round"/>
+<text x="330" y="452" font-size="11" fill="#1f2328">J1: CN3-1 VBUS to CN3-3 VCC (USB power)</text>
+<line x1="300" y1="468" x2="322" y2="468" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/>
+<text x="330" y="472" font-size="11" fill="#1f2328">J2: CN2-1 V3V3 to CN2-11 VIO</text>
+<line x1="300" y1="488" x2="322" y2="488" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/>
+<text x="330" y="492" font-size="11" fill="#1f2328">J3: CN2-3 V3V3 to CN2-21 VIO</text>
+<line x1="300" y1="508" x2="322" y2="508" stroke="#d97706" stroke-width="3" stroke-linecap="round"/>
+<text x="330" y="512" font-size="11" fill="#1f2328">J4: CN2-5 V3V3 to CN3-12 VIO</text>
+<line x1="300" y1="528" x2="322" y2="528" stroke="#d97706" stroke-width="3" stroke-linecap="round"/>
+<text x="330" y="532" font-size="11" fill="#1f2328">J5: CN3-12 VIO to CN3-22 VIO</text>
+<text x="300" y="554" font-size="11" fill="#5d6470">J2 to J5 feed every I/O bank from the 3.3 V regulator;</text>
+<text x="300" y="568" font-size="11" fill="#5d6470">without them every pin stays low.</text>
+<rect x="110" y="607" width="14" height="14" rx="2" fill="#ffe08a" stroke="#6b7480"/>
+<text x="129" y="618" font-size="10.5" fill="#1f2328">3.3 V regulator output</text>
+<rect x="287.4" y="607" width="14" height="14" rx="2" fill="#ffc9b0" stroke="#6b7480"/>
+<text x="306.4" y="618" font-size="10.5" fill="#1f2328">I/O bank supply input</text>
+<rect x="458.6" y="607" width="14" height="14" rx="2" fill="#ffb3b3" stroke="#6b7480"/>
+<text x="477.6" y="618" font-size="10.5" fill="#1f2328">USB 5 V and the regulator input VCC</text>
+<rect x="110" y="631" width="14" height="14" rx="2" fill="#d6d6d6" stroke="#6b7480"/>
+<text x="129" y="642" font-size="10.5" fill="#1f2328">ground</text>
+<rect x="188.2" y="631" width="14" height="14" rx="2" fill="#b7e7dc" stroke="#6b7480"/>
+<text x="207.2" y="642" font-size="10.5" fill="#1f2328">channel A pins used by the suite</text>
+</svg>

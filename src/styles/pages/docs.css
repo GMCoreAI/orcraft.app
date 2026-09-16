@@ -55,6 +55,12 @@
   list-style: disc;
 }
 
+.docs__article ol {
+  margin: 0 0 var(--space-4);
+  padding-left: var(--space-6);
+  list-style: decimal;
+}
+
 .docs__article table {
   width: 100%;
   margin: 0 0 var(--space-4);
