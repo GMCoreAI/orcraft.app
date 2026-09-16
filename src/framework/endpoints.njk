@@ -146,6 +146,21 @@ consume_result = self.run_step(
   </tbody>
 </table>
 
+<h3 id="suite-requirements">Suite requirements</h3>
+<p>A suite that imports packages beyond the Python standard library lists them in a
+  <code>requirements.txt</code> at the root of its repository, in pip's own format. After the suite
+  package is activated on an endpoint, the controller has the endpoint application's Python install
+  that file with pip, once per uploaded package; a package the endpoint already holds costs one short
+  check. The outcome appears in the log next to the upload lines and names the requirements. When the
+  install fails, the test errors before any step runs and the log carries pip's message.</p>
+<p>The FTDI GPIO example suite drives FT2232H modules through pyftdi, which needs a libusb library that
+  Windows does not ship, so its file lists both:</p>
+{{ codeblock.block('pyftdi
+libusb-package', 'text') }}
+<p>The controller's own Python is never touched. A test that runs on <code>localhost</code> uses the
+  controller's Python directly, so those packages must be installed there by hand. A suite without a
+  requirements file skips the step entirely.</p>
+
 <p>Data files are a separate matter from code. A file a test needs on an endpoint is declared as a
   package field, and the <code>endpoints</code> option binds it to the endpoint fields that actually need
   it:</p>

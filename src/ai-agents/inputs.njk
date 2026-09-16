@@ -59,6 +59,7 @@ An Orcraft test suite is ordinary Python. The same files run from the controller
 - Never edit a test to run it. Configure a run with a subclass that redeclares the fields it needs.
 - Configured copies and their batch go into the run folder, never into a suite repository.
 - Every batch item points `import_roots` and `package_source_path` at the suite repository.
+- A test that imports a package outside the Python standard library adds it to the suite repository's `requirements.txt`; the controller installs it on the endpoints.
 - Run the batch from the run folder. After the run, read the log under `Logs/` there and summarize the result.
 
 ## Paths (example - replace every line with your own)

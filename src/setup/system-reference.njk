@@ -440,6 +440,10 @@ launchctl kickstart -k gui/$(id -u)/com.orcraft.endpoint", 'bash') }}
     </tr>
   </tbody>
 </table>
+<p>Packages a suite needs on top of these, for a tool it drives or a protocol it speaks, come from the
+  suite's <code>requirements.txt</code>: the controller installs them into the endpoint application's
+  Python when it uploads the suite. See
+  <a class="text-accent" href="/framework/endpoints/#suite-requirements">Suite requirements</a>.</p>
 
 <h2 id="optional-integrations">Optional integrations</h2>
 
