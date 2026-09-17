@@ -49,6 +49,20 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
     </details>
 
     <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="just-another-automation-system">Is Orcraft just another test automation system?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>No. A test automation system executes scripts that someone wrote for it and schedules them. Orcraft covers
+          the testing operation as a whole: the suites are developed continuously, so a fixed bug or a new feature
+          becomes a test; every suite has the same structure, so the controller derives the GUI,
+          the run plan and the reports from the code; a run reaches every machine in the lab through the
+          endpoints; and the results of every run stay in one place.</p>
+        <p>The difference shows with AI agents. An automation system gives them a trigger to pull. Orcraft gives
+          them a structure to write into and a lab to run on, so they can develop the tests, pick the machines,
+          run and read the results, while the person reviews the work in the controller GUI.</p>
+      </div>
+    </details>
+
+    <details class="faq__item">
       <summary class="faq__question"><h3 class="faq__title" id="code-first">What does "code-first" mean in practice?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>The code comes first and everything else follows from it. Suites, groups, tests, flows and steps are
@@ -363,10 +377,11 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
     <details class="faq__item">
       <summary class="faq__question"><h3 class="faq__title" id="vs-sequencers">How does Orcraft compare to hardware test sequencers such as NI TestStand?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
-        <p>These are the closest relatives: they also orchestrate sequences of steps against hardware and report
-          on them. Orcraft differs in being Python-native and cross-platform, with the sequence living in code
-          rather than in a dedicated editor and its own file format. It runs on Windows, Linux and macOS, dispatches
-          steps to remote machines over the network, and installs with pip.</p>
+        <p>Both run sequences of steps against hardware and report on them. In a hardware test sequencer such
+          as NI TestStand the sequence is built in the tool's own editor, saved in its own file format and run
+          on Windows only. In Orcraft the sequence is Python code, so an AI agent can write it, and the
+          controller runs it on Windows, Linux and macOS, dispatches steps to remote machines over the network
+          and installs with pip.</p>
       </div>
     </details>
 
