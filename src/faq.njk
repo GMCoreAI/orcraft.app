@@ -375,13 +375,68 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
     </details>
 
     <details class="faq__item">
-      <summary class="faq__question"><h3 class="faq__title" id="vs-sequencers">How does Orcraft compare to hardware test sequencers such as NI TestStand?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <summary class="faq__question"><h3 class="faq__title" id="vs-sequencers">How does Orcraft compare to NI TestStand?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
-        <p>Both run sequences of steps against hardware and report on them. In a hardware test sequencer such
-          as NI TestStand the sequence is built in the tool's own editor, saved in its own file format and run
-          on Windows only. In Orcraft the sequence is Python code, so an AI agent can write it, and the
-          controller runs it on Windows, Linux and macOS, dispatches steps to remote machines over the network
-          and installs with pip.</p>
+        <p>Both run sequences of steps against hardware and report on them. In NI TestStand the sequence is built in
+          the tool's own editor, saved in its own file format and run on Windows only, and the step code lives in
+          separate modules that the sequence calls. In Orcraft the sequence and the steps are one Python suite.
+          There is no editor to learn and no file format to maintain: the controller derives the GUI from the
+          code, an AI agent can write the suite because it is plain Python, and the controller runs it on
+          Windows, Linux and macOS, dispatches steps to remote machines over the network and installs with pip.</p>
+      </div>
+    </details>
+
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="vs-opentap">How does Orcraft compare to OpenTAP?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>OpenTAP is Keysight's open-source test sequencer. Its engine is C# on .NET, a test plan is a sequence of
+          steps saved as a .TapPlan XML file, built in the tool's editor or a text user interface and run with the
+          <code>tap run</code> command, and the steps come from plugins written in C# or Python. It runs on
+          Windows and Linux. That is two layers to keep aligned, the plan file and the plugins behind it. In
+          Orcraft the plan and the steps are one Python suite: an AI agent can write it, the controller derives
+          the GUI from it, runs it on Windows, Linux and macOS, dispatches steps to remote machines over the
+          network and installs with pip, with no plugin toolchain and no .NET.</p>
+      </div>
+    </details>
+
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="vs-labgrid">How does Orcraft compare to labgrid?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>labgrid is an open-source Python library for controlling embedded boards in a lab. Exporters expose the
+          boards connected to each lab host, a coordinator manages access to them, and a client on the test host
+          takes a board over the network and drives its console, power and bootloader. It is not a test framework:
+          tests are written for pytest with the labgrid plugin, and they run on the test host, so the GUI, the run
+          plan and the roll-up of results are whatever pytest and its plugins provide. In Orcraft the test steps
+          themselves run on the endpoints, any Windows, Linux or macOS machine with the endpoint application
+          installed with pip, and the suite structure gives the run a configuration GUI, a plan, live logs and
+          results rolled up from step to suite, on the local machine and in CI alike.</p>
+      </div>
+    </details>
+
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="vs-lava">How does Orcraft compare to LAVA?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>LAVA is Linaro's open-source continuous integration system for boards. A job is a YAML file submitted to
+          the LAVA server; a dispatcher on a lab host deploys an operating system image onto a board, boots it and
+          runs the tests on it, and the server tracks the results. The job describes deploy, boot and test for
+          one device type, and the system needs a server and dispatchers installed and administered. An Orcraft
+          test is Python code that runs on any registered machine, the controller and the endpoints install with
+          pip, and the same suite runs from the controller's GUI, from the command line and in a CI pipeline,
+          with the results and logs of every run in the controller.</p>
+      </div>
+    </details>
+
+    <details class="faq__item">
+      <summary class="faq__question"><h3 class="faq__title" id="vs-openhtf">How does Orcraft compare to OpenHTF?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <div class="faq__answer">
+        <p>OpenHTF is Google's open-source Python framework for hardware testing on a test station. A test is a
+          sequence of phases, plain Python functions; plugs wrap the instruments and the device under test,
+          measurements with validators decide the outcome, and an operator web UI shows the station. The test
+          runs on the station it was written for, and running it elsewhere, configuring it or collecting results
+          across stations is left to the team. In Orcraft the suite is structured into groups, tests, cases,
+          flows and steps, and the controller runs the steps on the machines registered as endpoints, from the
+          configuration GUI it derives from the code, from the command line or in CI, and rolls the results up
+          from step to suite in one place.</p>
       </div>
     </details>
 
@@ -456,5 +511,7 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
   </div>
 
   <p class="faq__notice text-muted text-sm">All other product names are trademarks of their respective owners
-    and are used for identification only.</p>
+    and are used for identification only. The descriptions of other products on this page are summaries
+    written by us, may be inaccurate or out of date, and are not endorsed by their owners. For an accurate
+    description of any product, visit its own site.</p>
 </div>
