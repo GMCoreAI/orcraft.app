@@ -316,10 +316,10 @@ if __name__ == "__main__":
       <td>How long it took.</td>
     </tr>
     <tr>
-      <td><code>total_cases</code>, <code class="status-pass">passed_cases</code>, <code class="status-fail">failed_cases</code>, <code class="status-error">error_cases</code>, <code class="status-warning">warning_cases</code></td>
+      <td><code>total_cases</code>, <code>done_cases</code>, <code class="status-pass">passed_cases</code>, <code class="status-fail">failed_cases</code>, <code class="status-error">error_cases</code>, <code class="status-warning">warning_cases</code></td>
       <td class="docs-table__number mark mark--none">&ndash;</td>
       <td class="docs-table__number mark mark--reserved">{% icon "shield-lock" %}</td>
-      <td>Per-case counters, summed from the cases that ran and carried up into the group and suite results.</td>
+      <td>Per-case counters, carried up into the group and suite results. <code>total_cases</code> is the plan, the cases the run was going to execute, even when the test stopped before reaching them. <code>done_cases</code> is the cases that reached a verdict, passed or failed; an errored case is not done. Each counter after the total is logged with its share of the total, as <code>898 (99.56%)</code>.</td>
     </tr>
     <tr>
       <td><code>log_orientation</code></td>
