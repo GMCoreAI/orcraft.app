@@ -66,7 +66,7 @@ description: "Reference for OrcraftConfigField: every config field type and the 
       <td><code>log_orientation</code></td>
       <td>Every component</td>
       <td><code>HORIZONTAL</code></td>
-      <td>Orientation of the logged config table, or <code>OFF</code> to leave it out of the log. The result table has its own <code>log_orientation</code>.</td>
+      <td>Orientation of the logged config table, or <code>OFF</code> to leave it out of the log. On a test it also sets the tables of its cycles and cases. The result table has its own <code>log_orientation</code>.</td>
     </tr>
     <tr>
       <td><code>version</code></td>
@@ -157,8 +157,8 @@ description: "Reference for OrcraftConfigField: every config field type and the 
 </div>
 
 <h3 id="inherited-reserved">Reserved</h3>
-<p>Written by the framework while a run is in progress. A config that redeclares one of these changes
-  how nesting, timing or log layout behaves.</p>
+<p>Written by the framework while a run is in progress. A config that redeclares one of these, or code
+  that assigns one, is refused with an error naming the field.</p>
 
 <table>
   <thead>
@@ -187,21 +187,16 @@ description: "Reference for OrcraftConfigField: every config field type and the 
     <tr>
       <td><code>log_tab</code></td>
       <td>Every component</td>
-      <td>Log indentation. Assigned by the framework at every level - it cannot be overridden, only collided with.</td>
-    </tr>
-    <tr>
-      <td><code>log_title_color</code>, <code>log_title_bg_color</code></td>
-      <td>Every component</td>
-      <td>Palette plumbing for the log banners.</td>
+      <td>Log indentation. Assigned by the framework at every level.</td>
     </tr>
   </tbody>
 </table>
 
 <div class="docs-callout docs-callout--caution">
-  <span class="docs-callout__label">Do not redeclare</span>
-  <p>A field of your own under one of these names replaces the framework's. The framework keeps writing
-    to the name, but through your definition - and the log indentation, the run timestamps and the
-    endpoint a step is dispatched to silently stop meaning what the controller expects.</p>
+  <span class="docs-callout__label">Refused by the framework</span>
+  <p>A class of your own that declares one of these names fails as soon as it is defined, with an error
+    naming the field, and an assignment to one at run time raises the same error. The framework alone
+    writes them.</p>
 </div>
 
 <h2 id="options">Common config field options</h2>
@@ -586,10 +581,13 @@ input_folders = OrcraftConfigField.PackageFolderList(
   other. Turning off the configuration table also hides the description banner printed above it.</p>
 
 <p>Test cycles, matrix cases and case cycles are built by the framework and have no config class of
-  their own, so they follow the test: <code>OFF</code> on a test's config also hides the framework's
-  cycle, case and matrix tables beneath it. The test's own result table still follows the result
-  class. The demo suite's <code>test_log_tables_off</code> runs a matrix with two test cycles and two
-  case cycles and prints nothing but plain log lines.</p>
+  their own, so their Configuration tables follow the test's config: horizontal or vertical as the
+  test's is, and <code>OFF</code> on a test's config hides the framework's cycle, case and matrix
+  tables beneath it. The test's own Result table follows the result class the test assigns to
+  <code>self.result</code>, and a case's Result table follows the class the body assigns to
+  <code>case.result</code>, or reads as the test's does when the body assigns none. The demo suite's
+  <code>test_log_tables_off</code> runs a matrix with two test cycles and two case cycles and prints
+  nothing but plain log lines.</p>
 
 <p>For example, a step whose inputs are obvious from its name can drop its configuration table and
   still log its result:</p>

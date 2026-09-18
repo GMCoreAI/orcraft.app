@@ -117,7 +117,10 @@ status_text = Logger.colorize_if(
   <code>log_orientation</code>. Horizontal is compact for a handful of fields; vertical stays readable
   when there are many, or when values are long; <code>OFF</code> drops the table from the log entirely.
   The config class and the result class each carry their own <code>log_orientation</code>, so the two
-  tables are switched independently:</p>
+  tables are switched independently. A test's setting also reaches the tables the framework builds
+  beneath it: its cycles and cases take the test config's orientation for their Configuration tables,
+  and a case's Result table takes the orientation of the result class assigned to <code>case.result</code>,
+  or the test's own when none is assigned:</p>
 
 {{ codeblock.block('log_orientation = OrcraftConfigField.Format(
 	default=OrcraftConfigField.LogTableOrientation.VERTICAL

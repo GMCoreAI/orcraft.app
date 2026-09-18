@@ -182,24 +182,20 @@ class MyFlow(OrcraftTestFlow):
   <tbody>
     <tr>
       <td><code>start_time</code></td>
-      <td>When the run started. Stamped by the framework at run time - leave it alone.</td>
+      <td>When the run started. Stamped by the framework at run time.</td>
     </tr>
     <tr>
       <td><code>log_tab</code></td>
-      <td>Log indentation. Assigned by the framework at every level - it cannot be overridden, only collided with.</td>
-    </tr>
-    <tr>
-      <td><code>log_title_color</code>, <code>log_title_bg_color</code></td>
-      <td>Palette plumbing for the log banners. Not user-facing.</td>
+      <td>Log indentation. Assigned by the framework at every level.</td>
     </tr>
   </tbody>
 </table>
 
 <div class="docs-callout docs-callout--caution">
-  <span class="docs-callout__label">Do not redeclare</span>
-  <p>A field of your own under one of these names replaces the framework's. The framework keeps writing
-    to the name, but through your definition - and the log indentation, the run timestamps and the
-    endpoint a step is dispatched to silently stop meaning what the controller expects.</p>
+  <span class="docs-callout__label">Refused by the framework</span>
+  <p>A class of your own that declares one of these names fails as soon as it is defined, with an error
+    naming the field, and an assignment to one at run time raises the same error. The framework alone
+    writes them.</p>
 </div>
 
 <h2 id="flow-result-fields">Result fields</h2>
@@ -263,12 +259,6 @@ class MyFlow(OrcraftTestFlow):
       <td class="docs-table__number mark mark--none">&ndash;</td>
       <td>Whether the result table is logged horizontally, vertically or not at all (<code>OFF</code>). Defaults to horizontal.</td>
     </tr>
-    <tr>
-      <td><code>log_title_color</code>, <code>log_title_bg_color</code></td>
-      <td class="docs-table__number mark mark--none">&ndash;</td>
-      <td class="docs-table__number mark mark--reserved">{% icon "shield-lock" %}</td>
-      <td>Palette plumbing for the log banners. Not user-facing.</td>
-    </tr>
   </tbody>
 </table>
 
@@ -282,10 +272,10 @@ class MyFlow(OrcraftTestFlow):
 </div>
 
 <div class="docs-callout docs-callout--caution">
-  <span class="docs-callout__label">Do not redeclare</span>
-  <p>A field of your own under any of these names replaces the framework's. The framework keeps writing
-    to the name, but through your definition - and status comparisons, the case's <code>handle_errors</code>, and the controller's result columns silently break. Only
-    <code>log_orientation</code> is meant to be overridden, and only to change its default.</p>
+  <span class="docs-callout__label">Refused by the framework</span>
+  <p>A class of your own that declares one of the reserved names fails as soon as it is defined, with an
+    error naming the field, and an assignment to one at run time raises the same error. Only
+    <code>log_orientation</code> is meant to be redeclared, and only to change its default.</p>
 </div>
 
 <h2 id="run-step">Running steps</h2>

@@ -106,7 +106,7 @@ if __name__ == "__main__":
     <tr>
       <td><code>log_orientation</code></td>
       <td><code>HORIZONTAL</code></td>
-      <td>Orientation of the logged config table, or <code>OFF</code> to leave it out of the log - together with the framework's own test cycle, case and matrix tables. The result table has its own <code>log_orientation</code>.</td>
+      <td>Orientation of the logged config table. The framework's own tables beneath the test - test cycles, cases and case cycles - have no config class of their own and read the same way, and <code>OFF</code> leaves all of them out of the log, the matrix tables included. The result table has its own <code>log_orientation</code>.</td>
     </tr>
   </tbody>
 </table>
@@ -239,24 +239,20 @@ if __name__ == "__main__":
   <tbody>
     <tr>
       <td><code>start_time</code></td>
-      <td>When the run started. Stamped by the framework at run time - leave it alone.</td>
+      <td>When the run started. Stamped by the framework at run time.</td>
     </tr>
     <tr>
       <td><code>log_tab</code></td>
-      <td>Log indentation. Assigned by the framework at every level - it cannot be overridden, only collided with.</td>
-    </tr>
-    <tr>
-      <td><code>log_title_color</code>, <code>log_title_bg_color</code></td>
-      <td>Palette plumbing for the log banners. Not user-facing.</td>
+      <td>Log indentation. Assigned by the framework at every level.</td>
     </tr>
   </tbody>
 </table>
 
 <div class="docs-callout docs-callout--caution">
-  <span class="docs-callout__label">Do not redeclare</span>
-  <p>A field of your own under one of these names replaces the framework's. The framework keeps writing
-    to the name, but through your definition - and the log indentation, the run timestamps and the
-    endpoint a step is dispatched to silently stop meaning what the controller expects.</p>
+  <span class="docs-callout__label">Refused by the framework</span>
+  <p>A class of your own that declares one of these names fails as soon as it is defined, with an error
+    naming the field, and an assignment to one at run time raises the same error. The framework alone
+    writes them.</p>
 </div>
 
 <h2 id="result-class">Result class</h2>
@@ -327,12 +323,6 @@ if __name__ == "__main__":
       <td class="docs-table__number mark mark--none">&ndash;</td>
       <td>Whether the result table is logged horizontally, vertically or not at all (<code>OFF</code>). Test results default to vertical because the counters make a horizontal row too wide.</td>
     </tr>
-    <tr>
-      <td><code>log_title_color</code>, <code>log_title_bg_color</code></td>
-      <td class="docs-table__number mark mark--none">&ndash;</td>
-      <td class="docs-table__number mark mark--reserved">{% icon "shield-lock" %}</td>
-      <td>Palette plumbing for the log banners. Not user-facing.</td>
-    </tr>
   </tbody>
 </table>
 
@@ -346,15 +336,15 @@ if __name__ == "__main__":
 </div>
 
 <div class="docs-callout docs-callout--caution">
-  <span class="docs-callout__label">Do not redeclare</span>
-  <p>A field of your own under any of these names replaces the framework's. The framework keeps writing
-    to the name, but through your definition - and status comparisons, the counters the group and suite
-    roll up, and the controller's result columns silently break. Only <code>log_orientation</code> is
-    meant to be overridden, and only to change its default.</p>
+  <span class="docs-callout__label">Refused by the framework</span>
+  <p>A class of your own that declares one of the reserved names fails as soon as it is defined, with an
+    error naming the field, and an assignment to one at run time raises the same error. Only
+    <code>log_orientation</code> is meant to be redeclared, and only to change its default.</p>
 </div>
 
 <p>Declaring a result class is optional. A test that has nothing of its own to report can leave
-  <code>case.result</code> alone and still produce a complete pass or fail. Declaring one is what makes
+  <code>case.result</code> alone - it is then a plain <code>OrcraftTestResult</code>, with the same
+  inherited and reserved fields - and still produce a complete pass or fail. Declaring one is what makes
   measured values appear in the log tables, in the controller and in exported results.</p>
 
 <h2 id="run-case">Test body</h2>

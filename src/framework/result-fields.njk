@@ -94,9 +94,9 @@ class MyProduceStep(OrcraftTestStep):
   <em>Reserved</em> marks the ones the framework writes as the run progresses, and its icon says how
   strictly: <span class="mark mark--framework">{% icon "cpu" %}</span> is a field the framework sets on
   your behalf - through a checkpoint, an exception - that you may still set directly;
-  <span class="mark mark--reserved">{% icon "shield-lock" %}</span> is fully reserved, and redeclaring
-  it changes what the log and the controller report. See the per-component pages for the counters each
-  level adds on top.</p>
+  <span class="mark mark--reserved">{% icon "shield-lock" %}</span> is fully reserved: the framework
+  refuses a class that redeclares it and an assignment from your code, with an error naming the field.
+  See the per-component pages for the counters each level adds on top.</p>
 
 <table>
   <thead>
@@ -148,13 +148,7 @@ class MyProduceStep(OrcraftTestStep):
       <td><code>log_orientation</code></td>
       <td class="docs-table__number mark mark--user">{% icon "check" %}</td>
       <td class="docs-table__number mark mark--none">&ndash;</td>
-      <td>Whether the result table is logged horizontally, vertically or not at all (<code>OFF</code>). Override its default in code.</td>
-    </tr>
-    <tr>
-      <td><code>log_title_color</code>, <code>log_title_bg_color</code></td>
-      <td class="docs-table__number mark mark--none">&ndash;</td>
-      <td class="docs-table__number mark mark--reserved">{% icon "shield-lock" %}</td>
-      <td>Palette plumbing for the log banners. Not user-facing.</td>
+      <td>Whether the result table is logged horizontally, vertically or not at all (<code>OFF</code>). Override its default in code. On a test it also sets its cases' Result tables, unless a case is given a result class of its own.</td>
     </tr>
   </tbody>
 </table>
@@ -169,10 +163,10 @@ class MyProduceStep(OrcraftTestStep):
 </div>
 
 <div class="docs-callout docs-callout--caution">
-  <span class="docs-callout__label">Do not redeclare</span>
-  <p>A field of your own under one of the reserved names replaces the framework's. The framework keeps
-    writing to the name, but through your definition - and status comparisons, the counters rolled up
-    from below, and the controller's result columns silently break.</p>
+  <span class="docs-callout__label">Refused by the framework</span>
+  <p>A class of your own that declares one of the reserved names fails as soon as it is defined, with an
+    error naming the field, and an assignment to one at run time raises the same error. Only
+    <code>log_orientation</code> is meant to be redeclared, and only to change its default.</p>
 </div>
 
 <h2 id="aggregation">Aggregated counters</h2>
