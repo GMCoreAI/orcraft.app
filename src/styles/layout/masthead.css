@@ -4,13 +4,13 @@
   text-align: center;
   padding-block: 0;
   background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
 }
 
-/* Dark strip under the lead; the band that follows it draws the dividing line. */
+/* Dark strip under "Try it now" on the home page; the bands around it draw the dividing lines. */
 .masthead__principles {
   padding-block: var(--space-12);
   background: var(--color-bg);
-  border-top: 1px solid var(--color-border);
 }
 
 /* Only the home page shows the full masthead; other pages use the topbar. */

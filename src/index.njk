@@ -9,7 +9,7 @@ key: home
 <h1 class="visually-hidden">Orcraft: the platform for test development and orchestration that lets you and your AI agents run the entire testing operation</h1>
 
 <!-- Principles: code-first, code-once, code-only. -->
-<section class="band band--tight">
+<section class="section--principles">
   <div class="container">
     <dl class="principles">
       <div class="principles__item">
@@ -32,9 +32,9 @@ key: home
 </section>
 
 <!-- Evaluation -->
-<section class="section--tight">
+<section class="band band--install">
   <div class="container text-center">
-  <h2 id="try-it-now" class="section__title section__title--caps">Try it now</h2>
+  <h2 id="try-it-now" class="section__title section__title--caps install-band__title">Try it now</h2>
   <div class="install">
     <code class="install__command">pip install orcraft</code>
     <button class="button button--ghost install__copy" type="button" data-copy="pip install orcraft"
@@ -43,9 +43,55 @@ key: home
       <span class="install__copy-done">{% icon "check" %}</span>
     </button>
   </div>
-  <p class="text-muted" style="margin-top: var(--space-8); margin-bottom: 0;">See <a class="text-accent" href="/setup/">Setup</a> for details</p>
+  <p class="text-muted install-band__note">See <a class="text-accent" href="/setup/">Setup</a> for details</p>
   </div>
 </section>
+
+{# The thesis strip, on the page background so the rows keep alternating. #}
+<div class="masthead__principles">
+  <div class="container">
+    <div class="pillars" data-reveal-group>
+      <details class="pillar reveal">
+        <summary class="pillar__head">
+          <span class="pillar__icon">{% icon "stack-2" %}</span>
+          <h3 id="test-suite-standardization" class="pillar__title">Test suite standardization</h3>
+          <span class="pillar__marker">{% icon "chevron-right" %}</span>
+        </summary>
+        <p class="pillar__text">Every suite has the
+          <a class="text-accent" href="/framework/#component-model">same structure</a> in plain Python. Your AI
+          agent writes it with no API to learn; the controller derives the GUI from it.</p>
+      </details>
+      <details class="pillar reveal">
+        <summary class="pillar__head">
+          <span class="pillar__icon">{% icon "code" %}</span>
+          <h3 id="continuous-test-development" class="pillar__title">Continuous test development</h3>
+          <span class="pillar__marker">{% icon "chevron-right" %}</span>
+        </summary>
+        <p class="pillar__text">The suite grows with the system. On demand or on a schedule, your AI agent adds
+          the missing tests, and every fixed bug becomes a test.</p>
+      </details>
+      <details class="pillar reveal">
+        <summary class="pillar__head">
+          <span class="pillar__icon">{% icon "hierarchy" %}</span>
+          <h3 id="orchestration" class="pillar__title">Orchestration</h3>
+          <span class="pillar__marker">{% icon "chevron-right" %}</span>
+        </summary>
+        <p class="pillar__text">When asked or when scheduled, your AI agent picks the machines and runs
+          <a class="text-accent" href="/setup/">across the lab</a>. The controller ships the package and
+          collects the results.</p>
+      </details>
+      <details class="pillar reveal">
+        <summary class="pillar__head">
+          <span class="pillar__icon">{% icon "infinity" %}</span>
+          <h3 id="continuous-integration" class="pillar__title">Continuous integration</h3>
+          <span class="pillar__marker">{% icon "chevron-right" %}</span>
+        </summary>
+        <p class="pillar__text">The same suite runs unattended in the pipeline, from a snapshot exported from
+          the GUI or a batch your AI agent writes, with the same results.</p>
+      </details>
+    </div>
+  </div>
+</div>
 
 <!-- Product preview -->
 <section class="band">

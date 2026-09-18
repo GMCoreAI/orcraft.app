@@ -63,6 +63,24 @@
   padding-block: var(--space-12);
 }
 
+/* The principles row under the masthead, kept short. */
+.section--principles {
+  padding-block: var(--space-8);
+}
+
+/* The "Try it now" strip: one command and a pointer to Setup, kept short. */
+.band--install {
+  padding-block: var(--space-4);
+}
+
+.install-band__title {
+  margin-bottom: var(--space-3);
+}
+
+.install-band__note {
+  margin: var(--space-3) 0 0;
+}
+
 .band__title {
   margin-bottom: var(--space-8);
   color: var(--color-text-muted);
