@@ -2,10 +2,37 @@
 layout: layouts/base.njk
 title: Login
 key: login
-description: "Sign in to your Orcraft account."
+noindex: true
+description: "Sign in to your Orcraft account, or approve a controller that is waiting to sign in."
 ---
 
-<section class="section container container--narrow">
-  <h1>Login</h1>
-  <p class="text-muted">Login content is in preparation.</p>
+<section class="section container container--narrow login"
+  data-backend-url="{{ account.backendUrl }}"
+  data-clerk-publishable-key="{{ account.clerkPublishableKey }}"
+  data-clerk-frontend-api="{{ account.clerkFrontendApi }}">
+
+  {# Shown only when the address carries a controller code. #}
+  <div class="stack" data-login-controller hidden>
+    <h1>Connect a controller</h1>
+    <p class="text-muted">A controller is waiting to sign in with your account. Check the code it shows you, sign in, and approve it.</p>
+
+    <div class="card stack">
+      <label class="login__label" for="login-code">Code shown by the controller</label>
+      <input class="login__code" id="login-code" type="text" autocomplete="off" autocapitalize="characters"
+        spellcheck="false" maxlength="9" data-login-code />
+
+      <div class="stack" data-login-request hidden>
+        <p>Controller on <strong data-login-hostname></strong> (<span data-login-os></span>), asked <span data-login-when></span>.</p>
+        <p>Approving lets this controller act as <strong data-login-account></strong> until you sign it out from your account page.</p>
+        <div class="login__actions">
+          <button class="button button--primary" type="button" data-login-approve>Approve this controller</button>
+          <button class="button button--ghost" type="button" data-login-signout>Not me, sign out</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="login__widget"><div data-login-signin></div></div>
+
+  <p class="text-muted login__status" role="status" data-login-status></p>
 </section>

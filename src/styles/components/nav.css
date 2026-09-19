@@ -34,6 +34,24 @@
   background: var(--color-accent);
 }
 
+.nav__account {
+  padding: var(--space-1) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-text);
+}
+
+.nav__account:hover,
+.nav__account[aria-current="page"] {
+  border-color: var(--color-accent);
+  color: var(--color-accent-strong);
+  font-weight: 500;
+}
+
+.nav__account[aria-current="page"]::after {
+  display: none;
+}
+
 .nav__cta {
   padding-block: var(--space-2);
 }

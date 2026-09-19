@@ -1,0 +1,5 @@
+{
+  "backendUrl": "https://tffzxhiqniehykpkztux.supabase.co/functions/v1",
+  "clerkPublishableKey": "pk_test_c21hc2hpbmctY3JhbmUtOTMzNy5jbGVyay5hY2NvdW50cy5kZXYk",
+  "clerkFrontendApi": "https://smashing-crane-9337.clerk.accounts.dev"
+}

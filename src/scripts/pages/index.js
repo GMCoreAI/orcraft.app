@@ -3,6 +3,8 @@
 const pages = {
   home: () => import("./home.js"),
   contact: () => import("./contact.js"),
+  login: () => import("./login.js"),
+  account: () => import("./account.js"),
 };
 
 export function initPage(name) {

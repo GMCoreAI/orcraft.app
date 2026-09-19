@@ -1,0 +1,52 @@
+/* Login page: sign-in and controller approval. */
+
+.login,
+.account {
+  padding-top: var(--space-6);
+}
+
+.login__label {
+  color: var(--color-text-muted);
+}
+
+.login__code {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xl);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.login__code:focus {
+  border-color: var(--color-accent);
+  outline: none;
+}
+
+.login__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+/* The Clerk widget sizes itself; centre it instead of framing it. */
+.login__widget {
+  display: flex;
+  justify-content: center;
+}
+
+[data-login-controller]:not([hidden]) + .login__widget {
+  margin-top: var(--space-6);
+}
+
+.login__status {
+  text-align: center;
+}
+
+.login__status:empty {
+  display: none;
+}
