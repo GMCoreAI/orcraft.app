@@ -43,6 +43,8 @@ function clerkAppearance() {
       cardBox: { boxShadow: "none", border: `1px solid ${token("--color-border")}` },
       card: { boxShadow: "none" },
       footer: { background: token("--color-surface-alt") },
+      // The sign-in / sign-up switch is rendered by the page instead.
+      footerAction: { display: "none" },
       // Provider logos are drawn for light backgrounds; GitHub's is black.
       socialButtonsProviderIcon__github: { filter: "invert(1)" },
     },
@@ -77,13 +79,36 @@ export async function init() {
 
   rememberSignedIn(Boolean(clerk.user));
   if (!clerk.user) {
+    // Sign-in and sign-up are both embedded here; ?mode=signup shows the second.
     // Hash routing keeps every step, including the return from GitHub, on this page.
-    clerk.mountSignIn(find("signin"), {
+    const here = new URL(location.href);
+    const signUp = here.searchParams.get("mode") === "signup";
+    const other = new URL(here);
+    if (signUp) other.searchParams.delete("mode"); else other.searchParams.set("mode", "signup");
+    other.hash = "";
+    const done = new URL(here);
+    done.searchParams.delete("mode");
+    done.hash = "";
+    // Absolute return addresses with their trailing slash: Clerk strips the slash
+    // from paths, and the redirect that adds it back is not reliable everywhere.
+    const options = {
       routing: "hash",
-      forceRedirectUrl: location.href,
-      signUpForceRedirectUrl: location.href,
+      forceRedirectUrl: done.href,
+      signInForceRedirectUrl: done.href,
+      signUpForceRedirectUrl: done.href,
       appearance: clerkAppearance(),
-    });
+    };
+    if (signUp) clerk.mountSignUp(find("signin"), options);
+    else clerk.mountSignIn(find("signin"), options);
+    // The switch between the two forms is our own link, so it keeps the exact address.
+    const link = document.createElement("a");
+    link.className = "text-accent";
+    link.href = other.pathname + other.search;
+    link.target = "_self";
+    link.textContent = signUp ? "Sign in" : "Sign up";
+    const switchBox = find("switch");
+    switchBox.textContent = signUp ? "Already have an account? " : "Don't have an account? ";
+    switchBox.append(link);
     return;
   }
 

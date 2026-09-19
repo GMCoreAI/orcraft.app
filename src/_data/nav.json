@@ -9,7 +9,7 @@
     { "label": "Demo", "url": "/demo/" },
     { "label": "FAQ", "url": "/faq/" }
   ],
-  "login": { "label": "Login", "url": "/login/" },
+  "login": { "label": "Sign in", "url": "/login/" },
   "footer": [
     { "label": "Privacy Policy", "url": "/legal/privacy/" },
     { "label": "Terms of Use", "url": "/legal/terms/" },

@@ -22,7 +22,8 @@ export function updateAccountLinks() {
     signedIn = false;
   }
   document.querySelectorAll("[data-nav-account]").forEach((link) => {
-    link.textContent = signedIn ? "Account" : "Login";
+    const label = link.querySelector("[data-nav-account-label]") ?? link;
+    label.textContent = signedIn ? "Account" : "Sign in";
     link.setAttribute("href", signedIn ? "/account/" : "/login/");
   });
 }

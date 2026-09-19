@@ -43,6 +43,15 @@
   margin-top: var(--space-6);
 }
 
+.login__switch {
+  margin-top: var(--space-4);
+  text-align: center;
+}
+
+.login__switch:empty {
+  display: none;
+}
+
 .login__status {
   text-align: center;
 }
