@@ -334,7 +334,7 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
     <h2 id="comparison">How Orcraft compares</h2>
 
     <details class="faq__item">
-      <summary class="faq__question"><h3 class="faq__title" id="vs-pytest">How is Orcraft different from pytest or unittest?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <summary class="faq__question"><h3 class="faq__title" id="vs-pytest">How is Orcraft different from pytest or unittest?<sup class="faq__ref" data-pagefind-ignore><a href="#trademarks" title="See the note on other products">*</a></sup></h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>pytest and unittest run test functions on one machine and report pass or fail. Orcraft covers what
           happens around that: a structured hierarchy of suites, groups, tests, cases, flows and steps, a GUI
@@ -345,7 +345,7 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
     </details>
 
     <details class="faq__item">
-      <summary class="faq__question"><h3 class="faq__title" id="vs-robot">How is Orcraft different from Robot Framework?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <summary class="faq__question"><h3 class="faq__title" id="vs-robot">How is Orcraft different from Robot Framework?<sup class="faq__ref" data-pagefind-ignore><a href="#trademarks" title="See the note on other products">*</a></sup></h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>Robot Framework describes tests in a keyword language backed by Python libraries, so a team maintains
           both the keyword files and the code behind them. In Orcraft the test is the Python code, and the
@@ -355,7 +355,7 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
     </details>
 
     <details class="faq__item">
-      <summary class="faq__question"><h3 class="faq__title" id="vs-test-management">Does Orcraft replace a test management tool such as TestRail, Xray or Zephyr?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <summary class="faq__question"><h3 class="faq__title" id="vs-test-management">Does Orcraft replace a test management tool such as TestRail, Xray or Zephyr?<sup class="faq__ref" data-pagefind-ignore><a href="#trademarks" title="See the note on other products">*</a></sup></h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>Not directly. Those tools track test cases, plans and results that are executed elsewhere. Orcraft is
           the execution side: it runs the tests, keeps every session with its live logs and step-level results,
@@ -365,7 +365,7 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
     </details>
 
     <details class="faq__item">
-      <summary class="faq__question"><h3 class="faq__title" id="vs-ci">Does Orcraft replace Jenkins, GitHub Actions or GitLab CI?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <summary class="faq__question"><h3 class="faq__title" id="vs-ci">Does Orcraft replace Jenkins, GitHub Actions or GitLab CI?<sup class="faq__ref" data-pagefind-ignore><a href="#trademarks" title="See the note on other products">*</a></sup></h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>No, it runs inside them. A CI runner is a controller installation running in CLI mode, using a snapshot
           exported from the controller where the run was configured and confirmed in the GUI. The pipeline
@@ -375,7 +375,7 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
     </details>
 
     <details class="faq__item">
-      <summary class="faq__question"><h3 class="faq__title" id="vs-sequencers">How does Orcraft compare to NI TestStand?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <summary class="faq__question"><h3 class="faq__title" id="vs-sequencers">How does Orcraft compare to NI TestStand?<sup class="faq__ref" data-pagefind-ignore><a href="#trademarks" title="See the note on other products">*</a></sup></h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>Both run sequences of steps against hardware and report on them. In NI TestStand the sequence is built in
           the tool's own editor, saved in its own file format and run on Windows only, and the step code lives in
@@ -387,7 +387,7 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
     </details>
 
     <details class="faq__item">
-      <summary class="faq__question"><h3 class="faq__title" id="vs-opentap">How does Orcraft compare to OpenTAP?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <summary class="faq__question"><h3 class="faq__title" id="vs-opentap">How does Orcraft compare to OpenTAP?<sup class="faq__ref" data-pagefind-ignore><a href="#trademarks" title="See the note on other products">*</a></sup></h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>OpenTAP is Keysight's open-source test sequencer. Its engine is C# on .NET, a test plan is a sequence of
           steps saved as a .TapPlan XML file, built in the tool's editor or a text user interface and run with the
@@ -400,7 +400,7 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
     </details>
 
     <details class="faq__item">
-      <summary class="faq__question"><h3 class="faq__title" id="vs-labgrid">How does Orcraft compare to labgrid?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <summary class="faq__question"><h3 class="faq__title" id="vs-labgrid">How does Orcraft compare to labgrid?<sup class="faq__ref" data-pagefind-ignore><a href="#trademarks" title="See the note on other products">*</a></sup></h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>labgrid is an open-source Python library for controlling embedded boards in a lab. Exporters expose the
           boards connected to each lab host, a coordinator manages access to them, and a client on the test host
@@ -414,7 +414,7 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
     </details>
 
     <details class="faq__item">
-      <summary class="faq__question"><h3 class="faq__title" id="vs-lava">How does Orcraft compare to LAVA?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <summary class="faq__question"><h3 class="faq__title" id="vs-lava">How does Orcraft compare to LAVA?<sup class="faq__ref" data-pagefind-ignore><a href="#trademarks" title="See the note on other products">*</a></sup></h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>LAVA is Linaro's open-source continuous integration system for boards. A job is a YAML file submitted to
           the LAVA server; a dispatcher on a lab host deploys an operating system image onto a board, boots it and
@@ -427,7 +427,7 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
     </details>
 
     <details class="faq__item">
-      <summary class="faq__question"><h3 class="faq__title" id="vs-openhtf">How does Orcraft compare to OpenHTF?</h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
+      <summary class="faq__question"><h3 class="faq__title" id="vs-openhtf">How does Orcraft compare to OpenHTF?<sup class="faq__ref" data-pagefind-ignore><a href="#trademarks" title="See the note on other products">*</a></sup></h3><span class="faq__marker">{% icon "chevron-right" %}</span></summary>
       <div class="faq__answer">
         <p>OpenHTF is Google's open-source Python framework for hardware testing on a test station. A test is a
           sequence of phases, plain Python functions; plugs wrap the instruments and the device under test,
@@ -510,8 +510,12 @@ description: "Frequently asked questions about Orcraft: what it is, how it compa
 
   </div>
 
-  <p class="faq__notice text-muted text-sm">All other product names are trademarks of their respective owners
-    and are used for identification only. The descriptions of other products on this page are summaries
-    written by us, may be inaccurate or out of date, and are not endorsed by their owners. For an accurate
-    description of any product, visit its own site.</p>
+  <p class="faq__notice text-muted text-sm" id="trademarks"><span class="faq__ref">*</span> All other product names are trademarks of their respective owners
+    and are used for identification and comparison purposes only. Orcraft is not affiliated with, sponsored by
+    or endorsed by any of them. The descriptions of other products on this page compare features and
+    functionality to help you decide whether Orcraft fits your needs; they are not intended to disparage any
+    product or its owner. They are summaries written by us, reflect our understanding at the time of writing,
+    and may be inaccurate or out of date. For an accurate description of any product, visit its own site.
+    If you believe a description is wrong, <a class="text-accent" href="/contact/">tell us</a> and we will
+    correct it.</p>
 </div>

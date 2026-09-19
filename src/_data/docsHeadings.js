@@ -20,6 +20,7 @@ function toUrl(filePath) {
 
 function toText(html) {
   return html
+    .replace(/<sup\b[\s\S]*?<\/sup>/g, "")
     .replace(/<[^>]+>/g, "")
     .replace(/\s+/g, " ")
     .trim();
