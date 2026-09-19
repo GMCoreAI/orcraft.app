@@ -2,5 +2,5 @@
   {%- for item in nav.primary %}
   <a class="nav__link" href="{{ item.url }}"{% if page.url == item.url or (item.url != "/" and page.url.startsWith(item.url)) %} aria-current="page"{% endif %}>{{ item.label }}</a>
   {%- endfor %}
-  <a class="nav__link nav__account" href="{{ nav.login.url }}" data-nav-account{% if page.url == nav.login.url or page.url.startsWith("/account/") %} aria-current="page"{% endif %}>{% icon "user" %}<span data-nav-account-label>{{ nav.login.label }}</span></a>
+  <a class="nav__link nav__account" href="{{ nav.login.url }}" data-nav-account{% if page.url == nav.login.url or page.url.startsWith("/account/") %} aria-current="page"{% endif %}>{% icon "user" %}<span class="nav__account-label" data-nav-account-label>{{ nav.login.label }}</span></a>
 </nav>

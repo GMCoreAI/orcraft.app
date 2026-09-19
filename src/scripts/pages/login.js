@@ -77,7 +77,7 @@ export async function init() {
     return;
   }
 
-  rememberSignedIn(Boolean(clerk.user));
+  rememberSignedIn(clerk.user?.primaryEmailAddress?.emailAddress ?? null);
   if (!clerk.user) {
     // Sign-in and sign-up are both embedded here; ?mode=signup shows the second.
     // Hash routing keeps every step, including the return from GitHub, on this page.
@@ -161,7 +161,7 @@ export async function init() {
     }
   });
   find("signout").addEventListener("click", () => {
-    rememberSignedIn(false);
+    rememberSignedIn(null);
     clerk.signOut({ redirectUrl: location.href });
   });
   codeInput.addEventListener("change", showRequest);

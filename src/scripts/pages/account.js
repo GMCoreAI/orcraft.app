@@ -17,7 +17,7 @@ export async function init() {
     return;
   }
 
-  rememberSignedIn(Boolean(clerk.user));
+  rememberSignedIn(clerk.user?.primaryEmailAddress?.emailAddress ?? null);
   if (!clerk.user) {
     location.replace("/login/");
     return;
@@ -26,7 +26,7 @@ export async function init() {
   find("email").textContent = clerk.user.primaryEmailAddress.emailAddress;
   find("card").hidden = false;
   find("signout").addEventListener("click", () => {
-    rememberSignedIn(false);
+    rememberSignedIn(null);
     clerk.signOut({ redirectUrl: "/" });
   });
 }

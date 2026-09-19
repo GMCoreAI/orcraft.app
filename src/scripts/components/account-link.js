@@ -1,30 +1,45 @@
-/* Top navigation: shows Login or Account depending on whether the visitor is
-   signed in. The login and account pages keep the flag current; every other
-   page only reads it, so Clerk is not loaded site-wide. */
+/* Top navigation: shows Sign in, or the signed-in email, depending on whether
+   the visitor is signed in. The login and account pages keep the value current;
+   every other page only reads it, so Clerk is not loaded site-wide. */
 
 const KEY = "orcraft-signed-in";
 
-export function rememberSignedIn(signedIn) {
+export function rememberSignedIn(email) {
   try {
-    if (signedIn) localStorage.setItem(KEY, "1");
+    if (email) localStorage.setItem(KEY, email);
     else localStorage.removeItem(KEY);
   } catch {
-    /* storage unavailable: the link simply stays on Login */
+    /* storage unavailable: the link simply stays on Sign in */
   }
   updateAccountLinks();
 }
 
-export function updateAccountLinks() {
-  let signedIn = false;
+function signedInEmail() {
   try {
-    signedIn = localStorage.getItem(KEY) === "1";
+    const value = localStorage.getItem(KEY);
+    return value && value !== "1" ? value : null;
   } catch {
-    signedIn = false;
+    return null;
   }
+}
+
+export function updateAccountLinks() {
+  const email = signedInEmail();
   document.querySelectorAll("[data-nav-account]").forEach((link) => {
     const label = link.querySelector("[data-nav-account-label]") ?? link;
-    label.textContent = signedIn ? "Account" : "Sign in";
-    link.setAttribute("href", signedIn ? "/account/" : "/login/");
+    link.setAttribute("href", email ? "/account/" : "/login/");
+    link.classList.toggle("nav__account--signed-in", Boolean(email));
+    label.replaceChildren();
+    if (!email) {
+      label.textContent = "Sign in";
+      return;
+    }
+    const caption = document.createElement("small");
+    caption.textContent = "Signed in as";
+    const who = document.createElement("span");
+    who.textContent = email;
+    who.title = email;
+    label.append(caption, who);
   });
 }
 
